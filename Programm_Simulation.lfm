@@ -1,0 +1,191 @@
+object Form5: TForm5
+  Left = 192
+  Top = 107
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
+  Caption = 'Programm simulation'
+  ClientHeight = 329
+  ClientWidth = 313
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poScreenCenter
+  OnClose = FormClose
+  OnPaint = FormPaint
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Button1: TButton
+    Left = 8
+    Top = 296
+    Width = 89
+    Height = 25
+    Caption = '&Run'
+    TabOrder = 0
+    OnClick = Button1Click
+  end
+  object Button2: TButton
+    Left = 216
+    Top = 296
+    Width = 89
+    Height = 25
+    Caption = '&Cancel'
+    TabOrder = 1
+    OnClick = Button2Click
+  end
+  object GroupBox1: TGroupBox
+    Left = 8
+    Top = 8
+    Width = 297
+    Height = 153
+    Caption = ' Enter input values '
+    TabOrder = 2
+    object Label1: TLabel
+      Left = 16
+      Top = 32
+      Width = 32
+      Height = 13
+      Caption = 'Label1'
+    end
+    object Label2: TLabel
+      Left = 16
+      Top = 56
+      Width = 32
+      Height = 13
+      Caption = 'Label2'
+    end
+    object Label3: TLabel
+      Left = 16
+      Top = 80
+      Width = 32
+      Height = 13
+      Caption = 'Label3'
+    end
+    object Label4: TLabel
+      Left = 16
+      Top = 104
+      Width = 32
+      Height = 13
+      Caption = 'Label4'
+    end
+    object Label5: TLabel
+      Left = 16
+      Top = 128
+      Width = 32
+      Height = 13
+      Caption = 'Label5'
+    end
+    object Edit1: TEdit
+      Left = 136
+      Top = 24
+      Width = 121
+      Height = 21
+      TabOrder = 0
+      Text = 'Edit1'
+      OnKeyPress = Edit1KeyPress
+      OnKeyUp = Edit1KeyUp
+    end
+    object ScrollBar1: TScrollBar
+      Left = 264
+      Top = 24
+      Width = 16
+      Height = 115
+      Kind = sbVertical
+      PageSize = 0
+      TabOrder = 1
+      OnChange = ScrollBar1Change
+    end
+    object Edit2: TEdit
+      Left = 136
+      Top = 48
+      Width = 121
+      Height = 21
+      TabOrder = 2
+      Text = 'Edit2'
+      OnKeyPress = Edit1KeyPress
+      OnKeyUp = Edit1KeyUp
+    end
+    object Edit3: TEdit
+      Left = 136
+      Top = 72
+      Width = 121
+      Height = 21
+      TabOrder = 3
+      Text = 'Edit3'
+      OnKeyPress = Edit1KeyPress
+      OnKeyUp = Edit1KeyUp
+    end
+    object Edit4: TEdit
+      Left = 136
+      Top = 96
+      Width = 121
+      Height = 21
+      TabOrder = 4
+      Text = 'Edit4'
+      OnKeyPress = Edit1KeyPress
+      OnKeyUp = Edit1KeyUp
+    end
+    object Edit5: TEdit
+      Left = 136
+      Top = 120
+      Width = 121
+      Height = 21
+      TabOrder = 5
+      Text = 'Edit5'
+      OnKeyPress = Edit1KeyPress
+      OnKeyUp = Edit1KeyUp
+    end
+  end
+  object GroupBox2: TGroupBox
+    Left = 8
+    Top = 168
+    Width = 297
+    Height = 57
+    Caption = ' Output Value '
+    TabOrder = 3
+    object Label6: TLabel
+      Left = 16
+      Top = 32
+      Width = 22
+      Height = 13
+      Caption = 'X0 ='
+    end
+    object Edit6: TEdit
+      Left = 136
+      Top = 24
+      Width = 121
+      Height = 21
+      ReadOnly = True
+      TabOrder = 0
+    end
+  end
+  object Button3: TButton
+    Left = 112
+    Top = 296
+    Width = 89
+    Height = 25
+    Caption = 'Stop program'
+    TabOrder = 4
+    Visible = False
+    OnClick = Button3Click
+  end
+  object GroupBox3: TGroupBox
+    Left = 8
+    Top = 232
+    Width = 297
+    Height = 49
+    Caption = ' Show time was taken to execute programm '
+    TabOrder = 5
+    object CheckBox1: TCheckBox
+      Left = 136
+      Top = 24
+      Width = 97
+      Height = 17
+      Caption = 'Show time'
+      TabOrder = 0
+    end
+  end
+end

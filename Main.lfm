@@ -1,0 +1,442 @@
+object Form1: TForm1
+  Left = 323
+  Height = 480
+  Top = 107
+  Width = 732
+  Caption = 'Form1'
+  ClientHeight = 480
+  ClientWidth = 732
+  Color = clBtnFace
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Menu = MainMenu1
+  Position = poScreenCenter
+  LCLVersion = '4.99.0.0'
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnPaint = FormPaint
+  object Splitter1: TSplitter
+    Left = 440
+    Height = 202
+    Top = 8
+    Width = 3
+    Align = alNone
+    AutoSnap = False
+    Visible = False
+  end
+  object Splitter2: TSplitter
+    Left = 488
+    Height = 3
+    Top = 304
+    Width = 200
+    Align = alNone
+    AutoSnap = False
+    MinSize = 60
+    Visible = False
+  end
+  object Splitter3: TSplitter
+    Left = 488
+    Height = 3
+    Top = 208
+    Width = 200
+    Align = alNone
+    AutoSnap = False
+    MinSize = 60
+    Visible = False
+  end
+  inline Code: TSynEdit
+    Left = 448
+    Height = 185
+    Top = 8
+    Width = 257
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'Courier New'
+    Font.Pitch = fpFixed
+    Font.Quality = fqNonAntialiased
+    ParentColor = False
+    ParentFont = False
+    TabOrder = 0
+    OnClick = CodeClick
+    OnKeyDown = CodeKeyDown
+    OnKeyPress = CodeKeyPress
+    BookMarkOptions.BookmarkImages = BookMarks
+    Gutter.Width = 57
+    Gutter.MouseActions = <>
+    RightGutter.Width = 0
+    RightGutter.MouseActions = <>
+    Keystrokes = <>
+    MouseActions = <>
+    MouseTextActions = <>
+    MouseSelActions = <>
+    VisibleSpecialChars = [vscSpace, vscTabAtLast]
+    SelectedColor.BackPriority = 50
+    SelectedColor.ForePriority = 50
+    SelectedColor.FramePriority = 50
+    SelectedColor.BoldPriority = 50
+    SelectedColor.ItalicPriority = 50
+    SelectedColor.UnderlinePriority = 50
+    SelectedColor.StrikeOutPriority = 50
+    BracketHighlightStyle = sbhsBoth
+    BracketMatchColor.Background = clNone
+    BracketMatchColor.Foreground = clNone
+    BracketMatchColor.Style = [fsBold]
+    FoldedCodeColor.Background = clNone
+    FoldedCodeColor.Foreground = clGray
+    FoldedCodeColor.FrameColor = clGray
+    MouseLinkColor.Background = clNone
+    MouseLinkColor.Foreground = clBlue
+    LineHighlightColor.Background = clNone
+    LineHighlightColor.Foreground = clNone
+    OnChange = CodeChange
+    OnGutterClick = CodeGutterClick
+    OnSpecialLineColors = CodeSpecialLineColors
+    OnStatusChange = CodeStatusChange
+    inline SynLeftGutterPartList1: TSynGutterPartList
+      object SynGutterMarks1: TSynGutterMarks
+        Width = 24
+        MouseActions = <>
+        MaxExtraMarksColums = 0
+        Options = [sgmoDeDuplicateMarksOnOverflow]
+      end
+      object SynGutterLineNumber1: TSynGutterLineNumber
+        Width = 17
+        MouseActions = <>
+        MarkupInfo.Background = clBtnFace
+        MarkupInfo.Foreground = clNone
+        DigitCount = 2
+        ShowOnlyLineNumbersMultiplesOf = 1
+        ZeroStart = False
+        LeadingZeros = False
+      end
+      object SynGutterChanges1: TSynGutterChanges
+        Width = 4
+        MouseActions = <>
+        ModifiedColor = 59900
+        SavedColor = clGreen
+      end
+      object SynGutterSeparator1: TSynGutterSeparator
+        Width = 2
+        MouseActions = <>
+        MarkupInfo.Background = clWhite
+        MarkupInfo.Foreground = clGray
+      end
+      object SynGutterCodeFolding1: TSynGutterCodeFolding
+        MouseActions = <>
+        MarkupInfo.Background = clNone
+        MarkupInfo.Foreground = clGray
+        MouseActionsExpanded = <>
+        MouseActionsCollapsed = <>
+      end
+    end
+  end
+  object Explorer: TTreeView
+    Left = 304
+    Height = 177
+    Top = 8
+    Width = 129
+    Images = ExplorerSymbols
+    Indent = 19
+    ReadOnly = True
+    TabOrder = 1
+    Visible = False
+    Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
+  end
+  object Warnings_Error: TListBox
+    Left = 504
+    Height = 70
+    Top = 320
+    Width = 161
+    ItemHeight = 0
+    PopupMenu = PopupMenu2
+    TabOrder = 2
+    TopIndex = -1
+    Visible = False
+    OnDblClick = Warnings_ErrorDblClick
+    OnMouseDown = Warnings_ErrorMouseDown
+  end
+  object Controlled_Varables: TListBox
+    Left = 504
+    Height = 70
+    Top = 216
+    Width = 161
+    ItemHeight = 0
+    PopupMenu = PopupMenu1
+    TabOrder = 3
+    TopIndex = -1
+    Visible = False
+    OnMouseDown = Controlled_VarablesMouseDown
+  end
+  object StatusBar1: TStatusBar
+    Left = 0
+    Height = 24
+    Top = 456
+    Width = 732
+    Panels = <    
+      item
+        Width = 50
+      end    
+      item
+        Width = 60
+      end    
+      item
+        Width = 50
+      end>
+    SimplePanel = False
+  end
+  object MainMenu1: TMainMenu
+    Left = 8
+    Top = 8
+    object Datei1: TMenuItem
+      Caption = 'File'
+      object New1: TMenuItem
+        Caption = '&New'
+        ShortCut = 16462
+        OnClick = New1Click
+      end
+      object Load1: TMenuItem
+        Caption = '&Load'
+        ShortCut = 16460
+        OnClick = Load1Click
+      end
+      object Save1: TMenuItem
+        Caption = '&Save'
+        ShortCut = 16467
+        OnClick = Save1Click
+      end
+      object SaveAs1: TMenuItem
+        Caption = 'Save &as'
+        OnClick = SaveAs1Click
+      end
+      object Print1: TMenuItem
+        Caption = 'Print'
+        ShortCut = 16464
+        OnClick = Print1Click
+      end
+      object Close1: TMenuItem
+        Caption = '&Close'
+        ShortCut = 32883
+        OnClick = Close1Click
+      end
+    end
+    object Edit1: TMenuItem
+      Caption = 'Edit'
+      object Copy1: TMenuItem
+        Caption = 'Copy'
+        ShortCut = 16451
+        OnClick = Copy1Click
+      end
+      object Selectall1: TMenuItem
+        Caption = 'Select &all'
+        ShortCut = 16449
+        OnClick = Selectall1Click
+      end
+      object N1: TMenuItem
+        Caption = '-'
+      end
+      object Find1: TMenuItem
+        Caption = 'Find'
+        ShortCut = 16454
+        OnClick = Find1Click
+      end
+      object SearchReplace1: TMenuItem
+        Caption = 'Search Replace'
+        ShortCut = 16466
+        OnClick = SearchReplace1Click
+      end
+      object N2: TMenuItem
+        Caption = '-'
+      end
+      object CommentSelectedBlock1: TMenuItem
+        Caption = 'Comment Selected Block'
+        ShortCut = 118
+        OnClick = CommentSelectedBlock1Click
+      end
+      object UncommentSelectedBlock1: TMenuItem
+        Caption = 'Uncomment Selected Block'
+        ShortCut = 16502
+        OnClick = UncommentSelectedBlock1Click
+      end
+    end
+    object Debug1: TMenuItem
+      Caption = 'Debug'
+      object ConverttorealLoopprogram1: TMenuItem
+        Caption = 'Convert to real Loop program'
+        Visible = False
+        OnClick = ConverttorealLoopprogram1Click
+      end
+      object CodeFormater2: TMenuItem
+        Caption = 'Code Formater'
+        ShortCut = 16452
+        OnClick = CodeFormater2Click
+      end
+      object ShowcontrolledValues1: TMenuItem
+        Caption = 'Show controlled values'
+        ShortCut = 49239
+        OnClick = ShowcontrolledValues1Click
+      end
+      object asd1: TMenuItem
+        Caption = 'Show Executed File'
+        ShortCut = 16393
+        OnClick = asd1Click
+      end
+      object ToggleBrakePoint1: TMenuItem
+        Caption = 'Toggle Brake Point'
+        ShortCut = 116
+        OnClick = ToggleBrakePoint1Click
+      end
+    end
+    object Start1: TMenuItem
+      Caption = 'Start'
+      object Run1: TMenuItem
+        Caption = 'Run'
+        ShortCut = 120
+        OnClick = Run1Click
+      end
+      object Step1: TMenuItem
+        Caption = 'Step'
+        ShortCut = 119
+        OnClick = Step1Click
+      end
+      object Stop1: TMenuItem
+        Caption = 'Stop'
+        ShortCut = 16497
+        OnClick = Stop1Click
+      end
+      object Compile1: TMenuItem
+        Caption = 'Compile'
+        ShortCut = 16504
+        OnClick = Compile1Click
+      end
+      object Createexefile1: TMenuItem
+        Caption = 'Create exe file'
+        Visible = False
+        OnClick = Createexefile1Click
+      end
+    end
+    object Color1: TMenuItem
+      Caption = 'Options'
+      object Extendedoptions1: TMenuItem
+        Caption = 'Extended options'
+        ShortCut = 16463
+        OnClick = Extendedoptions1Click
+      end
+      object Colorsheme1: TMenuItem
+        Caption = 'Programm options'
+        OnClick = Colorsheme1Click
+      end
+      object CodeFormater1: TMenuItem
+        Caption = 'Code Formater options'
+        OnClick = CodeFormater1Click
+      end
+      object ShowExplorer1: TMenuItem
+        Caption = 'Show Explorer'
+        ShortCut = 16453
+        OnClick = ShowExplorer1Click
+      end
+    end
+    object Help1: TMenuItem
+      Caption = 'Help'
+      object Instruction1: TMenuItem
+        Caption = 'Instruction'
+        OnClick = Instruction1Click
+      end
+      object Info1: TMenuItem
+        Caption = 'Info/ Support'
+        OnClick = Info1Click
+      end
+    end
+  end
+  object OpenDialog1: TOpenDialog
+    DefaultExt = '.Loop'
+    Filter = 'Loop Programm|*.Loop|All|*.*'
+    Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist]
+    Left = 8
+    Top = 40
+  end
+  object SaveDialog1: TSaveDialog
+    DefaultExt = '.Loop'
+    FileName = 'Loop Program'
+    Filter = 'Loop Programm|*.Loop|All|*.*'
+    Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist]
+    Left = 8
+    Top = 72
+  end
+  object BookMarks: TImageList
+    Height = 14
+    Width = 12
+    Left = 8
+    Top = 104
+    Bitmap = {
+      4C7A0A0000000C0000000E000000E20000000000000078DAED98511283200C44
+      F7E8B959B8595B3F702882048436B5FB916154DCC1F0DC00AAFAD05700688626
+      7D4308A7212226CD1869FFED7DC8760FC5B6D43F7DB6477CA7A2FFD627B9AEEA
+      231B0BEEAD2F92CF513BFFC536E1C7CA43644D6FC6677D1E1AF9B7E863405F3A
+      F4C5977E71AEC8A75FFF9401FF293031FBFF32E70738F90EF2F9AF7C0ED7C71E
+      FE59DFFDF3894ACDB3F0091FFAC7BC2CF067E3F8AFE893CFEBF39BFBE7EAFA48
+      FF647DFFE8FE7D369FDCBFD33F7F617FD4597FDD9D0F904FF7E79F32E23FF44F
+      F2F9ADF373E3F9CCD1F727AE3F57AF6F17F0F9047FBCF6B5
+    }
+  end
+  object DebugMarks: TImageList
+    Height = 14
+    Width = 11
+    Left = 40
+    Top = 104
+    Bitmap = {
+      4C7A040000000B0000000E000000840000000000000078DAED95D10AC0200845
+      EFA7F7E777ECA1254E4B598335327CF2207235053E6734DCE168F88D7738935F
+      8DCDE890D577DB9321265802DA9E5C6DDA882F88B3952FBBBF6FEEA9EC4E8BB1
+      4CFC5FB2C7B7F8E56E7E11D7CFD8511E6BEE2759AFCB19B58775CBE9FBDF799C
+      7F37A938766E16459C03166A2E31296FACDE65EEE60108E35FB2
+    }
+  end
+  object ExplorerSymbols: TImageList
+    Left = 72
+    Top = 104
+    Bitmap = {
+      4C7A020000001000000010000000CC0000000000000078DAED955112C2200C44
+      397A8EC6CDE2A46DCA4277A1F2E58799D951C6BE274AD296D2CACC3C526B3D52
+      BEA8E0A2821B3D2B17B218E699B8E8B5E8C1889DF899DE2578E270474746B082
+      BF1CFC7ACAB6EBBC25D67EBD66041BF57020076C143AF27FCAC23DE37BFC9CF1
+      99D133AE57BCF24CCEEE5833C7ECEC490F518F3AFB491F761EC5E91EEE3D1BDC
+      BFA0B7CAD9EFFB6C6687DF70E4F91ACEEEE810AEDCF3DD27CAD1E658FE5E7BDE
+      73A6FCDDB3F83D386BCCAFFA9EF18BFDABD9C19979F70CE9EFC9BF3E6F1F784B
+      809E
+    }
+  end
+  object PopupMenu1: TPopupMenu
+    Left = 512
+    Top = 224
+    object Add1: TMenuItem
+      Caption = 'Modify list'
+      OnClick = Add1Click
+    end
+    object AktuallLoopcount1: TMenuItem
+      Caption = 'Show Aktuall Loop count'
+      OnClick = AktuallLoopcount1Click
+    end
+    object Deleteall1: TMenuItem
+      Caption = 'Clear list'
+      OnClick = Deleteall1Click
+    end
+    object hidemenue1: TMenuItem
+      Caption = 'hide menue'
+      OnClick = hidemenue1Click
+    end
+  end
+  object FindDialog1: TFindDialog
+    OnFind = FindDialog1Find
+    Left = 8
+    Top = 136
+  end
+  object PopupMenu2: TPopupMenu
+    Left = 512
+    Top = 328
+    object close2: TMenuItem
+      Caption = 'close'
+      OnClick = close2Click
+    end
+  end
+end
