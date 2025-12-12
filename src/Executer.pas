@@ -2,7 +2,7 @@ Unit Executer;
 
 Interface
 
-Uses forms, sysutils, Compiler, Rechenbaum, LoopStack, Controled_Vars, {Debuggen} Dialogs {Debuggen Ende};
+Uses forms, sysutils, Compiler, Rechenbaum, LoopStack, unit8, {Debuggen} Dialogs {Debuggen Ende};
 
 Var
   LoopRechner: TLoopStack;
@@ -25,7 +25,7 @@ Function PointerVar_To_RealVar(Value: int64): int64;
 
 Implementation
 
-Uses Programm_Simulation, parser, Main;
+Uses unit5, parser, Unit1;
 
 Procedure SetUnknown;
   Function getun(Value: String): String;

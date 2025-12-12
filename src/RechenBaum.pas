@@ -23,7 +23,7 @@ Function Preclear(Value: String): String;
 
 Implementation
 
-Uses Main, executer, compiler, Parser;
+Uses unit1, executer, compiler, Parser;
 
 // Gibt einen Trechentree Frei und setzt ihn auf NIL
 

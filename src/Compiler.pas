@@ -107,7 +107,7 @@ Function getline(Value: String): integer;
 
 Implementation
 
-Uses Main, Parser, executer, Controled_Vars;
+Uses unit1, Parser, executer, unit8;
 
 // Prüft ob die Variable überhauot von Line aus Sichtbar ist , wenn Ja -> True
 

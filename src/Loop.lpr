@@ -11,17 +11,10 @@ Uses
   Forms,
   dialogs,
   sysutils,
-  Main,
-  Color_Sheme,
-  Extended_Options,
-  New_Projekt,
-  Programm_Simulation,
-  Code_Formater,
-  Instructions,
-  Controled_Vars,
-  Replacer,
-  Extended_Color_Options,
-  Printdialog, Compiler;
+  unit1, unit2, unit3, unit4, unit5, unit6, unit7, unit8, unit9, unit10,
+  unit11
+  , Compiler // Why is this unit needed here ?
+  ;
 
 //{$R *.res}
 

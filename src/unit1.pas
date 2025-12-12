@@ -1,4 +1,4 @@
-Unit Main;
+Unit unit1;
 
 Interface
 
@@ -226,16 +226,18 @@ Procedure SpringezuZeile(value: int64);
 Implementation
 
 Uses
-  Color_Sheme,
-  Extended_Options,
-  New_Projekt,
-  Programm_Simulation,
-  Code_Formater,
-  Instructions,
+  unit2, // Color_Sheme
+  unit3, // Extended_Options
+  unit4, // New_Projekt
+  unit5, // Programm_Simulation
+  unit6, // Code_Formater
+  unit7, //Instructions
   loopstack,
-  Controled_Vars,
-  Replacer,
-  Printdialog;
+  unit8, // Controled_Vars
+  unit9,  // Replacer
+  // unit10, Extended_Color_Options
+  unit11 // Printdialog
+  ;
 
 {$R *.lfm}
 

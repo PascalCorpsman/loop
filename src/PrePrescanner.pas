@@ -8,14 +8,14 @@ Function PrePrescan(Lines: Tstrings): Boolean;
 
 Implementation
 
-Uses main, compiler;
+Uses unit1, compiler;
 
 Function PrePrescan(Lines: Tstrings): Boolean;
 Var
   erg: boolean;
 Begin
   erg := false;
-//  form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' Missing "Then".');
+  //  form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' Missing "Then".');
 
   result := erg;
 End;

@@ -1,5 +1,7 @@
 Unit Parser;
 
+{$MODE objfpc}{$H+}
+
 Interface
 
 Uses Sysutils, Classes, Forms, comctrls, Compiler, {Debuggen} Dialogs {Debuggen Ende};
@@ -23,7 +25,7 @@ Function GetclearedString(Value: String; ClearDoublespace: Boolean): String;
 
 Implementation
 
-Uses Main;
+Uses unit1;
 
 // Löscht Führende Leerzeichen
 
@@ -517,8 +519,8 @@ Begin
         End;
         If x < (length(Lineup) - 1) Then Begin
           If (Lineup[x] = 'E') And (Lineup[x + 1] = 'N') And (Lineup[x + 2] = 'D') Then dec(blcount);
-          If LineContainsToken('var',lineup)<>0 then singleback:=true;
-//          If (Lineup[x] = 'V') And (Lineup[x + 1] = 'A') And (Lineup[x + 2] = 'R') Then singleback := true;
+          If LineContainsToken('var', lineup) <> 0 Then singleback := true;
+          //          If (Lineup[x] = 'V') And (Lineup[x + 1] = 'A') And (Lineup[x + 2] = 'R') Then singleback := true;
         End;
         If x < (length(Lineup) - 2) Then Begin
           If (Lineup[x] = 'T') And (Lineup[x + 1] = 'H') And (Lineup[x + 2] = 'E') And (Lineup[x + 3] = 'N') Then Begin
