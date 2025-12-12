@@ -1,142 +1,146 @@
 object Form9: TForm9
   Left = 192
+  Height = 259
   Top = 107
+  Width = 299
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Text Replace'
   ClientHeight = 259
   ClientWidth = 299
   Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
-  Font.Style = []
-  OldCreateOrder = False
   Position = poScreenCenter
+  LCLVersion = '4.99.0.0'
   OnPaint = FormPaint
-  PixelsPerInch = 96
-  TextHeight = 13
   object Label1: TLabel
     Left = 16
+    Height = 16
     Top = 16
-    Width = 79
-    Height = 13
+    Width = 83
     Caption = 'Search for         :'
   end
   object Label2: TLabel
     Left = 16
+    Height = 16
     Top = 40
-    Width = 79
-    Height = 13
+    Width = 85
     Caption = 'Replace trough :'
   end
   object GroupBox1: TGroupBox
     Left = 8
+    Height = 57
     Top = 160
     Width = 137
-    Height = 57
     Caption = ' Area '
+    ClientHeight = 40
+    ClientWidth = 135
+    ParentBackground = False
     TabOrder = 0
     object CheckBox1: TCheckBox
       Left = 8
+      Height = 22
       Top = 16
-      Width = 73
-      Height = 17
+      Width = 60
       Caption = 'all Text'
       TabOrder = 0
     end
     object CheckBox2: TCheckBox
       Left = 8
+      Height = 22
       Top = 32
-      Width = 89
-      Height = 17
+      Width = 90
       Caption = 'selected Text'
       TabOrder = 1
     end
   end
   object Button1: TButton
     Left = 24
+    Height = 25
     Top = 224
     Width = 75
-    Height = 25
     Caption = '&Replace'
     TabOrder = 1
     OnClick = Button1Click
   end
   object Button2: TButton
     Left = 112
+    Height = 25
     Top = 224
     Width = 75
-    Height = 25
     Caption = 'Replace &all'
     TabOrder = 2
     OnClick = Button2Click
   end
   object Button3: TButton
     Left = 200
+    Height = 25
     Top = 224
     Width = 75
-    Height = 25
     Caption = '&Cancel'
     TabOrder = 3
     OnClick = Button3Click
   end
   object ComboBox1: TComboBox
     Left = 104
+    Height = 28
     Top = 16
     Width = 185
-    Height = 21
-    ItemHeight = 13
+    ItemHeight = 0
     TabOrder = 4
     OnKeyPress = ComboBox2KeyPress
   end
   object ComboBox2: TComboBox
     Left = 104
+    Height = 28
     Top = 40
     Width = 185
-    Height = 21
-    ItemHeight = 13
+    ItemHeight = 0
     TabOrder = 5
     OnKeyPress = ComboBox2KeyPress
   end
   object GroupBox2: TGroupBox
     Left = 8
+    Height = 89
     Top = 64
     Width = 137
-    Height = 89
     Caption = ' Options '
+    ClientHeight = 72
+    ClientWidth = 135
+    ParentBackground = False
     TabOrder = 6
     object CheckBox3: TCheckBox
       Left = 16
+      Height = 22
       Top = 16
-      Width = 97
-      Height = 17
+      Width = 94
       Caption = 'case sensitive'
       TabOrder = 0
     end
     object CheckBox4: TCheckBox
       Left = 16
+      Height = 22
       Top = 32
-      Width = 105
-      Height = 17
+      Width = 117
       Caption = 'only whole words'
       TabOrder = 1
     end
     object CheckBox5: TCheckBox
       Left = 16
+      Height = 22
       Top = 48
-      Width = 97
-      Height = 17
+      Width = 95
       Caption = 'regular terms'
       TabOrder = 2
       Visible = False
     end
     object CheckBox6: TCheckBox
       Left = 16
+      Height = 22
       Top = 64
-      Width = 97
-      Height = 17
+      Width = 102
       Caption = 'with validation'
       TabOrder = 3
       Visible = False
@@ -144,16 +148,19 @@ object Form9: TForm9
   end
   object GroupBox3: TGroupBox
     Left = 152
+    Height = 89
     Top = 64
     Width = 137
-    Height = 89
     Caption = ' Direction '
+    ClientHeight = 72
+    ClientWidth = 135
+    ParentBackground = False
     TabOrder = 7
     object CheckBox7: TCheckBox
       Left = 16
+      Height = 22
       Top = 16
-      Width = 97
-      Height = 17
+      Width = 66
       Caption = 'forward'
       Checked = True
       State = cbChecked
@@ -162,9 +169,9 @@ object Form9: TForm9
     end
     object CheckBox8: TCheckBox
       Left = 16
+      Height = 22
       Top = 32
-      Width = 97
-      Height = 17
+      Width = 74
       Caption = 'backward'
       TabOrder = 1
       OnClick = CheckBox8Click
@@ -172,16 +179,19 @@ object Form9: TForm9
   end
   object GroupBox4: TGroupBox
     Left = 152
+    Height = 57
     Top = 160
     Width = 137
-    Height = 57
     Caption = ' Begin '
+    ClientHeight = 40
+    ClientWidth = 135
+    ParentBackground = False
     TabOrder = 8
     object CheckBox9: TCheckBox
       Left = 24
+      Height = 22
       Top = 16
-      Width = 97
-      Height = 17
+      Width = 75
       Caption = 'ex Cursur'
       Checked = True
       State = cbChecked
@@ -190,9 +200,9 @@ object Form9: TForm9
     end
     object CheckBox10: TCheckBox
       Left = 24
+      Height = 22
       Top = 32
-      Width = 97
-      Height = 17
+      Width = 106
       Caption = 'from beginning'
       TabOrder = 1
       OnClick = CheckBox10Click

@@ -1,108 +1,109 @@
 object Form3: TForm3
   Left = 192
+  Height = 333
   Top = 107
+  Width = 306
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Extended Options'
   ClientHeight = 333
   ClientWidth = 306
   Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
-  Font.Style = []
-  OldCreateOrder = False
   Position = poScreenCenter
-  PixelsPerInch = 96
-  TextHeight = 13
+  LCLVersion = '4.99.0.0'
   object GroupBox1: TGroupBox
     Left = 8
+    Height = 273
     Top = 8
     Width = 289
-    Height = 273
     Caption = ' Extended language options '
+    ClientHeight = 256
+    ClientWidth = 287
+    ParentBackground = False
     TabOrder = 0
     object CheckBox1: TCheckBox
       Left = 16
+      Height = 22
       Top = 120
-      Width = 265
-      Height = 17
+      Width = 271
       Caption = 'Allow " If .. Then .. Else "    "e.g. If x1 = 0 Then .. "'
       TabOrder = 4
       OnClick = CheckBox1Click
     end
     object CheckBox2: TCheckBox
       Left = 16
+      Height = 22
       Top = 216
-      Width = 153
-      Height = 17
+      Width = 115
       Caption = 'Allow " Function "'
       TabOrder = 8
     end
     object CheckBox3: TCheckBox
       Left = 16
+      Height = 22
       Top = 168
-      Width = 185
-      Height = 17
+      Width = 93
       Caption = 'Allow " Mod "'
       TabOrder = 6
     end
     object CheckBox4: TCheckBox
       Left = 16
+      Height = 22
       Top = 192
-      Width = 153
-      Height = 17
+      Width = 86
       Caption = 'Allow " Div "'
       TabOrder = 7
     end
     object CheckBox5: TCheckBox
       Left = 16
+      Height = 22
       Top = 48
-      Width = 249
-      Height = 17
+      Width = 75
       Caption = 'Allow " * "'
       TabOrder = 1
     end
     object CheckBox6: TCheckBox
       Left = 16
+      Height = 22
       Top = 24
-      Width = 257
-      Height = 17
+      Width = 196
       Caption = 'Allow " ^- " modified substraction'
       TabOrder = 0
     end
     object CheckBox7: TCheckBox
       Left = 16
+      Height = 22
       Top = 96
-      Width = 265
-      Height = 17
+      Width = 280
       Caption = 'Allow multiple operand " e.g. x0:= ( x0 + x1 ) + x2 "'
       Enabled = False
       TabOrder = 3
     end
     object CheckBox8: TCheckBox
       Left = 16
+      Height = 22
       Top = 240
-      Width = 177
-      Height = 17
+      Width = 190
       Caption = 'Allow other Var names e. g. x , y'
       TabOrder = 9
     end
     object CheckBox9: TCheckBox
       Left = 16
+      Height = 22
       Top = 144
-      Width = 257
-      Height = 17
+      Width = 147
       Caption = 'Allow  " >", "<", "<=", ">="'
       Enabled = False
       TabOrder = 5
     end
     object CheckBox10: TCheckBox
       Left = 16
+      Height = 22
       Top = 72
-      Width = 257
-      Height = 17
+      Width = 239
       Caption = 'Allow 2. var of operand not to be a const.'
       TabOrder = 2
       OnClick = CheckBox10Click
@@ -110,18 +111,18 @@ object Form3: TForm3
   end
   object Button1: TButton
     Left = 16
+    Height = 25
     Top = 296
     Width = 113
-    Height = 25
     Caption = '&OK'
     TabOrder = 1
     OnClick = Button1Click
   end
   object Button2: TButton
     Left = 168
+    Height = 25
     Top = 296
     Width = 113
-    Height = 25
     Caption = '&Cancel'
     TabOrder = 2
     OnClick = Button2Click

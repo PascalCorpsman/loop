@@ -48,17 +48,23 @@
       <Unit>
         <Filename Value="Controled_Vars.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form8"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
         <Filename Value="Programm_Simulation.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form5"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
         <Filename Value="Color_Sheme.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form2"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
         <Filename Value="Extended_Color_Options.pas"/>
@@ -68,32 +74,64 @@
       <Unit>
         <Filename Value="Printdialog.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form11"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
         <Filename Value="Extended_Options.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form3"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
         <Filename Value="New_Projekt.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form4"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
         <Filename Value="Code_Formater.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form6"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
         <Filename Value="Instructions.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form7"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
         <Filename Value="Replacer.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form9"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Compiler.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Parser.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="RechenBaum.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="LoopStack.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="PrePrescanner.pas"/>
+        <IsPartOfProject Value="True"/>
       </Unit>
     </Units>
   </ProjectOptions>

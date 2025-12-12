@@ -169,7 +169,7 @@ Const
   (*                                 ACHTUNG                                    *)
   (*                                                                            *)
   (* Die Klasse Trechentree nutzt folgende Zeichen :                            *)
-  (*                                                                            *)
+  (*                      §--das muss weg !                                     *)
   (*                  ] , § , $ , ! , ? , ~ , # , % , [ , «                     *)
   (*                                                                            *)
   (* Diese Zeichen dürfen in "allowedchars" nicht enthalten sein !!!!!!!!!!!    *)
@@ -225,8 +225,17 @@ Procedure SpringezuZeile(value: int64);
 
 Implementation
 
-Uses Color_Sheme, Extended_Options, New_Projekt, Programm_Simulation, Code_Formater,
-  Instructions, loopstack, Controled_Vars, Replacer, Printdialog;
+Uses
+  Color_Sheme,
+  Extended_Options,
+  New_Projekt,
+  Programm_Simulation,
+  Code_Formater,
+  Instructions,
+  loopstack,
+  Controled_Vars,
+  Replacer,
+  Printdialog;
 
 {$R *.lfm}
 

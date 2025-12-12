@@ -1,62 +1,58 @@
 object Form6: TForm6
   Left = 192
+  Height = 129
   Top = 107
+  Width = 213
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Code formater'
   ClientHeight = 129
   ClientWidth = 213
   Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
-  Font.Style = []
-  OldCreateOrder = False
   Position = poScreenCenter
-  PixelsPerInch = 96
-  TextHeight = 13
+  LCLVersion = '4.99.0.0'
   object Label1: TLabel
     Left = 16
+    Height = 16
     Top = 32
-    Width = 144
-    Height = 13
+    Width = 159
     Caption = 'Number of Spaces per indent :'
   end
   object Button1: TButton
     Left = 16
+    Height = 25
     Top = 88
     Width = 75
-    Height = 25
     Caption = '&OK'
     TabOrder = 0
     OnClick = Button1Click
   end
   object Button2: TButton
     Left = 120
+    Height = 25
     Top = 88
     Width = 75
-    Height = 25
     Caption = '&Cancel'
     TabOrder = 1
     OnClick = Button2Click
   end
   object CheckBox1: TCheckBox
     Left = 16
+    Height = 22
     Top = 8
-    Width = 153
-    Height = 17
+    Width = 164
     Caption = 'Remove double blank lines'
     TabOrder = 2
   end
   object SpinEdit1: TSpinEdit
     Left = 40
+    Height = 26
     Top = 56
     Width = 121
-    Height = 22
     MaxValue = 10
-    MinValue = 0
     TabOrder = 3
-    Value = 0
   end
 end

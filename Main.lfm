@@ -393,7 +393,7 @@ object Form1: TForm1
     }
   end
   object ExplorerSymbols: TImageList
-    Left = 72
+    Left = 80
     Top = 104
     Bitmap = {
       4C7A020000001000000010000000CC0000000000000078DAED955112C2200C44

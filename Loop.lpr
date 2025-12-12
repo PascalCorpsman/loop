@@ -1,5 +1,7 @@
 Program Loop;
 
+{$MODE objfpc}{$H+}
+
 //{$R 'Loopicon.res' 'Loopicon.rc'} // Für das Tolle Loop Icon
 
 //{$R 'Icon.res' 'Icon.rc'} // Das Icon für die Anwendung
@@ -12,20 +14,14 @@ Uses
   Main,
   Color_Sheme,
   Extended_Options,
-  Parser,
-  Compiler,
   New_Projekt,
   Programm_Simulation,
   Code_Formater,
   Instructions,
-  Executer,
-  LoopStack,
   Controled_Vars,
-  RechenBaum,
   Replacer,
   Extended_Color_Options,
-  PrePrescanner,
-  Printdialog;
+  Printdialog, Compiler;
 
 //{$R *.res}
 
