@@ -1,4 +1,20 @@
+(******************************************************************************)
+(*                                                                            *)
+(* Author      : Uwe Schächterle (Corpsman)                                   *)
+(*                                                                            *)
+(* This file is part of Loop                                                  *)
+(*                                                                            *)
+(*  See the file license.md, located under:                                   *)
+(*  https://github.com/PascalCorpsman/Software_Licenses/blob/main/license.md  *)
+(*  for details about the license.                                            *)
+(*                                                                            *)
+(*               It is not allowed to change or remove this text from any     *)
+(*               source file of the project.                                  *)
+(*                                                                            *)
+(******************************************************************************)
 Unit unit5;
+
+{$MODE objfpc}{$H+}
 
 Interface
 
@@ -7,6 +23,9 @@ Uses
   StdCtrls, Executer;
 
 Type
+
+  { TForm5 }
+
   TForm5 = Class(TForm)
     Button1: TButton;
     Button2: TButton;
@@ -36,7 +55,7 @@ Type
     Procedure ScrollBar1Change(Sender: TObject);
     Procedure Button3Click(Sender: TObject);
     Procedure FormPaint(Sender: TObject);
-    Procedure FormClose(Sender: TObject; Var Action: TCloseAction);
+    Procedure FormClose(Sender: TObject; Var CloseAction: TCloseAction);
   private
     { Private-Deklarationen }
   public
@@ -83,7 +102,7 @@ End;
 Procedure TForm5.Button1Click(Sender: TObject);
 Var
   x: Integer;
-  b:Boolean;
+  b: Boolean;
 Begin
   // Sperren das ein Programm Mehrfach ausgeführt werden kann
   Checkbox1.enabled := false;
@@ -97,7 +116,7 @@ Begin
   End;
   // Zuweisen der Übergebenen Varuablen
   For x := 0 To high(CompiledCode.getvars) Do Begin
-    CompiledCode.vars[GetVarindex(CompiledCode.getvars[x].name,b)].value := CompiledCode.getvars[x].value;
+    CompiledCode.vars[GetVarindex(CompiledCode.getvars[x].name, b)].value := CompiledCode.getvars[x].value;
   End;
   // Erst müssen noch alle Variablen gesetzt werden und dann kann ausgeführt werden.
   TimeVar := Gettickcount;
@@ -111,8 +130,7 @@ Begin
   If Not (Key In ['0'..'9', #8]) Then key := #0;
 End;
 
-Procedure TForm5.Edit1KeyUp(Sender: TObject; Var Key: Word;
-  Shift: TShiftState);
+Procedure TForm5.Edit1KeyUp(Sender: TObject; Var Key: Word; Shift: TShiftState);
 Var
   x: Integer;
 Begin
@@ -148,7 +166,7 @@ Begin
   If Edit1.visible Then edit1.SetFocus;
 End;
 
-Procedure TForm5.FormClose(Sender: TObject; Var Action: TCloseAction);
+Procedure TForm5.FormClose(Sender: TObject; Var CloseAction: TCloseAction);
 Var
   b: Boolean;
 Begin

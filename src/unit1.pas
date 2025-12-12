@@ -1,4 +1,33 @@
+(******************************************************************************)
+(* Loop                                                            ??.??.2006 *)
+(*                                                                            *)
+(* Version     : 0.01                                                         *)
+(*                                                                            *)
+(* Author      : Uwe Schächterle (Corpsman)                                   *)
+(*                                                                            *)
+(* Support     : www.Corpsman.de                                              *)
+(*                                                                            *)
+(* Description : Loop interpreter                                             *)
+(*                                                                            *)
+(* License     : See the file license.md, located under:                      *)
+(*  https://github.com/PascalCorpsman/Software_Licenses/blob/main/license.md  *)
+(*  for details about the license.                                            *)
+(*                                                                            *)
+(*               It is not allowed to change or remove this text from any     *)
+(*               source file of the project.                                  *)
+(*                                                                            *)
+(* Warranty    : There is no warranty, neither in correctness of the          *)
+(*               implementation, nor anything other that could happen         *)
+(*               or go wrong, use at your own risk.                           *)
+(*                                                                            *)
+(* Known Issues: none                                                         *)
+(*                                                                            *)
+(* History     : 0.01 - Initial version                                       *)
+(*                                                                            *)
+(******************************************************************************)
 Unit unit1;
+
+{$MODE objfpc}{$H+}
 
 Interface
 
@@ -84,7 +113,7 @@ Type
     Procedure ShowcontrolledValues1Click(Sender: TObject);
     Procedure CodeSpecialLineColors(Sender: TObject; Line: integer;
       Var Special: Boolean; Var FG, BG: TColor);
-    Procedure FormClose(Sender: TObject; Var Action: TCloseAction);
+    Procedure FormClose(Sender: TObject; Var CloseAction: TCloseAction);
     Procedure CodeKeyDown(Sender: TObject; Var Key: Word;
       Shift: TShiftState);
     Procedure Load1Click(Sender: TObject);
@@ -234,7 +263,7 @@ Uses
   unit7, //Instructions
   loopstack,
   unit8, // Controled_Vars
-  unit9,  // Replacer
+  unit9, // Replacer
   // unit10, Extended_Color_Options
   unit11 // Printdialog
   ;
@@ -936,7 +965,7 @@ Begin
   application.title := 'Loop Compiler';
 End;
 
-Procedure TForm1.FormClose(Sender: TObject; Var Action: TCloseAction);
+Procedure TForm1.FormClose(Sender: TObject; Var CloseAction: TCloseAction);
 Begin
   writeini;
   setlength(Brakepoints, 0);
@@ -1055,8 +1084,8 @@ Begin
   End;
 End;
 
-Procedure TForm1.CodeKeyDown(Sender: TObject; Var Key: Word;
-  Shift: TShiftState);
+Procedure TForm1.CodeKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState
+  );
 Begin
   If Aktualerrorline <> -1 Then Begin
     Aktualerrorline := -1;
@@ -1328,8 +1357,8 @@ Begin
   Controlled_Varables.ItemIndex := Controlled_Varables.ItemAtPos(point(x, y), true);
 End;
 
-Procedure TForm1.Warnings_ErrorMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+Procedure TForm1.Warnings_ErrorMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: integer);
 Begin
   Warnings_Error.ItemIndex := Warnings_Error.ItemAtPos(point(x, y), true);
 End;
@@ -1508,8 +1537,7 @@ Begin
   Warnings_Error.visible := false;
 End;
 
-Procedure TForm1.CodeStatusChange(Sender: TObject;
-  Changes: TSynStatusChanges);
+Procedure TForm1.CodeStatusChange(Sender: TObject; Changes: TSynStatusChanges);
 Begin
   StatusBar1.Panels[0].text := ' ' + inttostr(code.carety) + ': ' + inttostr(code.caretx);
   StatusBar1.Panels[0].Width := StatusBar1.Canvas.TextWidth(StatusBar1.Panels[0].text) + 20;

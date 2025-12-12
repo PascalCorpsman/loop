@@ -1,4 +1,20 @@
+(******************************************************************************)
+(*                                                                            *)
+(* Author      : Uwe Schächterle (Corpsman)                                   *)
+(*                                                                            *)
+(* This file is part of Loop                                                  *)
+(*                                                                            *)
+(*  See the file license.md, located under:                                   *)
+(*  https://github.com/PascalCorpsman/Software_Licenses/blob/main/license.md  *)
+(*  for details about the license.                                            *)
+(*                                                                            *)
+(*               It is not allowed to change or remove this text from any     *)
+(*               source file of the project.                                  *)
+(*                                                                            *)
+(******************************************************************************)
 Unit RechenBaum;
+
+{$MODE objfpc}{$H+}
 
 Interface
 
@@ -610,7 +626,7 @@ Begin
             If y >= 1 Then Begin
               // Wenn man den Or Block rein macht gibt der Compiler einen Internen Feher aus
               // Warum weis wohl nur Borland, also machen wir halt 2 If Bedingungen Draus
-              If (value[y] In (Steuerzeichen)) { Or (value[y] = ']') {} Then Begin
+              If (value[y] In (Steuerzeichen)) { Or (value[y] = ']')  } Then Begin
                 y := y + 1;
                 b := false;
               End;
@@ -651,7 +667,7 @@ Begin
       If Value[x] = ']' Then Begin
         // Wir haben unser Div gefunen nun müssen wir ein Blatt daraus machen.
         back := getafter(Value, x);
-        If { (Front = -1) {Or }(Back = -1) Then Begin
+        If { (Front = -1) Or }(Back = -1) Then Begin
           Error := true;
           form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
           Result := Nil;
