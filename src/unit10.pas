@@ -19,7 +19,7 @@ Unit unit10;
 Interface
 
 Uses
-  Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, {ColorGrd, } SynEdit, SynEditHighlighter, { SynHighlighterGeneral,}
   ImgList;
 

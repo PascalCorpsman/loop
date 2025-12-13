@@ -19,7 +19,7 @@ Unit unit8;
 Interface
 
 Uses
-  Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, CheckLst;
 
 Type

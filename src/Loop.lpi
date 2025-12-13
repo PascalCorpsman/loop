@@ -7,6 +7,7 @@
       <Title Value="Loop"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
+      <Icon Value="0"/>
     </General>
     <BuildModes>
       <Item Name="Default" Default="True"/>
@@ -19,6 +20,9 @@
       <FormatVersion Value="2"/>
     </RunParams>
     <RequiredPackages>
+      <Item>
+        <PackageName Value="uniqueinstance_package"/>
+      </Item>
       <Item>
         <PackageName Value="SynEditDsgn"/>
       </Item>
@@ -146,7 +150,7 @@
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
-        <SyntaxMode Value="Delphi"/>
+        <CStyleOperator Value="False"/>
         <IncludeAssertionCode Value="True"/>
       </SyntaxOptions>
     </Parsing>

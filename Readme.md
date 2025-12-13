@@ -17,3 +17,4 @@ Unfortunately, all programming tasks for Loop had to be carried out purely as th
 2025.12.11 - create initial GitHub repository<br>
 2025.12.12 - first version that compiles and does not crash during startup (did FPC_Understand analysis)
 ![](Documentation/FPC_Understand_before.png)
+2025.12.13 - Empty program does compile ;)

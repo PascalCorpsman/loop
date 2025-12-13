@@ -19,7 +19,7 @@ Unit unit5;
 Interface
 
 Uses
-  Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, Executer;
 
 Type

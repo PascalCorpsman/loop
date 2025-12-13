@@ -1,7 +1,7 @@
 (******************************************************************************)
 (* Loop                                                            ??.??.2006 *)
 (*                                                                            *)
-(* Version     : 0.01                                                         *)
+(* Version     : 0.13                                                         *)
 (*                                                                            *)
 (* Author      : Uwe Schächterle (Corpsman)                                   *)
 (*                                                                            *)
@@ -22,7 +22,122 @@
 (*                                                                            *)
 (* Known Issues: none                                                         *)
 (*                                                                            *)
-(* History     : 0.01 - Initial version                                       *)
+(* History     : 0.01 : o Grundprogramm                                       *)
+(*                        - Code Formater                                     *)
+(*                        - Highlighter                                       *)
+(*                        - Explorer ( zum anzeigen evtler Functionsnamen)    *)
+(*                        - Laden / Speichern                                 *)
+(*                        - Compiler zum ausführen der Loop Programme         *)
+(*                      o Zulassen erweiterter Variablennamen                 *)
+(*               0.02 : o Erweiterung der Sprache auf If - Then - Else        *)
+(*                         Strukturen.                                        *)
+(*                      o Zulassen von Variablen als zweiten Parameter von    *)
+(*                         +, - ,^- ..                                        *)
+(*               0.03 : o Einbau eines Schritt für Schritt Debugger's         *)
+(*                        - Zeigt alle Variablen sowie den Aktuellen Loop     *)
+(*                           Zähler                                           *)
+(*               0.04 : o Umschreiben der Compilerstruktur, dadruch           *)
+(*                         erheblicher Geschwindigkeitsgewinn.                *)
+(*               0.05 : o Umschreiben der Datenstruktur für anweisungen und   *)
+(*                         If abfragen                                        *)
+(*                        - Ermöglichen von Mehrfachbedingungen und Mehrfach  *)
+(*                           zuweisungen ( z.B. : X0:= X1 +X2 +X3; )          *)
+(*                      o Erweitern der Operatoren für If bedingungn auf      *)
+(*                         beliebige schachtelungen und "<", ">", ">=", "<="  *)
+(*                      o Hinzufügen eines Suchen Ersetzen Dialoges für den   *)
+(*                         Editor                                             *)
+(*               0.06 : o Einbau der "Functionen" in den Compiler             *)
+(*                        - inklusive entsprechendem bindungsbereich der      *)
+(*                          Variablen                                         *)
+(*                      o Einrichtung der Unterstützung für die Dateiendung   *)
+(*                         .Loop                                              *)
+(*                      o Einbau einer Schnellspeichern Function              *)
+(*                      o Umschreiben des Ausdruckparsers Fehler der Art      *)
+(*                        X0:= -X1; weden nun erkannt.                        *)
+(*                      o Einbau eines Suchen Dialoges                        *)
+(*                      o Anzeigen unbenutzter Functionen / Variablen         *)
+(*               0.07 : o schreiben eines Uninstallers                        *)
+(*                      o Automatisches Speichern vor Compilieren (Optional)  *)
+(*               0.08 : o Umbau des Codeformaters Leerzeichen in Kommentaren  *)
+(*                         werden nun nicht mehr Gelöscht !!                  *)
+(*                      o Einbau eines Statusbar der aktuelle Zeile, Geladene *)
+(*                         Datei .. Anzeigt                                   *)
+(*                      o Hinzufügen einiger Sample Programme zur             *)
+(*                         Demonstration der Loop Sprache                     *)
+(*                      o Einbau einer Zeitanzeige wie Lange es dauert ein    *)
+(*                         Programm aus zu führen.                            *)
+(*                      o Umschreiben des Gesammten Programmes auf 64 Bit     *)
+(*                         Variablen damit sind größere Zahlenbereiche        *)
+(*                         möglich.                                           *)
+(*                        - Zahlen gehen nun von 0 bis 9223372036854775807    *)
+(*               0.09 : o Einbau einer Überwachung der Grenzen des            *)
+(*                         Variablentypes, damit erkennen von Overflow,       *)
+(*                         Underflow, Division by Zero                        *)
+(*                      o Letzte Korrekturen Am Farbschema                    *)
+(*               0.10 : o Teilweise umgestalltung der Menuleiste und damit    *)
+(*                         beheben des Copy Past Bug's                        *)
+(*               0.11 : o Erweitern des Colorshems auf User Definierte        *)
+(*                         Einstellungen.                                     *)
+(*               0.12 : o Einbau eines Features zum Automatischen             *)
+(*                         Auskommentieren von Source Code                    *)
+(*                      o Ermöglichen des Ausdruckens des Codes               *)
+(*                      o Einrichten einer Schriftart einstellung für den     *)
+(*                         Editor                                             *)
+(*               0.13 : o Port nach Lazarus / FreePascal                      *)
+(*                                                                            *)
+(* Bisher Behobene Bugs :                                                     *)
+(*                                                                            *)
+(*  - Erlauben von Konstanten bei Functionsaufrufen ( 0.06 )                  *)
+(*  - Einstellige Functionsaufrufe wurden nicht geparst. ( 0.06 )             *)
+(*  - Falsch geklammerte Ausdrücke werden nun erkanne. ( 0.07 )               *)
+(*  - Das Autospeichern hat die Aktion das Speichern nicht gespeichert.       *)
+(*     ( 0.08 )                                                               *)
+(*  - Der Codeformater und damit auch Der Kompiler haben Anweisungen der Art  *)
+(*     <= und >= nicht erkennen können. ( 0.08 )                              *)
+(*  - >= und <= wurden nur erkannt wenn ein Leerzeichen davor stand. ( 0.08 ) *)
+(*  - Bei Drücken von STRG + F2 wenn das Programm ganz Normal Lief ist alles  *)
+(*     Abgeraucht. ( 0.08 )                                                   *)
+(*  - Fehlerhafte If Blöcke solten nun erkannt werden. ( 0.08 )               *)
+(*  - Das Programm stürzt nicht mehr ab wenn hinter Var ein Deklarationsteil  *)
+(*     vergessen wird ( 0.08 )                                                *)
+(*  - Zeitmessung wurde nach dem Ersten Runn deaktiviert und konnte nicht mehr*)
+(*     aktiviert werden. ( 0.10 )                                             *)
+(*  - Codeformater hat schlüsselwort Var falsch behandelt und eingerückt.     *)
+(*     ( 0.10 )                                                               *)
+(*  - Beim Neustart des Betriebssystemes ist das Programm manchmal kurz       *)
+(*     sichtbar gewesen. ( 0.12 )                                             *)
+(*  - x * 0 hat Division durch 0 Fehler gegeben. ( 0.12 )                     *)
+(*
+Bisher noch nicht Behobene Bugs :
+
+Sind der Codeviewer und der Loop Kompiler Gleichzeitig geöffnet functioniert das
+automatische öffnen von dateien nicht mehr, Fehlerhaft.
+
+Das Copy und Paste tut mal gar nicht !!
+
+Proceduren Und Functionen dürfen keine Schlüsselworte Sein !!!
+
+Wenn ALT + F4 Gedrückt wird in der Programmsimulation dann wird der Komplette Compiler Beendet
+
+Es können irgendwo Begin wörter stehen obwohl sie überhaupt keinen Sinn machen die sollten erkannt werden
+
+Procedure Project1;
+  Function Test(a, b);
+  Begin
+    result := a + b;
+  End;
+Begin
+  x0 := 4 + test(5, 6);
+End;
+
+Hat das Ergebnis 11 und nicht 15 !!!
+
+-------------------------------------------------------------------------
+
+Noch nicht drin :
+- Make Exe File
+- Convert to Real Loop Programm
+*)
 (*                                                                            *)
 (******************************************************************************)
 Unit unit1;
@@ -32,11 +147,11 @@ Unit unit1;
 Interface
 
 Uses
-  Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Menus, SynMemo, SynEdit, SynEditHighlighter, SynHighlighterPas, StdCtrls,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Menus, SynEdit, SynEditHighlighter, SynHighlighterPas, StdCtrls,
   ComCtrls, ExtCtrls, {SynHighlighterGeneral, } ImgList, Parser, compiler, Executer,
   SynEditMiscClasses {, SynEditSearch}, Registry, SynEditTypes,
-  Printers, SynGutterBase, SynEditMarks;
+  Printers, UniqueInstance, SynEditMarks, SynHighlighterAny, SynGutterBase, SynEditMarkupSpecialLine;
 
 Type
 
@@ -51,6 +166,7 @@ Type
     Colorsheme1: TMenuItem;
     Explorer: TTreeView;
     Splitter1: TSplitter;
+    UniqueInstance1: TUniqueInstance;
     Warnings_Error: TListBox;
     CodeFormater1: TMenuItem;
     Controlled_Varables: TListBox;
@@ -59,7 +175,7 @@ Type
     ShowExplorer1: TMenuItem;
     Debug1: TMenuItem;
     ShowcontrolledValues1: TMenuItem;
-    //    Loop_Highlither1: TSynGeneralSyn;
+    Loop_Highlither1: TSynAnySyn;
     OpenDialog1: TOpenDialog;
     SaveDialog1: TSaveDialog;
     New1: TMenuItem;
@@ -122,7 +238,7 @@ Type
     Procedure Extendedoptions1Click(Sender: TObject);
     Procedure CodeGutterPaint(Sender: TObject; aLine, X, Y: integer);
     Procedure CodeChange(Sender: TObject);
-    Procedure FormPaint(Sender: TObject);
+    Procedure FormShow(Sender: TObject);
     Procedure New1Click(Sender: TObject);
     Procedure Compile1Click(Sender: TObject);
     Procedure Run1Click(Sender: TObject);
@@ -132,6 +248,8 @@ Type
     Procedure ConverttorealLoopprogram1Click(Sender: TObject);
     Procedure Controlled_VarablesMouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+    Procedure UniqueInstance1OtherInstance(Sender: TObject;
+      ParamCount: Integer; Const Parameters: Array Of String);
     Procedure Warnings_ErrorMouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     Procedure Deleteall1Click(Sender: TObject);
@@ -161,8 +279,6 @@ Type
     { Private-Deklarationen }
   public
     { Public-Deklarationen }
-
-//    Procedure Empfaenger(Sender: TObject; SenderHandle: HWND; Text: ShortString);
   End;
 
   TUserHiglighter = Record
@@ -183,7 +299,8 @@ Type
   //  Hier mus das Attribut Right Edge noch eingefügt Werden !! Sowohl die Angabe wo als auch die Farbe
 
 Const
-  Ver = 0.121; // Laufende Versionsnummer des Programms
+
+  Ver = 0.13;
 
   allowedchars = [// Auflistung aller Erlaubten Zeichen
   'a'..'z', 'A'..'Z', '_', // Namen
@@ -240,7 +357,7 @@ Var
   Usercheme // Hier werden die Highlighter optionnen für User definiert eingestellt, ist mit schema Standart vorbelegt.
   : Tusercheme;
 
-  UserFont // Hier wird die Schriftart und Größe des Users gespiehcert
+  UserFont // Hier wird die Schriftart und Größe des Users gespeichert
   : TUserFont;
 
   // Setzt die zu Highlightenden Schlüsselworte
@@ -255,13 +372,14 @@ Procedure SpringezuZeile(value: int64);
 Implementation
 
 Uses
+  LCLType,
   unit2, // Color_Sheme
   unit3, // Extended_Options
   unit4, // New_Projekt
   unit5, // Programm_Simulation
   unit6, // Code_Formater
   unit7, //Instructions
-  loopstack,
+  LoopStack,
   unit8, // Controled_Vars
   unit9, // Replacer
   // unit10, Extended_Color_Options
@@ -287,26 +405,22 @@ Begin
 End;
 
 Procedure LoadProject(Filename: String);
-//Var
-//  t: Tshfileinfo;
 Begin
   If (length(AktualFilename) <> 0) And Projektchanged Then Begin
-    //    Case Messagebox(Application.handle, pchar(extractfilename(AktualFilename) + ' is not saved yet do you want to save it now ?'), 'Info', MB_YESNO + MB_ICONQUESTION) Of
-    //      ID_YES: Begin
-    //          form1.SaveAs1Click(Nil);
-    //          AktualFilename := '';
-    //          LoadProject(filename);
-    //        End;
-    //      ID_NO: Begin
-    //          AktualFilename := '';
-    //          LoadProject(filename);
-    //        End;
-    //    End;
+    Case Application.Messagebox(pchar(extractfilename(AktualFilename) + ' is not saved yet do you want to save it now ?'), 'Info', MB_YESNO + MB_ICONQUESTION) Of
+      ID_YES: Begin
+          form1.SaveAs1Click(Nil);
+          AktualFilename := '';
+          LoadProject(filename);
+        End;
+      ID_NO: Begin
+          AktualFilename := '';
+          LoadProject(filename);
+        End;
+    End;
   End
   Else Begin
     Projektchanged := false;
-    //    shgetfileinfo(pchar(Filename), 0, t, sizeof(t), SHGFI_DISPLAYNAME);
-    //    filename := extractfilepath(filename) + t.szDisplayName;
     AktualFilename := filename;
     form1.StatusBar1.Panels[2].Text := extractfilename(filename);
     form1.StatusBar1.Panels[1].Text := '';
@@ -472,8 +586,8 @@ Var
   s: String;
   x: integer;
 Begin
-  If Fileexists(extractfilepath(application.exename) + '\User.ini') Then Begin
-    assignfile(f, extractfilepath(application.exename) + '\User.ini');
+  If Fileexists(extractfilepath(application.exename) + PathDelim + 'User.ini') Then Begin
+    assignfile(f, extractfilepath(application.exename) + PathDelim + 'User.ini');
     reset(f);
     readln(f, s);
     If Strtofloat(s) = ver Then Begin
@@ -580,7 +694,7 @@ Var
   F: Textfile;
   x: integer;
 Begin
-  assignfile(f, extractfilepath(application.exename) + '\User.ini');
+  assignfile(f, extractfilepath(application.exename) + PathDelim + 'User.ini');
   rewrite(f);
   writeln(f, floattostr(ver));
   writeln(f, inttostr(ord(allowMod)));
@@ -611,12 +725,19 @@ End;
 
 Procedure ToggleBrakepoint(Line: int64);
 Var
-  x, vi: integer;
+  x, vi, j: integer;
+  m: TSynEditMark;
 Begin
   //Es soltle noch der Rote Punkt Links rein
   If Not isBrakepoint(line) Then Begin // Hinzufügen eines Brakepoints
     setlength(Brakepoints, high(Brakepoints) + 2);
     Brakepoints[high(Brakepoints)] := line;
+    m := TSynEditMark.Create(form1.code);
+    m.Line := line;
+    m.Visible := true;
+    m.ImageList := form1.DebugMarks;
+    m.ImageIndex := 0;
+    form1.code.Marks.Add(m);
   End
   Else Begin // Löschen des Brakepoints
     vi := -1;
@@ -627,8 +748,14 @@ Begin
         Brakepoints[x] := Brakepoints[x + 1];
     End;
     setlength(Brakepoints, high(Brakepoints));
+    For j := 0 To form1.Code.Marks.Count - 1 Do Begin
+      If form1.Code.Marks[j].Line = line Then Begin
+        form1.Code.Marks.Delete(j);
+        break;
+      End;
+    End;
   End;
-  form1.code.Repaint;
+  form1.code.Invalidate;
 End;
 
 Procedure SpringezuZeile(value: int64);
@@ -663,240 +790,210 @@ Begin
       0: Begin
           // Hintergrundfarbe des Feldes
           code.Color := clwindow;
-          //          Loop_Highlither1.WhitespaceAttribute.Style := [];
-          //          // Farbe für die Kommentare
-          //          Loop_Highlither1.CommentAttribute.Foreground := CLnavy;
-          //          Loop_Highlither1.CommentAttribute.Background := Code.color;
-          //          Loop_Highlither1.CommentAttribute.Style := [fsitalic];
-          //          // Schlüsselworte Hervorheben
-          //          Loop_Highlither1.KeywordAttribute.Foreground := clblack;
-          //          Loop_Highlither1.KeywordAttribute.Style := [FSbold];
-          //          Loop_Highlither1.KeywordAttribute.Background := Code.color;
-          //          // Alle anderen Zeichen
-          //          Loop_Highlither1.IdentifierAttribute.foreground := clblack;
-          //          Loop_Highlither1.IdentifierAttribute.Background := Code.color;
-          //          Loop_Highlither1.IdentifierAttribute.Style := [];
-          //          // Farbe für Symbole
-          //          Loop_Highlither1.SymbolAttri.Foreground := clblack;
-          //          Loop_Highlither1.SymbolAttri.Background := code.color;
-          //          Loop_Highlither1.SymbolAttri.Style := [];
-          //          // Zahlen werden Lila
-          //          Loop_Highlither1.NumberAttri.Foreground := clblack;
-          //          Loop_Highlither1.NumberAttri.Style := [];
-          //          Loop_Highlither1.NumberAttri.Background := code.color;
-          //          // Markierter Block
-          //          Code.SelectedColor.Background := $00800000;
-          //          Code.SelectedColor.Foreground := clwhite;
-          //          // Alle unbenutzen sachen müssen auch eingestellt werden
-          //          // Strings werden gleich angezeigt wie Identifier
-          //          Loop_Highlither1.StringAttribute.Foreground := clblack;
-          //          Loop_Highlither1.StringAttribute.Background := Code.color;
-          //          Loop_Highlither1.StringAttribute.style := [];
-          //          // Deaktivieren des Preprocessorattr
-          //          Loop_Highlither1.PreprocessorAttri.Foreground := clblack;
-          //          Loop_Highlither1.PreprocessorAttri.Background := code.color;
-          //          Loop_Highlither1.PreprocessorAttri.style := [];
-                    // Einfärben des Striches Rechts
+          Loop_Highlither1.WhitespaceAttribute.Style := [];
+          // Farbe für die Kommentare
+          Loop_Highlither1.CommentAttribute.Foreground := CLnavy;
+          Loop_Highlither1.CommentAttribute.Background := Code.color;
+          Loop_Highlither1.CommentAttribute.Style := [fsitalic];
+          // Schlüsselworte Hervorheben
+          Loop_Highlither1.KeywordAttribute.Foreground := clblack;
+          Loop_Highlither1.KeywordAttribute.Style := [FSbold];
+          Loop_Highlither1.KeywordAttribute.Background := Code.color;
+          // Alle anderen Zeichen
+          Loop_Highlither1.IdentifierAttribute.foreground := clblack;
+          Loop_Highlither1.IdentifierAttribute.Background := Code.color;
+          Loop_Highlither1.IdentifierAttribute.Style := [];
+          // Farbe für Symbole
+          Loop_Highlither1.SymbolAttri.Foreground := clblack;
+          Loop_Highlither1.SymbolAttri.Background := code.color;
+          Loop_Highlither1.SymbolAttri.Style := [];
+          // Zahlen werden Lila
+          Loop_Highlither1.NumberAttri.Foreground := clblack;
+          Loop_Highlither1.NumberAttri.Style := [];
+          Loop_Highlither1.NumberAttri.Background := code.color;
+          // Markierter Block
+          Code.SelectedColor.Background := $00800000;
+          Code.SelectedColor.Foreground := clwhite;
+          // Alle unbenutzen sachen müssen auch eingestellt werden
+          // Strings werden gleich angezeigt wie Identifier
+          Loop_Highlither1.StringAttribute.Foreground := clblack;
+          Loop_Highlither1.StringAttribute.Background := Code.color;
+          Loop_Highlither1.StringAttribute.style := [];
+          // Deaktivieren des Preprocessorattr
+          Loop_Highlither1.PreprocessorAttri.Foreground := clblack;
+          Loop_Highlither1.PreprocessorAttri.Background := code.color;
+          Loop_Highlither1.PreprocessorAttri.style := [];
+          // Einfärben des Striches Rechts
           code.RightEdgeColor := clgray;
         End;
       1: Begin
           // Hintergrundfarbe des Feldes
           code.Color := clnavy;
-          //          Loop_Highlither1.WhitespaceAttribute.Style := [];
-          //          // Farbe für die Kommentare
-          //          Loop_Highlither1.CommentAttribute.Foreground := CLsilver;
-          //          Loop_Highlither1.CommentAttribute.Background := Code.color;
-          //          Loop_Highlither1.CommentAttribute.Style := [fsitalic];
-          //          // Schlüsselworte Hervorheben
-          //          Loop_Highlither1.KeywordAttribute.Foreground := clwhite;
-          //          Loop_Highlither1.KeywordAttribute.Style := [];
-          //          Loop_Highlither1.KeywordAttribute.Background := Code.color;
-          //          // Alle anderen Zeichen
-          //          Loop_Highlither1.IdentifierAttribute.foreground := clyellow;
-          //          Loop_Highlither1.IdentifierAttribute.Background := Code.color;
-          //          Loop_Highlither1.IdentifierAttribute.Style := [];
-          //          // Farbe für Symbole
-          //          Loop_Highlither1.SymbolAttri.Foreground := clyellow;
-          //          Loop_Highlither1.SymbolAttri.Background := code.color;
-          //          Loop_Highlither1.SymbolAttri.Style := [];
-          //          // Zahlen werden Lila
-          //          Loop_Highlither1.NumberAttri.Foreground := clyellow;
-          //          Loop_Highlither1.NumberAttri.Style := [];
-          //          Loop_Highlither1.NumberAttri.Background := code.color;
-          //          // Markierter Block
-          //          Code.SelectedColor.Background := $00C0C0C0;
-          //          Code.SelectedColor.Foreground := $00800000;
-          //          // Alle unbenutzen sachen müssen auch eingestellt werden
-          //          // Strings werden gleich angezeigt wie Identifier
-          //          Loop_Highlither1.StringAttribute.Foreground := clyellow;
-          //          Loop_Highlither1.StringAttribute.Background := Code.color;
-          //          Loop_Highlither1.StringAttribute.style := [];
-          //          // Deaktivieren des Preprocessorattr
-          //          Loop_Highlither1.PreprocessorAttri.Foreground := clblue;
-          //          Loop_Highlither1.PreprocessorAttri.Background := code.color;
-          //          Loop_Highlither1.PreprocessorAttri.style := [];
-                    // Einfärben des Striches Rechts
+          Loop_Highlither1.WhitespaceAttribute.Style := [];
+          // Farbe für die Kommentare
+          Loop_Highlither1.CommentAttribute.Foreground := CLsilver;
+          Loop_Highlither1.CommentAttribute.Background := Code.color;
+          Loop_Highlither1.CommentAttribute.Style := [fsitalic];
+          // Schlüsselworte Hervorheben
+          Loop_Highlither1.KeywordAttribute.Foreground := clwhite;
+          Loop_Highlither1.KeywordAttribute.Style := [];
+          Loop_Highlither1.KeywordAttribute.Background := Code.color;
+          // Alle anderen Zeichen
+          Loop_Highlither1.IdentifierAttribute.foreground := clyellow;
+          Loop_Highlither1.IdentifierAttribute.Background := Code.color;
+          Loop_Highlither1.IdentifierAttribute.Style := [];
+          // Farbe für Symbole
+          Loop_Highlither1.SymbolAttri.Foreground := clyellow;
+          Loop_Highlither1.SymbolAttri.Background := code.color;
+          Loop_Highlither1.SymbolAttri.Style := [];
+          // Zahlen werden Lila
+          Loop_Highlither1.NumberAttri.Foreground := clyellow;
+          Loop_Highlither1.NumberAttri.Style := [];
+          Loop_Highlither1.NumberAttri.Background := code.color;
+          // Markierter Block
+          Code.SelectedColor.Background := $00C0C0C0;
+          Code.SelectedColor.Foreground := $00800000;
+          // Alle unbenutzen sachen müssen auch eingestellt werden
+          // Strings werden gleich angezeigt wie Identifier
+          Loop_Highlither1.StringAttribute.Foreground := clyellow;
+          Loop_Highlither1.StringAttribute.Background := Code.color;
+          Loop_Highlither1.StringAttribute.style := [];
+          // Deaktivieren des Preprocessorattr
+          Loop_Highlither1.PreprocessorAttri.Foreground := clblue;
+          Loop_Highlither1.PreprocessorAttri.Background := code.color;
+          Loop_Highlither1.PreprocessorAttri.style := [];
+          // Einfärben des Striches Rechts
           code.RightEdgeColor := clSilver;
         End;
       2: Begin
           // Hintergrundfarbe des Feldes
           code.Color := clblack;
-          //          Loop_Highlither1.WhitespaceAttribute.Style := [];
-          //          // Farbe für die Kommentare
-          //          Loop_Highlither1.CommentAttribute.Foreground := CLsilver;
-          //          Loop_Highlither1.CommentAttribute.Background := Code.color;
-          //          Loop_Highlither1.CommentAttribute.Style := [fsitalic];
-          //          // Schlüsselworte Hervorheben
-          //          Loop_Highlither1.KeywordAttribute.Foreground := claqua;
-          //          Loop_Highlither1.KeywordAttribute.Style := [FSbold];
-          //          Loop_Highlither1.KeywordAttribute.Background := Code.color;
-          //          // Alle anderen Zeichen
-          //          Loop_Highlither1.IdentifierAttribute.foreground := clwhite;
-          //          Loop_Highlither1.IdentifierAttribute.Background := Code.color;
-          //          Loop_Highlither1.IdentifierAttribute.Style := [];
-          //          // Farbe für Symbole
-          //          Loop_Highlither1.SymbolAttri.Foreground := claqua;
-          //          Loop_Highlither1.SymbolAttri.Background := code.color;
-          //          Loop_Highlither1.SymbolAttri.Style := [];
-          //          // Zahlen werden Lila
-          //          Loop_Highlither1.NumberAttri.Foreground := clFuchsia;
-          //          Loop_Highlither1.NumberAttri.Style := [];
-          //          Loop_Highlither1.NumberAttri.Background := code.color;
-          //          // Markierter Block
-          //          Code.SelectedColor.Background := clwhite;
-          //          Code.SelectedColor.Foreground := clblack;
-          //          // Alle unbenutzen sachen müssen auch eingestellt werden
-          //          // Strings werden gleich angezeigt wie Identifier
-          //          Loop_Highlither1.StringAttribute.Foreground := clwhite;
-          //          Loop_Highlither1.StringAttribute.Background := Code.color;
-          //          Loop_Highlither1.StringAttribute.style := [];
-          //          // Deaktivieren des Preprocessorattr
-          //          Loop_Highlither1.PreprocessorAttri.Foreground := clwhite;
-          //          Loop_Highlither1.PreprocessorAttri.Background := code.color;
-          //          Loop_Highlither1.PreprocessorAttri.style := [];
-                    // Einfärben des Striches Rechts
+          Loop_Highlither1.WhitespaceAttribute.Style := [];
+          // Farbe für die Kommentare
+          Loop_Highlither1.CommentAttribute.Foreground := CLsilver;
+          Loop_Highlither1.CommentAttribute.Background := Code.color;
+          Loop_Highlither1.CommentAttribute.Style := [fsitalic];
+          // Schlüsselworte Hervorheben
+          Loop_Highlither1.KeywordAttribute.Foreground := claqua;
+          Loop_Highlither1.KeywordAttribute.Style := [FSbold];
+          Loop_Highlither1.KeywordAttribute.Background := Code.color;
+          // Alle anderen Zeichen
+          Loop_Highlither1.IdentifierAttribute.foreground := clwhite;
+          Loop_Highlither1.IdentifierAttribute.Background := Code.color;
+          Loop_Highlither1.IdentifierAttribute.Style := [];
+          // Farbe für Symbole
+          Loop_Highlither1.SymbolAttri.Foreground := claqua;
+          Loop_Highlither1.SymbolAttri.Background := code.color;
+          Loop_Highlither1.SymbolAttri.Style := [];
+          // Zahlen werden Lila
+          Loop_Highlither1.NumberAttri.Foreground := clFuchsia;
+          Loop_Highlither1.NumberAttri.Style := [];
+          Loop_Highlither1.NumberAttri.Background := code.color;
+          // Markierter Block
+          Code.SelectedColor.Background := clwhite;
+          Code.SelectedColor.Foreground := clblack;
+          // Alle unbenutzen sachen müssen auch eingestellt werden
+          // Strings werden gleich angezeigt wie Identifier
+          Loop_Highlither1.StringAttribute.Foreground := clwhite;
+          Loop_Highlither1.StringAttribute.Background := Code.color;
+          Loop_Highlither1.StringAttribute.style := [];
+          // Deaktivieren des Preprocessorattr
+          Loop_Highlither1.PreprocessorAttri.Foreground := clwhite;
+          Loop_Highlither1.PreprocessorAttri.Background := code.color;
+          Loop_Highlither1.PreprocessorAttri.style := [];
+          // Einfärben des Striches Rechts
           code.RightEdgeColor := clSilver;
         End;
       3: Begin
           // Hintergrundfarbe des Feldes
           code.Color := claqua;
-          //          Loop_Highlither1.WhitespaceAttribute.Style := [];
-          //          // Farbe für die Kommentare
-          //          Loop_Highlither1.CommentAttribute.Foreground := $00808000;
-          //          Loop_Highlither1.CommentAttribute.Background := Code.color;
-          //          Loop_Highlither1.CommentAttribute.Style := [fsitalic];
-          //          // Schlüsselworte Hervorheben
-          //          Loop_Highlither1.KeywordAttribute.Foreground := clblack;
-          //          Loop_Highlither1.KeywordAttribute.Style := [FSbold];
-          //          Loop_Highlither1.KeywordAttribute.Background := Code.color;
-          //          // Alle anderen Zeichen
-          //          Loop_Highlither1.IdentifierAttribute.foreground := clblue;
-          //          Loop_Highlither1.IdentifierAttribute.Background := Code.color;
-          //          Loop_Highlither1.IdentifierAttribute.Style := [];
-          //          // Farbe für Symbole
-          //          Loop_Highlither1.SymbolAttri.Foreground := clblack;
-          //          Loop_Highlither1.SymbolAttri.Background := code.color;
-          //          Loop_Highlither1.SymbolAttri.Style := [];
-          //          // Zahlen werden Lila
-          //          Loop_Highlither1.NumberAttri.Foreground := clolive;
-          //          Loop_Highlither1.NumberAttri.Style := [];
-          //          Loop_Highlither1.NumberAttri.Background := code.color;
-          //          //Markierter Block
-          //          Code.SelectedColor.Background := $00FF0000;
-          //          Code.SelectedColor.Foreground := $00FFFF00;
-          //          // Alle unbenutzen sachen müssen auch eingestellt werden
-          //          // Strings werden gleich angezeigt wie Identifier
-          //          Loop_Highlither1.StringAttribute.Foreground := clblue;
-          //          Loop_Highlither1.StringAttribute.Background := Code.color;
-          //          Loop_Highlither1.StringAttribute.style := [];
-          //          // Deaktivieren des Preprocessorattr
-          //          Loop_Highlither1.PreprocessorAttri.Foreground := clblue;
-          //          Loop_Highlither1.PreprocessorAttri.Background := code.color;
-          //          Loop_Highlither1.PreprocessorAttri.style := [];
-                    // Einfärben des Striches Rechts
+          Loop_Highlither1.WhitespaceAttribute.Style := [];
+          // Farbe für die Kommentare
+          Loop_Highlither1.CommentAttribute.Foreground := $00808000;
+          Loop_Highlither1.CommentAttribute.Background := Code.color;
+          Loop_Highlither1.CommentAttribute.Style := [fsitalic];
+          // Schlüsselworte Hervorheben
+          Loop_Highlither1.KeywordAttribute.Foreground := clblack;
+          Loop_Highlither1.KeywordAttribute.Style := [FSbold];
+          Loop_Highlither1.KeywordAttribute.Background := Code.color;
+          // Alle anderen Zeichen
+          Loop_Highlither1.IdentifierAttribute.foreground := clblue;
+          Loop_Highlither1.IdentifierAttribute.Background := Code.color;
+          Loop_Highlither1.IdentifierAttribute.Style := [];
+          // Farbe für Symbole
+          Loop_Highlither1.SymbolAttri.Foreground := clblack;
+          Loop_Highlither1.SymbolAttri.Background := code.color;
+          Loop_Highlither1.SymbolAttri.Style := [];
+          // Zahlen werden Lila
+          Loop_Highlither1.NumberAttri.Foreground := clolive;
+          Loop_Highlither1.NumberAttri.Style := [];
+          Loop_Highlither1.NumberAttri.Background := code.color;
+          //Markierter Block
+          Code.SelectedColor.Background := $00FF0000;
+          Code.SelectedColor.Foreground := $00FFFF00;
+          // Alle unbenutzen sachen müssen auch eingestellt werden
+          // Strings werden gleich angezeigt wie Identifier
+          Loop_Highlither1.StringAttribute.Foreground := clblue;
+          Loop_Highlither1.StringAttribute.Background := Code.color;
+          Loop_Highlither1.StringAttribute.style := [];
+          // Deaktivieren des Preprocessorattr
+          Loop_Highlither1.PreprocessorAttri.Foreground := clblue;
+          Loop_Highlither1.PreprocessorAttri.Background := code.color;
+          Loop_Highlither1.PreprocessorAttri.style := [];
+          // Einfärben des Striches Rechts
           code.RightEdgeColor := clSilver;
         End;
       4: Begin
           // Whitespace
           code.color := usercheme[0].HG;
-          //          Loop_Highlither1.WhitespaceAttribute.Style := makefont(usercheme[0]);
-          //          // Komemntare
-          //          Loop_Highlither1.CommentAttri.Foreground := usercheme[1].VG;
-          //          Loop_Highlither1.CommentAttri.Background := usercheme[1].HG;
-          //          Loop_Highlither1.CommentAttri.Style := makefont(usercheme[1]);
-          //          // Schlüsselworte Hervorheben
-          //          Loop_Highlither1.KeywordAttribute.Foreground := usercheme[2].VG;
-          //          Loop_Highlither1.KeywordAttribute.Background := usercheme[2].HG;
-          //          Loop_Highlither1.KeywordAttribute.Style := makefont(usercheme[2]);
-          //          // Identifier
-          //          Loop_Highlither1.IdentifierAttri.Foreground := usercheme[3].VG;
-          //          Loop_Highlither1.IdentifierAttri.Background := usercheme[3].HG;
-          //          Loop_Highlither1.IdentifierAttri.Style := makefont(usercheme[3]);
-          //          // Symbole
-          //          Loop_Highlither1.SymbolAttri.Foreground := usercheme[4].VG;
-          //          Loop_Highlither1.SymbolAttri.Background := usercheme[4].HG;
-          //          Loop_Highlither1.SymbolAttri.Style := makefont(usercheme[4]);
-          //          // Number
-          //          Loop_Highlither1.NumberAttri.Style := makefont(usercheme[5]);
-          //          Loop_Highlither1.NumberAttri.Background := usercheme[5].HG;
-          //          Loop_Highlither1.NumberAttri.Foreground := usercheme[5].VG;
-          //          // Markeirter Block
-          //          code.SelectedColor.Foreground := usercheme[6].VG;
-          //          code.SelectedColor.Background := usercheme[6].hG;
-          //          // Alle unbenutzen sachen müssen auch eingestellt werden
-          //          // Strings werden gleich angezeigt wie Identifier
-          //          Loop_Highlither1.StringAttribute.Foreground := usercheme[3].VG;
-          //          Loop_Highlither1.StringAttribute.Background := usercheme[3].HG;
-          //          Loop_Highlither1.StringAttribute.style := makefont(usercheme[3]);
-          //          // Deaktivieren des Preprocessorattr
-          //          Loop_Highlither1.PreprocessorAttri.Foreground := usercheme[3].VG;
-          //          Loop_Highlither1.PreprocessorAttri.Background := usercheme[3].HG;
-          //          Loop_Highlither1.PreprocessorAttri.style := makefont(usercheme[3]);
-                    // Einfärben des Striches Rechts
+          Loop_Highlither1.WhitespaceAttribute.Style := makefont(usercheme[0]);
+          // Komemntare
+          Loop_Highlither1.CommentAttri.Foreground := usercheme[1].VG;
+          Loop_Highlither1.CommentAttri.Background := usercheme[1].HG;
+          Loop_Highlither1.CommentAttri.Style := makefont(usercheme[1]);
+          // Schlüsselworte Hervorheben
+          Loop_Highlither1.KeywordAttribute.Foreground := usercheme[2].VG;
+          Loop_Highlither1.KeywordAttribute.Background := usercheme[2].HG;
+          Loop_Highlither1.KeywordAttribute.Style := makefont(usercheme[2]);
+          // Identifier
+          Loop_Highlither1.IdentifierAttri.Foreground := usercheme[3].VG;
+          Loop_Highlither1.IdentifierAttri.Background := usercheme[3].HG;
+          Loop_Highlither1.IdentifierAttri.Style := makefont(usercheme[3]);
+          // Symbole
+          Loop_Highlither1.SymbolAttri.Foreground := usercheme[4].VG;
+          Loop_Highlither1.SymbolAttri.Background := usercheme[4].HG;
+          Loop_Highlither1.SymbolAttri.Style := makefont(usercheme[4]);
+          // Number
+          Loop_Highlither1.NumberAttri.Style := makefont(usercheme[5]);
+          Loop_Highlither1.NumberAttri.Background := usercheme[5].HG;
+          Loop_Highlither1.NumberAttri.Foreground := usercheme[5].VG;
+          // Markeirter Block
+          code.SelectedColor.Foreground := usercheme[6].VG;
+          code.SelectedColor.Background := usercheme[6].hG;
+          // Alle unbenutzen sachen müssen auch eingestellt werden
+          // Strings werden gleich angezeigt wie Identifier
+          Loop_Highlither1.StringAttribute.Foreground := usercheme[3].VG;
+          Loop_Highlither1.StringAttribute.Background := usercheme[3].HG;
+          Loop_Highlither1.StringAttribute.style := makefont(usercheme[3]);
+          // Deaktivieren des Preprocessorattr
+          Loop_Highlither1.PreprocessorAttri.Foreground := usercheme[3].VG;
+          Loop_Highlither1.PreprocessorAttri.Background := usercheme[3].HG;
+          Loop_Highlither1.PreprocessorAttri.style := makefont(usercheme[3]);
+          // Einfärben des Striches Rechts
           code.RightEdgeColor := usercheme[7].VG;
         End;
     End;
   End;
 End;
 
-Procedure RegisterFileType(Ext: String; ExeProgram: String; ExeIconNumber: int64);
-//Var
-//  Reg: TRegistry;
+Procedure TForm1.UniqueInstance1OtherInstance(Sender: TObject;
+  ParamCount: Integer; Const Parameters: Array Of String);
 Begin
-  //  Reg := TRegistry.Create;
-  //  With Reg Do Begin
-  //    Try
-  //      RootKey := HKEY_CLASSES_ROOT;
-  //      If OpenKey('.' + Ext, True) Then Begin
-  //        WriteString('', Ext + 'file');
-  //        CloseKey;
-  //      End;
-  //      If CreateKey(Ext + 'file') Then Begin
-  //        OpenKey(Ext + 'file\DefaultIcon', True);
-  //        WriteString('', ExeProgram + ',' + IntToStr(ExeIconNumber));
-  //        CloseKey;
-  //      End;
-  //      If OpenKey(Ext + 'file\shell\open\command', True) Then Begin
-  //        WriteString('', ExeProgram + ' "%1"');
-  //        CloseKey;
-  //      End;
-  //      RootKey := HKEY_LOCAL_MACHINE;
-  //      If openkey('Software\Microsoft\Windows\CurrentVersion\Run', true) Then Begin
-  //        Writestring('Loop', application.exename + ' /i');
-  //        closekey;
-  //      End;
-  //    Finally
-  //      Free;
-  //    End;
-  //  End;
-  //  SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, Nil, Nil);
+  If ParamCount >= 1 Then Begin
+    LoadProject(Parameters[0]);
+    Form1.BringToFront;
+  End;
 End;
-
-//Procedure TForm1.Empfaenger(Sender: TObject; SenderHandle: HWND; Text: ShortString);
-//Begin
-//  LoadProject(text);
-//  SetForegroundWindow(Form1.handle);
-//End;
 
 Procedure TForm1.Close1Click(Sender: TObject);
 Begin
@@ -912,31 +1009,9 @@ End;
 
 Procedure TForm1.FormCreate(Sender: TObject);
 Begin
-
-  (*
-   object Loop_Highlither1: TSynGeneralSyn
-    Comments = [csAnsiStyle, csPasStyle, csCPPStyle]
-    DetectPreprocessor = False
-    IdentifierChars =
-    Left = 456
-    Top = 16
-  end
-
-
-  *)
-  // Registrieren der Icons
-//  RegisterFileType('Loop', Application.ExeName, 1);
-  // Wenn wir nur die Icons Registrieren wollten und sonst nichts
-  If Paramstr(1) = '/i' Then Begin
-    //    form1.visible := false;
-    application.terminate;
-  End;
   // Initialisierne der Liste für die Compilierten Codes
   AktualFilename := '';
   Projektchanged := false;
-  //  MessageEmpfaenger := TInterAppReceiver.create(form1);
-  //  MessageEmpfaenger.Enabled := true;
-  //  MessageEmpfaenger.OnReceiveString := Empfaenger;
   setlength(CompiledCode.vars, 0);
   setlength(CompiledCode.getvars, 0);
   CompiledCode.Code := Nil;
@@ -973,7 +1048,6 @@ Begin
   // Freigeben aller Code Variablen
   LoopRechner.free;
   FreeCompiledcode;
-  //  MessageEmpfaenger.free;
   If assigned(PrintFont) Then Begin
     PrintFont.free;
     PrintFont := Nil;
@@ -993,18 +1067,18 @@ Begin
 End;
 
 Procedure TForm1.CodeKeyPress(Sender: TObject; Var Key: Char);
-Var
-  ext: String;
+//Var
+//  ext: String;
 Begin
   If Code.readonly Then showmessage('You cannot edit the source code while running.');
   // Falls der Copmpiler Gemekert hat wird das hier abgeschaltet
   If Aktualerrorline <> -1 Then Begin
     Aktualerrorline := -1;
-    code.repaint;
+    code.Invalidate;
   End;
   // Würden wir dieses Zeichen erlauben dann bekäme unser Parser so manches Problem
   If Not (key In allowedchars) Then key := #0;
-  EXT := inttostr(Code.lines.count + 1);
+  //  EXT := inttostr(Code.lines.count + 1);
   //  If length(EXT) > 2 Then
   //    Code.Gutter.DigitCount := length(EXT)
   //  Else
@@ -1089,7 +1163,7 @@ Procedure TForm1.CodeKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState
 Begin
   If Aktualerrorline <> -1 Then Begin
     Aktualerrorline := -1;
-    code.repaint;
+    code.Invalidate;
   End;
 End;
 
@@ -1109,15 +1183,15 @@ Begin
     Savedialog1.FileName := getProjectname;
     If Savedialog1.execute Then Begin
       If FileExists(savedialog1.FileName) Then Begin
-        //        If ID_YES = Messagebox(Application.handle, 'File already exists. Override it ?', 'Question', MB_YESNO + MB_ICONQUESTION) Then Begin
-        //          Code.Lines.savetoFile(savedialog1.FileName);
-        //          AktualFilename := savedialog1.FileName;
-        //          opendialog1.InitialDir := extractfilepath(savedialog1.FileName);
-        //          savedialog1.InitialDir := extractfilepath(savedialog1.FileName);
-        //          Projektchanged := false;
-        //          StatusBar1.Panels[1].Text := '';
-        //          StatusBar1.Panels[2].Text := extractfilename(Savedialog1.filename);
-        //        End;
+        If ID_YES = Application.Messagebox('File already exists. Override it ?', 'Question', MB_YESNO + MB_ICONQUESTION) Then Begin
+          Code.Lines.savetoFile(savedialog1.FileName);
+          AktualFilename := savedialog1.FileName;
+          opendialog1.InitialDir := extractfilepath(savedialog1.FileName);
+          savedialog1.InitialDir := extractfilepath(savedialog1.FileName);
+          Projektchanged := false;
+          StatusBar1.Panels[1].Text := '';
+          StatusBar1.Panels[2].Text := extractfilename(Savedialog1.filename);
+        End;
       End
       Else Begin
         Code.Lines.savetoFile(savedialog1.FileName);
@@ -1139,7 +1213,7 @@ End;
 
 Procedure TForm1.Info1Click(Sender: TObject);
 Begin
-  Showmessage('Support : www.Corpsman.de.vu');
+  Showmessage('Support : www.Corpsman.de');
 End;
 
 Procedure TForm1.Extendedoptions1Click(Sender: TObject);
@@ -1157,39 +1231,16 @@ Begin
   Form3.showmodal;
 End;
 
-Procedure TForm1.CodeGutterPaint(Sender: TObject; aLine, X, Y: integer);
-Begin
-  // Zeichnet zu den Haltepunkt Linien den Roten Punkt Links
-  If isBrakepoint(aline) Then Begin
-    If High(CompilableLines) <> -1 Then Begin
-      If IsCompilableLine(Aline) Then
-        DebugMarks.draw(code.Canvas, x + 4, y, 0)
-      Else
-        DebugMarks.draw(code.Canvas, x + 4, y, 3)
-    End
-    Else
-      DebugMarks.draw(code.Canvas, x + 4, y, 0);
-  End;
-  // Anzeigen aller Zeilen die der Rechner als Kompilierbar ansieht
-  If IsCompilableLine(Aline) Then Begin
-    DebugMarks.draw(code.Canvas, x + 4, y, 1);
-  End;
-  // Im Debugg Modus die Aktuelle Zeile Anzeigen
-  If ALine = AktualDebugLine Then Begin
-    DebugMarks.draw(code.Canvas, x + 4 + 14, y, 2);
-  End;
-End;
-
 Procedure TForm1.CodeChange(Sender: TObject);
 Begin
   // Aktualisieren der ExplorerView, bei Veränderungen des Code's
   If Explorer.visible Then GetFunnames(Code.Lines, explorer);
-  If ClearCompilableLines Then code.repaint;
+  If ClearCompilableLines Then code.Invalidate;
   Projektchanged := true;
   StatusBar1.Panels[1].Text := 'Changed';
 End;
 
-Procedure TForm1.FormPaint(Sender: TObject);
+Procedure TForm1.FormShow(Sender: TObject);
 Begin
   // Mus so gemacht werden da es bei OnCreate noch nicht machbar ist
   If First Then Begin
@@ -1232,13 +1283,13 @@ Begin
     If Length(AktualFilename) = 0 Then exit;
   End;
   If Compile(code.lines) Then Begin
-    code.Repaint;
+    code.Invalidate;
     showmessage('Ready.');
   End
   Else Begin
     SpringezuZeile(geterrorline(warnings_Error.items.count - 1));
     Aktualerrorline := geterrorline(warnings_Error.items.count - 1);
-    Code.Repaint;
+    Code.Invalidate;
     showmessage('Error detected.')
   End;
 End;
@@ -1251,7 +1302,7 @@ Begin
   // Wenn wir gerade debuggt haben und wieder F9 gedrückt haben
   If AktualDebugLine <> -1 Then Begin
     AktualDebugLine := -1;
-    code.Repaint;
+    code.Invalidate;
     form5.BringToFront;
     execute(false, true);
   End
@@ -1263,7 +1314,7 @@ Begin
     End;
     // Dann Kompilieren
     If Compile(code.lines) Then Begin
-      code.Repaint;
+      code.Invalidate;
       form5.edit6.text := '';
       // zuweisen des Scrollbars
       form5.scrollbar1.visible := high(CompiledCode.GETVars) > 4;
@@ -1317,7 +1368,7 @@ Begin
     Else Begin
       SpringezuZeile(geterrorline(warnings_Error.items.count - 1));
       Aktualerrorline := geterrorline(warnings_Error.items.count - 1);
-      Code.Repaint;
+      Code.Invalidate;
       showmessage('Error detected.')
     End;
   End;
@@ -1376,7 +1427,7 @@ Procedure TForm1.Warnings_ErrorDblClick(Sender: TObject);
 Begin
   If Aktualerrorline <> -1 Then Begin
     Aktualerrorline := -1;
-    code.repaint;
+    code.Invalidate;
   End;
   SpringezuZeile(geterrorline(Warnings_Error.itemindex));
 End;
@@ -1385,7 +1436,7 @@ Procedure TForm1.CodeClick(Sender: TObject);
 Begin
   If Aktualerrorline <> -1 Then Begin
     Aktualerrorline := -1;
-    code.repaint;
+    code.Invalidate;
   End;
 End;
 
@@ -1410,7 +1461,7 @@ Begin
   AktualDebugLine := -1; // Debugganzeige löschen
   Aktualerrorline := -1; // Löschen der zeile mit dem Aktuellen Fehler
   code.readonly := false; // Schreibrechte wieder erlauben
-  code.Repaint; // Neuzeichnen, damit Löschen der Roten Zeilen
+  code.Invalidate; // Neuzeichnen, damit Löschen der Roten Zeilen
   setlength(CompiledCode.vars, 0); // Löschen der Überwachten Variablen damit sie in Controlled nicht mehr gezeigt werden.
   // Löschen der überwachten Ausdrücke
   If form8.CheckListBox1.Items.count <> 0 Then Begin
@@ -1429,13 +1480,6 @@ Begin
   If Form5.visible Then
     Form5.BringToFront;
 End;
-
-//Procedure TForm1.CodeGutterClick(Sender: TObject; Button: TMouseButton; X,
-//  Y, Line: integer; Mark: TSynEditMark);
-//Begin
-//  // Für alle Maus user *würg*
-//  ToggleBrakepoint(Line);
-//End;
 
 Procedure TForm1.AktuallLoopcount1Click(Sender: TObject);
 Begin
@@ -1461,15 +1505,15 @@ Begin
     Savedialog1.FileName := AktualFilename;
   If Savedialog1.execute Then Begin
     If FileExists(savedialog1.FileName) Then Begin
-      //      If ID_YES = Messagebox(Application.handle, 'File already exists. Override it ?', 'Question', MB_YESNO + MB_ICONQUESTION) Then Begin
-      //        Code.Lines.savetoFile(savedialog1.FileName);
-      //        opendialog1.InitialDir := extractfilepath(savedialog1.FileName);
-      //        savedialog1.InitialDir := extractfilepath(savedialog1.FileName);
-      //        AktualFilename := savedialog1.FileName;
-      //        Projektchanged := false;
-      //        StatusBar1.Panels[1].Text := '';
-      //        StatusBar1.Panels[2].Text := extractfilename(Savedialog1.filename);
-      //      End;
+      If ID_YES = Application.Messagebox('File already exists. Override it ?', 'Question', MB_YESNO + MB_ICONQUESTION) Then Begin
+        Code.Lines.savetoFile(savedialog1.FileName);
+        opendialog1.InitialDir := extractfilepath(savedialog1.FileName);
+        savedialog1.InitialDir := extractfilepath(savedialog1.FileName);
+        AktualFilename := savedialog1.FileName;
+        Projektchanged := false;
+        StatusBar1.Panels[1].Text := '';
+        StatusBar1.Panels[2].Text := extractfilename(Savedialog1.filename);
+      End;
     End
     Else Begin
       Code.Lines.savetoFile(savedialog1.FileName);
@@ -1625,6 +1669,36 @@ Begin
   End
   Else
     showmessage('No Printer found.');
+End;
+
+(*
+ * Inaktive Methoden, welche auf andere Weißen noch implementiert werden müssen !
+ *)
+Procedure TForm1.CodeGutterPaint(Sender: TObject; aLine, X, Y: integer);
+Begin
+  // TODO: Das hier muss gemäß  https://forum.lazarus.freepascal.org/index.php?topic=13105.0
+  //       Umgeschrieben werden in TSynEditMarks
+  // Der Anfang ist in ToggleBrakepoint() gemacht und die Breakpoints
+  // sind da nun "Sichtbar", das umschalten auf Index3 anhand der IsCompilableLine fehlt aber noch..
+  // Zeichnet zu den Haltepunkt Linien den Roten Punkt Links
+  If isBrakepoint(aline) Then Begin
+    If High(CompilableLines) <> -1 Then Begin
+      If IsCompilableLine(Aline) Then
+        DebugMarks.draw(code.Canvas, x + 4, y, 0)
+      Else
+        DebugMarks.draw(code.Canvas, x + 4, y, 3)
+    End
+    Else
+      DebugMarks.draw(code.Canvas, x + 4, y, 0);
+  End;
+  // Anzeigen aller Zeilen die der Rechner als Kompilierbar ansieht
+  If IsCompilableLine(Aline) Then Begin
+    DebugMarks.draw(code.Canvas, x + 4, y, 1);
+  End;
+  // Im Debugg Modus die Aktuelle Zeile Anzeigen
+  If ALine = AktualDebugLine Then Begin
+    DebugMarks.draw(code.Canvas, x + 4 + 14, y, 2);
+  End;
 End;
 
 End.

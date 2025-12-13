@@ -19,7 +19,7 @@ Unit unit9;
 Interface
 
 Uses
-  Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, SynEditMiscClasses, SynEditSearch;
 
 Type
