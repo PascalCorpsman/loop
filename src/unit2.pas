@@ -23,6 +23,9 @@ Uses
   StdCtrls;
 
 Type
+
+  { TForm2 }
+
   TForm2 = Class(TForm)
     Button1: TButton;
     Button2: TButton;
@@ -43,13 +46,13 @@ Type
     Edit4: TEdit;
     Procedure Button1Click(Sender: TObject);
     Procedure Button2Click(Sender: TObject);
+    Procedure ComboBox1Change(Sender: TObject);
     Procedure FormPaint(Sender: TObject);
     Procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; Var Handled: Boolean);
     Procedure FormMouseWheelDown(Sender: TObject; Shift: TShiftState;
       MousePos: TPoint; Var Handled: Boolean);
     Procedure ComboBox1KeyPress(Sender: TObject; Var Key: Char);
-    Procedure ComboBox1Click(Sender: TObject);
     Procedure Button3Click(Sender: TObject);
     Procedure Edit4KeyPress(Sender: TObject; Var Key: Char);
   private
@@ -119,7 +122,7 @@ Procedure TForm2.ComboBox1KeyPress(Sender: TObject; Var Key: Char);
 Begin
   If Key = #13 Then Begin
     If ComboBox1.text = 'User Definied' Then Begin
-      //      form10.SynGeneralSyn1.KeyWords.AddStrings(Form1.Loop_Highlither1.KeyWords);
+      form10.SynAnySyn1.KeyWords.AddStrings(Form1.Loop_Highlither1.KeyWords);
       form10.listbox1.itemindex := 0;
       loadchme;
       loadall;
@@ -131,11 +134,11 @@ Begin
   If Not (key In [#28, #26]) Then Key := #0;
 End;
 
-Procedure TForm2.ComboBox1Click(Sender: TObject);
+Procedure TForm2.ComboBox1Change(Sender: TObject);
 Begin
   If ComboBox1.text = 'User Definied' Then Begin
-    //    form10.SynGeneralSyn1.KeyWords.Clear;
-    //    form10.SynGeneralSyn1.KeyWords.AddStrings(Form1.Loop_Highlither1.KeyWords);
+    form10.SynAnySyn1.KeyWords.Clear;
+    form10.SynAnySyn1.KeyWords.AddStrings(Form1.Loop_Highlither1.KeyWords);
     form10.listbox1.itemindex := 0;
     loadchme;
     loadall;

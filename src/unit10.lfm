@@ -1,13 +1,13 @@
 object Form10: TForm10
-  Left = 192
-  Height = 373
+  Left = 323
+  Height = 626
   Top = 107
-  Width = 355
+  Width = 746
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Extended Colorsheme Options'
-  ClientHeight = 373
-  ClientWidth = 355
+  ClientHeight = 626
+  ClientWidth = 746
   Color = clBtnFace
   Font.Color = clWindowText
   Font.Height = -11
@@ -23,10 +23,10 @@ object Form10: TForm10
     Caption = 'Element:'
   end
   object Button1: TButton
-    Left = 32
+    Left = 16
     Height = 25
-    Top = 336
-    Width = 281
+    Top = 592
+    Width = 705
     Caption = '&OK'
     TabOrder = 0
     OnClick = Button1Click
@@ -52,9 +52,9 @@ object Form10: TForm10
     OnMouseDown = ListBox1MouseDown
   end
   object GroupBox1: TGroupBox
-    Left = 248
+    Left = 320
     Height = 73
-    Top = 40
+    Top = 32
     Width = 97
     Caption = ' Style '
     ClientHeight = 56
@@ -64,7 +64,7 @@ object Form10: TForm10
     object CheckBox1: TCheckBox
       Left = 8
       Height = 22
-      Top = 16
+      Top = 0
       Width = 48
       Caption = 'Bold'
       Font.Color = clWindowText
@@ -77,7 +77,7 @@ object Form10: TForm10
     object CheckBox2: TCheckBox
       Left = 8
       Height = 22
-      Top = 32
+      Top = 16
       Width = 49
       Caption = 'Italic'
       TabOrder = 1
@@ -86,7 +86,7 @@ object Form10: TForm10
     object CheckBox3: TCheckBox
       Left = 8
       Height = 22
-      Top = 48
+      Top = 32
       Width = 76
       Caption = 'Underline'
       TabOrder = 2
@@ -95,9 +95,9 @@ object Form10: TForm10
   end
   inline Synedit1: TSynEdit
     Left = 8
-    Height = 185
+    Height = 440
     Top = 136
-    Width = 337
+    Width = 728
     Font.Color = clWindowText
     Font.Height = -13
     Font.Name = 'Courier New'
@@ -208,7 +208,7 @@ object Form10: TForm10
   object DebugMarks: TImageList
     Height = 14
     Width = 11
-    Left = 80
+    Left = 152
     Top = 144
     Bitmap = {
       4C7A040000000B0000000E000000840000000000000078DAED95D10AC0200845
@@ -233,5 +233,17 @@ object Form10: TForm10
       FF647DFFE8FE7D369FDCBFD33F7F617FD4597FDD9D0F904FF7E79F32E23FF44F
       F2F9ADF373E3F9CCD1F727AE3F57AF6F17F0F9047FBCF6B5
     }
+  end
+  object SynAnySyn1: TSynAnySyn
+    Enabled = False
+    Comments = []
+    DetectPreprocessor = False
+    IdentifierChars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz'
+    Markup = False
+    Entity = False
+    DollarVariables = False
+    ActiveDot = False
+    Left = 240
+    Top = 144
   end
 end

@@ -19,11 +19,13 @@ Unit unit10;
 Interface
 
 Uses
-  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, {ColorGrd, } SynEdit, SynEditHighlighter, { SynHighlighterGeneral,}
-  ImgList;
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, SynEdit,
+  SynEditHighlighter, SynHighlighterAny, ImgList;
 
 Type
+
+  { TForm10 }
+
   TForm10 = Class(TForm)
     //    ColorGrid1: TColorGrid;
     Button1: TButton;
@@ -33,6 +35,7 @@ Type
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
+    SynAnySyn1: TSynAnySyn;
     //    SynGeneralSyn1: TSynGeneralSyn;
     Synedit1: TSynEdit;
     DebugMarks: TImageList;

@@ -149,9 +149,9 @@ Interface
 Uses
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   Menus, SynEdit, SynEditHighlighter, SynHighlighterPas, StdCtrls,
-  ComCtrls, ExtCtrls, {SynHighlighterGeneral, } ImgList, Parser, compiler, Executer,
-  SynEditMiscClasses {, SynEditSearch}, Registry, SynEditTypes,
-  Printers, UniqueInstance, SynEditMarks, SynHighlighterAny, SynGutterBase, SynEditMarkupSpecialLine;
+  ComCtrls, ExtCtrls, ImgList, Parser, compiler, Executer,
+  SynEditMiscClasses, Registry, SynEditTypes,
+  Printers, UniqueInstance, SynEditMarks, SynHighlighterAny;
 
 Type
 
@@ -277,6 +277,7 @@ Type
     Procedure Print1Click(Sender: TObject);
   private
     { Private-Deklarationen }
+    defcaption: String;
   public
     { Public-Deklarationen }
   End;
@@ -315,7 +316,7 @@ Const
   (*                                 ACHTUNG                                    *)
   (*                                                                            *)
   (* Die Klasse Trechentree nutzt folgende Zeichen :                            *)
-  (*                      §--das muss weg !                                     *)
+  (*                                                                            *)
   (*                  ] , § , $ , ! , ? , ~ , # , % , [ , «                     *)
   (*                                                                            *)
   (* Diese Zeichen dürfen in "allowedchars" nicht enthalten sein !!!!!!!!!!!    *)
@@ -505,7 +506,7 @@ Begin
   End;
   If allowmod Then l.add('mod');
   If Allowdiv Then l.add('div');
-  //  form1.Loop_Highlither1.KeyWords := l;
+  form1.Loop_Highlither1.KeyWords := l;
   l.free;
 End;
 
@@ -1017,7 +1018,8 @@ Begin
   CompiledCode.Code := Nil;
   LoopRechner := TLoopStack.create;
   Aktualerrorline := -1;
-  form1.Caption := 'Loop Compiler ver. ' + floattostrf(ver, FFFixed, 7, 2);
+  defcaption := 'Loop Interpreter ver. ' + floattostrf(ver, FFFixed, 7, 2);
+  form1.Caption := defcaption;
   opendialog1.InitialDir := extractfilepath(application.exename);
   savedialog1.InitialDir := extractfilepath(application.exename);
   AktualDebugLine := -1;
@@ -1067,8 +1069,6 @@ Begin
 End;
 
 Procedure TForm1.CodeKeyPress(Sender: TObject; Var Key: Char);
-//Var
-//  ext: String;
 Begin
   If Code.readonly Then showmessage('You cannot edit the source code while running.');
   // Falls der Copmpiler Gemekert hat wird das hier abgeschaltet
@@ -1078,11 +1078,6 @@ Begin
   End;
   // Würden wir dieses Zeichen erlauben dann bekäme unser Parser so manches Problem
   If Not (key In allowedchars) Then key := #0;
-  //  EXT := inttostr(Code.lines.count + 1);
-  //  If length(EXT) > 2 Then
-  //    Code.Gutter.DigitCount := length(EXT)
-  //  Else
-  //    Code.Gutter.DigitCount := 3;
 End;
 
 Procedure TForm1.ShowExplorer1Click(Sender: TObject);
@@ -1472,7 +1467,7 @@ Begin
     If B Then form1.AktuallLoopcount1Click(Nil);
   End;
   // Rücksetzen der Statusanzeige
-  form1.Caption := 'Loop Intergreter by Uwe Schächterle and Axel Sauer ver. ' + floattostrf(ver, FFFixed, 7, 2);
+  form1.Caption := defcaption;
 End;
 
 Procedure TForm1.asd1Click(Sender: TObject);
@@ -1674,6 +1669,7 @@ End;
 (*
  * Inaktive Methoden, welche auf andere Weißen noch implementiert werden müssen !
  *)
+
 Procedure TForm1.CodeGutterPaint(Sender: TObject; aLine, X, Y: integer);
 Begin
   // TODO: Das hier muss gemäß  https://forum.lazarus.freepascal.org/index.php?topic=13105.0
