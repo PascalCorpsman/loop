@@ -139,6 +139,11 @@
         <Filename Value="PrePrescanner.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="../Sample/Graphik/ucolorgrid.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uColorGrid"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -148,6 +153,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="../Sample/Graphik"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>

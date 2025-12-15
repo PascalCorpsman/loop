@@ -1,7 +1,7 @@
 object Form10: TForm10
-  Left = 323
+  Left = 1375
   Height = 626
-  Top = 107
+  Top = 127
   Width = 746
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
@@ -14,6 +14,7 @@ object Form10: TForm10
   Font.Name = 'MS Sans Serif'
   Position = poScreenCenter
   LCLVersion = '4.99.0.0'
+  OnCreate = FormCreate
   OnPaint = FormPaint
   object Label1: TLabel
     Left = 8
@@ -53,18 +54,18 @@ object Form10: TForm10
   end
   object GroupBox1: TGroupBox
     Left = 320
-    Height = 73
+    Height = 97
     Top = 32
-    Width = 97
+    Width = 113
     Caption = ' Style '
-    ClientHeight = 56
-    ClientWidth = 95
+    ClientHeight = 80
+    ClientWidth = 111
     ParentBackground = False
     TabOrder = 3
     object CheckBox1: TCheckBox
       Left = 8
       Height = 22
-      Top = 0
+      Top = 8
       Width = 48
       Caption = 'Bold'
       Font.Color = clWindowText
@@ -77,7 +78,7 @@ object Form10: TForm10
     object CheckBox2: TCheckBox
       Left = 8
       Height = 22
-      Top = 16
+      Top = 32
       Width = 49
       Caption = 'Italic'
       TabOrder = 1
@@ -86,7 +87,7 @@ object Form10: TForm10
     object CheckBox3: TCheckBox
       Left = 8
       Height = 22
-      Top = 32
+      Top = 56
       Width = 76
       Caption = 'Underline'
       TabOrder = 2
@@ -113,6 +114,7 @@ object Form10: TForm10
     Gutter.MouseActions = <>
     RightGutter.Width = 0
     RightGutter.MouseActions = <>
+    Highlighter = SynGeneralSyn1
     Keystrokes = <>
     MouseActions = <>
     MouseTextActions = <>
@@ -234,7 +236,7 @@ object Form10: TForm10
       F2F9ADF373E3F9CCD1F727AE3F57AF6F17F0F9047FBCF6B5
     }
   end
-  object SynAnySyn1: TSynAnySyn
+  object SynGeneralSyn1: TSynAnySyn
     Enabled = False
     Comments = []
     DetectPreprocessor = False

@@ -122,7 +122,7 @@ Procedure TForm2.ComboBox1KeyPress(Sender: TObject; Var Key: Char);
 Begin
   If Key = #13 Then Begin
     If ComboBox1.text = 'User Definied' Then Begin
-      form10.SynAnySyn1.KeyWords.AddStrings(Form1.Loop_Highlither1.KeyWords);
+      form10.SynGeneralSyn1.KeyWords.AddStrings(Form1.Loop_Highlither1.KeyWords);
       form10.listbox1.itemindex := 0;
       loadchme;
       loadall;
@@ -137,8 +137,8 @@ End;
 Procedure TForm2.ComboBox1Change(Sender: TObject);
 Begin
   If ComboBox1.text = 'User Definied' Then Begin
-    form10.SynAnySyn1.KeyWords.Clear;
-    form10.SynAnySyn1.KeyWords.AddStrings(Form1.Loop_Highlither1.KeyWords);
+    form10.SynGeneralSyn1.KeyWords.Clear;
+    form10.SynGeneralSyn1.KeyWords.AddStrings(Form1.Loop_Highlither1.KeyWords);
     form10.listbox1.itemindex := 0;
     loadchme;
     loadall;
