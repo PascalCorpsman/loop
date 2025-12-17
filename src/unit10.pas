@@ -40,15 +40,12 @@ Type
     DebugMarks: TImageList;
     BookMarks: TImageList;
     Procedure Button1Click(Sender: TObject);
+    Procedure CheckBox1Click(Sender: TObject);
     Procedure FormCreate(Sender: TObject);
     Procedure ListBox1Click(Sender: TObject);
-    Procedure ListBox1MouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
     Procedure ColorGrid1MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     Procedure FormPaint(Sender: TObject);
-    Procedure CheckBox1MouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
     Procedure Synedit1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     Procedure Synedit1MouseUp(Sender: TObject; Button: TMouseButton;
@@ -59,12 +56,12 @@ Type
     { Private-Deklarationen }
   public
     { Public-Deklarationen }
+    Procedure LoadScheme;
   End;
 
 Var
   Form10: TForm10;
 
-Procedure loadchme;
 Procedure loadall;
 
 Implementation
@@ -132,20 +129,34 @@ Begin
   End;
 End;
 
-Procedure loadchme;
+Procedure TForm10.LoadScheme;
+Var
+  Index: integer;
 Begin
-  With form10 Do Begin
-    checkbox1.Checked := Usercheme[listbox1.ItemIndex].Bold;
-    checkbox2.Checked := Usercheme[listbox1.ItemIndex].Italic;
-    checkbox3.Checked := Usercheme[listbox1.ItemIndex].Underline;
-    ColorGrid1.ForegroundIndex := ColorGrid1.ColorToIndex(Usercheme[listbox1.ItemIndex].VG);
-    ColorGrid1.backgroundindex := ColorGrid1.ColorToIndex(Usercheme[listbox1.ItemIndex].HG);
-  End;
+  index := listbox1.ItemIndex;
+
+  checkbox1.OnClick := Nil;
+  checkbox2.OnClick := Nil;
+  checkbox3.OnClick := Nil;
+  checkbox1.Checked := Usercheme[Index].Bold;
+  checkbox2.Checked := Usercheme[Index].Italic;
+  checkbox3.Checked := Usercheme[Index].Underline;
+  checkbox1.OnClick := @CheckBox1Click;
+  checkbox2.OnClick := @CheckBox1Click;
+  checkbox3.OnClick := @CheckBox1Click;
+
+  ColorGrid1.ForegroundIndex := ColorGrid1.ColorToIndex(Usercheme[Index].VG);
+  ColorGrid1.backgroundindex := ColorGrid1.ColorToIndex(Usercheme[Index].HG);
 End;
 
 Procedure TForm10.Button1Click(Sender: TObject);
 Begin
   close;
+End;
+
+Procedure TForm10.CheckBox1Click(Sender: TObject);
+Begin
+  ColorGrid1MouseUp(Nil, mbleft, [], 0, 0);
 End;
 
 Procedure TForm10.FormCreate(Sender: TObject);
@@ -163,19 +174,14 @@ End;
 
 Procedure TForm10.ListBox1Click(Sender: TObject);
 Begin
-  loadchme;
-End;
-
-Procedure TForm10.ListBox1MouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
-Begin
-  listbox1.ItemIndex := listbox1.ItemAtPos(point(x, y), true);
+  LoadScheme;
 End;
 
 Procedure TForm10.ColorGrid1MouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 Var
   s: TFontStyles;
+  i: Integer;
 Begin
   s := [];
   If checkbox1.checked Then include(s, fsbold);
@@ -189,6 +195,16 @@ Begin
   Case listbox1.itemindex Of
     0: Begin // Whitespace
         Synedit1.Color := ColorGrid1.BackgroundColor;
+        SynGeneralSyn1.CommentAttri.Background := ColorGrid1.BackgroundColor;
+        SynGeneralSyn1.KeyAttri.Background := ColorGrid1.BackgroundColor;
+        SynGeneralSyn1.IdentifierAttri.Background := ColorGrid1.BackgroundColor;
+        SynGeneralSyn1.StringAttri.Background := ColorGrid1.BackgroundColor;
+        SynGeneralSyn1.PreprocessorAttri.Background := ColorGrid1.BackgroundColor;
+        SynGeneralSyn1.SymbolAttri.Background := ColorGrid1.BackgroundColor;
+        SynGeneralSyn1.NumberAttri.Background := ColorGrid1.BackgroundColor;
+        Synedit1.SelectedColor.Background := ColorGrid1.BackgroundColor;
+        For i := 0 To high(Usercheme) Do
+          Usercheme[i].HG := ColorGrid1.BackgroundColor;
         SynGeneralSyn1.WhitespaceAttribute.Style := s;
       End;
     1: Begin
@@ -237,12 +253,6 @@ Begin
   // Anzeigen des Selectierten Textes
   synedit1.BlockBegin := point(0, 12);
   synedit1.BlockEnd := point(length(Synedit1.Lines[11]) - 1, 12);
-End;
-
-Procedure TForm10.CheckBox1MouseUp(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
-Begin
-  ColorGrid1MouseUp(Nil, mbleft, [], 0, 0);
 End;
 
 Procedure TForm10.Synedit1MouseDown(Sender: TObject; Button: TMouseButton;

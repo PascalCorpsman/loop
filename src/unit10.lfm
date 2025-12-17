@@ -1,7 +1,7 @@
 object Form10: TForm10
-  Left = 1375
+  Left = 323
   Height = 626
-  Top = 127
+  Top = 107
   Width = 746
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
@@ -50,7 +50,6 @@ object Form10: TForm10
     ItemHeight = 22
     TabOrder = 1
     OnClick = ListBox1Click
-    OnMouseDown = ListBox1MouseDown
   end
   object GroupBox1: TGroupBox
     Left = 320
@@ -73,7 +72,7 @@ object Form10: TForm10
       Font.Name = 'MS Sans Serif'
       ParentFont = False
       TabOrder = 0
-      OnMouseUp = CheckBox1MouseUp
+      OnClick = CheckBox1Click
     end
     object CheckBox2: TCheckBox
       Left = 8
@@ -82,7 +81,7 @@ object Form10: TForm10
       Width = 49
       Caption = 'Italic'
       TabOrder = 1
-      OnMouseUp = CheckBox1MouseUp
+      OnClick = CheckBox1Click
     end
     object CheckBox3: TCheckBox
       Left = 8
@@ -91,7 +90,7 @@ object Form10: TForm10
       Width = 76
       Caption = 'Underline'
       TabOrder = 2
-      OnMouseUp = CheckBox1MouseUp
+      OnClick = CheckBox1Click
     end
   end
   inline Synedit1: TSynEdit
@@ -210,8 +209,8 @@ object Form10: TForm10
   object DebugMarks: TImageList
     Height = 14
     Width = 11
-    Left = 152
-    Top = 144
+    Left = 488
+    Top = 416
     Bitmap = {
       4C7A040000000B0000000E000000840000000000000078DAED95D10AC0200845
       EFA7F7E777ECA1254E4B598335327CF2207235053E6734DCE168F88D7738935F
@@ -223,8 +222,8 @@ object Form10: TForm10
   object BookMarks: TImageList
     Height = 14
     Width = 12
-    Left = 48
-    Top = 144
+    Left = 400
+    Top = 416
     Bitmap = {
       4C7A0A0000000C0000000E000000E20000000000000078DAED98511283200C44
       F7E8B959B8595B3F702882048436B5FB916154DCC1F0DC00AAFAD05700688626
@@ -238,14 +237,16 @@ object Form10: TForm10
   end
   object SynGeneralSyn1: TSynAnySyn
     Enabled = False
-    Comments = []
+    CommentAttri.Foreground = clRed
+    Comments = [csAnsiStyle, csPasStyle]
     DetectPreprocessor = False
     IdentifierChars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz'
+    StringDelim = sdDoubleQuote
     Markup = False
     Entity = False
     DollarVariables = False
     ActiveDot = False
-    Left = 240
-    Top = 144
+    Left = 584
+    Top = 416
   end
 end

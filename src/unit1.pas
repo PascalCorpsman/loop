@@ -562,6 +562,7 @@ Procedure Readini;
     Usercheme[7].Italic := false;
     Usercheme[7].Underline := false;
   End;
+
   Function stringtosheme(data: String): TUserHiglighter;
   Var
     s: String;
@@ -582,82 +583,9 @@ Procedure Readini;
     erg.Underline := odd(strtoint(data));
     result := erg;
   End;
-Var
-  f: Textfile;
-  s: String;
-  x: integer;
-Begin
-  If Fileexists(extractfilepath(application.exename) + PathDelim + 'User.ini') Then Begin
-    assignfile(f, extractfilepath(application.exename) + PathDelim + 'User.ini');
-    reset(f);
-    readln(f, s);
-    If Strtofloat(s) = ver Then Begin
-      readln(f, s);
-      allowMod := odd(strtoint(s));
-      readln(f, s);
-      allowif := odd(strtoint(s));
-      readln(f, s);
-      allowdiv := odd(strtoint(s));
-      readln(f, s);
-      allowfunction := odd(strtoint(s));
-      readln(f, s);
-      allowminus := odd(strtoint(s));
-      readln(f, s);
-      allowMulti := odd(strtoint(s));
-      readln(f, s);
-      allowklammern := odd(strtoint(s));
-      readln(f, s);
-      allowothernames := odd(strtoint(s));
-      readln(f, s);
-      allowgroeserKleiner := odd(strtoint(s));
-      readln(f, s);
-      allow2varnotconst := odd(strtoint(s));
-      readln(f, s);
-      Colorsheme := strtoint(s);
-      readln(f, s);
-      RemoveDoubleBlank := odd(strtoint(s));
-      readln(f, s);
-      blankPerIdent := strtoint(s);
-      readln(f, s);
-      Havetosave := odd(strtoint(s));
-      For x := 0 To high(usercheme) Do Begin
-        readln(f, s);
-        usercheme[x] := stringtosheme(s);
-      End;
-      readln(f, s);
-      userfont.size := strtoint(s);
-      readln(f, s);
-      userfont.name := s;
-      readln(f, s);
-      userfont.Style := getFontstylefromstring(s);
-      readln(f, s);
-      form1.code.RightEdge := strtoint(s);
-      // weiter
-    End
-    Else Begin
-      // Die Default einstellungen
-      allowMod := false;
-      allowif := false;
-      allowdiv := false;
-      allowfunction := False;
-      allowminus := False;
-      allowMulti := False;
-      allowklammern := False;
-      allowothernames := False;
-      allowgroeserKleiner := false;
-      allow2varnotconst := false;
-      Colorsheme := 0;
-      RemoveDoubleBlank := true;
-      blankPerIdent := 2;
-      Havetosave := true;
-      setstdsheme;
-      UserFont.Size := 10;
-      UserFont.Name := 'Courier New';
-      UserFont.Style := [];
-    End;
-    closefile(f);
-  End
-  Else Begin
+
+  Procedure SetDefaultSettings();
+  Begin
     // Die Default einstellungen
     allowMod := false;
     allowif := false;
@@ -678,6 +606,72 @@ Begin
     UserFont.Name := 'Courier New';
     UserFont.Style := [];
   End;
+
+Var
+  sl: TStringList;
+  s: String;
+  x: integer;
+  fs: TFormatSettings;
+Begin
+  If Fileexists(extractfilepath(application.exename) + PathDelim + 'User.ini') Then Begin
+    fs := DefaultFormatSettings;
+    fs.DecimalSeparator := '.'; // ENG
+    sl := TStringList.Create;
+    sl.LoadFromFile(extractfilepath(application.exename) + PathDelim + 'User.ini');
+    s := sl[0];
+    If Strtofloat(s, fs) = ver Then Begin
+      s := sl[1];
+      allowMod := odd(strtoint(s));
+      s := sl[2];
+      allowif := odd(strtoint(s));
+      s := sl[3];
+      allowdiv := odd(strtoint(s));
+      s := sl[4];
+      allowfunction := odd(strtoint(s));
+      s := sl[5];
+      allowminus := odd(strtoint(s));
+      s := sl[6];
+      allowMulti := odd(strtoint(s));
+      s := sl[7];
+      allowklammern := odd(strtoint(s));
+      s := sl[8];
+      allowothernames := odd(strtoint(s));
+      s := sl[9];
+      allowgroeserKleiner := odd(strtoint(s));
+      s := sl[10];
+      allow2varnotconst := odd(strtoint(s));
+      s := sl[11];
+      Colorsheme := strtoint(s);
+      s := sl[12];
+      RemoveDoubleBlank := odd(strtoint(s));
+      s := sl[13];
+      blankPerIdent := strtoint(s);
+      s := sl[14];
+      Havetosave := odd(strtoint(s));
+      For x := 0 To high(usercheme) Do Begin
+        s := sl[15 + x];
+        usercheme[x] := stringtosheme(s);
+      End;
+      s := sl[15 + high(usercheme) + 1];
+      userfont.size := strtoint(s);
+      s := sl[15 + high(usercheme) + 2];
+      userfont.name := s;
+      s := sl[15 + high(usercheme) + 3];
+      userfont.Style := getFontstylefromstring(s);
+      s := sl[15 + high(usercheme) + 4];
+      form1.code.RightEdge := strtoint(s);
+
+      // weiter
+
+    End
+    Else Begin
+      SetDefaultSettings();
+    End;
+    sl.free;
+  End
+  Else Begin
+    SetDefaultSettings();
+  End;
 End;
 
 Procedure Writeini;
@@ -692,36 +686,40 @@ Procedure Writeini;
     result := Erg;
   End;
 Var
-  F: Textfile;
+  sl: TStringList;
   x: integer;
+  fs: TFormatSettings;
 Begin
-  assignfile(f, extractfilepath(application.exename) + PathDelim + 'User.ini');
-  rewrite(f);
-  writeln(f, floattostr(ver));
-  writeln(f, inttostr(ord(allowMod)));
-  writeln(f, inttostr(ord(allowif)));
-  writeln(f, inttostr(ord(allowdiv)));
-  writeln(f, inttostr(ord(allowfunction)));
-  writeln(f, inttostr(ord(allowminus)));
-  writeln(f, inttostr(ord(allowMulti)));
-  writeln(f, inttostr(ord(allowklammern)));
-  writeln(f, inttostr(ord(allowothernames)));
-  writeln(f, inttostr(ord(allowgroeserKleiner)));
-  writeln(f, inttostr(ord(allow2varnotconst)));
-  writeln(f, inttostr(Colorsheme));
-  writeln(f, inttostr(ord(RemoveDoubleBlank)));
-  writeln(f, inttostr(blankPerIdent));
-  writeln(f, inttostr(ord(Havetosave)));
+  fs := DefaultFormatSettings;
+  fs.DecimalSeparator := '.'; // ENG
+  sl := TStringList.Create;
+  sl.add(floattostr(ver, fs));
+  sl.add(inttostr(ord(allowMod)));
+  sl.add(inttostr(ord(allowif)));
+  sl.add(inttostr(ord(allowdiv)));
+  sl.add(inttostr(ord(allowfunction)));
+  sl.add(inttostr(ord(allowminus)));
+  sl.add(inttostr(ord(allowMulti)));
+  sl.add(inttostr(ord(allowklammern)));
+  sl.add(inttostr(ord(allowothernames)));
+  sl.add(inttostr(ord(allowgroeserKleiner)));
+  sl.add(inttostr(ord(allow2varnotconst)));
+  sl.add(inttostr(Colorsheme));
+  sl.add(inttostr(ord(RemoveDoubleBlank)));
+  sl.add(inttostr(blankPerIdent));
+  sl.add(inttostr(ord(Havetosave)));
   For x := 0 To high(usercheme) Do Begin
-    writeln(f, shtostring(usercheme[x]));
+    sl.add(shtostring(usercheme[x]));
   End;
-  writeln(f, inttostr(userfont.size));
-  writeln(f, userfont.name);
-  writeln(f, FontstyletoString(userfont.style));
-  writeln(f, inttostr(form1.code.RightEdge));
+  sl.add(inttostr(userfont.size));
+  sl.add(userfont.name);
+  sl.add(FontstyletoString(userfont.style));
+  sl.add(inttostr(form1.code.RightEdge));
+
   // weiter
 
-  closefile(f);
+  sl.SaveToFile(extractfilepath(application.exename) + PathDelim + 'User.ini');
+  sl.free;
 End;
 
 Procedure ToggleBrakepoint(Line: int64);
@@ -729,7 +727,7 @@ Var
   x, vi, j: integer;
   m: TSynEditMark;
 Begin
-  //Es soltle noch der Rote Punkt Links rein
+  //Es sollte noch der Rote Punkt Links rein
   If Not isBrakepoint(line) Then Begin // Hinzufügen eines Brakepoints
     setlength(Brakepoints, high(Brakepoints) + 2);
     Brakepoints[high(Brakepoints)] := line;

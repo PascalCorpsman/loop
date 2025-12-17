@@ -124,7 +124,7 @@ Begin
     If ComboBox1.text = 'User Definied' Then Begin
       form10.SynGeneralSyn1.KeyWords.AddStrings(Form1.Loop_Highlither1.KeyWords);
       form10.listbox1.itemindex := 0;
-      loadchme;
+      form10.LoadScheme;
       loadall;
       form10.showmodal;
     End
@@ -140,7 +140,7 @@ Begin
     form10.SynGeneralSyn1.KeyWords.Clear;
     form10.SynGeneralSyn1.KeyWords.AddStrings(Form1.Loop_Highlither1.KeyWords);
     form10.listbox1.itemindex := 0;
-    loadchme;
+    form10.LoadScheme;
     loadall;
     form10.showmodal;
   End;
