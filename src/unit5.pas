@@ -67,7 +67,10 @@ Var
 
 Implementation
 
-Uses Compiler, Unit1, unit8;
+Uses Compiler
+  , uloop
+  , Unit1
+  , unit8;
 
 {$R *.lfm}
 
@@ -92,7 +95,7 @@ Begin
     If B Then form1.AktuallLoopcount1Click(Nil);
   End;
   // Rücksetzen der Statusanzeige
-  form1.Caption := 'Loop Intergreter by Uwe Schächterle and Axel Sauer ver. ' + floattostrf(ver, FFFixed, 7, 2);
+  form1.Caption := defcaption;
   form1.code.readonly := false;
   form1.code.Repaint;
   Checkbox1.enabled := true;
@@ -183,7 +186,7 @@ Begin
     If B Then form1.AktuallLoopcount1Click(Nil);
   End;
   // Rücksetzen der Statusanzeige
-  form1.Caption := 'Loop Intergreter by Uwe Schächterle and Axel Sauer ver. ' + floattostrf(ver, FFFixed, 7, 2);
+  form1.Caption := defcaption;
   form1.code.readonly := false;
   form1.code.Repaint;
 End;

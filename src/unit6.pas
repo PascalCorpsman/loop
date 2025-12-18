@@ -44,7 +44,7 @@ Implementation
 
 {$R *.lfm}
 
-Uses Unit1;
+Uses uloop;
 
 Procedure TForm6.Button2Click(Sender: TObject);
 Begin

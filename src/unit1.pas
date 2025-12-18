@@ -151,7 +151,7 @@ Uses
   Menus, SynEdit, SynEditHighlighter, SynHighlighterPas, StdCtrls,
   ComCtrls, ExtCtrls, ImgList, Parser, compiler, Executer,
   SynEditMiscClasses, Registry, SynEditTypes,
-  Printers, UniqueInstance, SynEditMarks, SynHighlighterAny;
+  Printers, UniqueInstance, SynEditMarks, SynHighlighterAny, uloop;
 
 Type
 
@@ -277,89 +277,14 @@ Type
     Procedure Print1Click(Sender: TObject);
   private
     { Private-Deklarationen }
-    defcaption: String;
+    Procedure CheckShowHideWarnings;
   public
     { Public-Deklarationen }
   End;
 
-  TUserHiglighter = Record
-    VG: Integer;
-    HG: Integer;
-    Bold: Boolean;
-    Italic: Boolean;
-    Underline: Boolean;
-  End;
 
-  TUserFont = Record
-    Name: Tfontname;
-    Size: Integer;
-    Style: Tfontstyles;
-  End;
-
-  Tusercheme = Array[0..7] Of TUserHiglighter;
-  //  Hier mus das Attribut Right Edge noch eingefügt Werden !! Sowohl die Angabe wo als auch die Farbe
-
-Const
-
-  Ver = 0.13;
-
-  allowedchars = [// Auflistung aller Erlaubten Zeichen
-  'a'..'z', 'A'..'Z', '_', // Namen
-  '0'..'9', // Zahlen
-  '+', '-', '*', '^', '<', '>', // Operatoren
-  ';', ':', '=', ' ', ',', // Steuerzeichen
-  '/', '{', '}', '(', ')' // Kommentarzeichen
-  ];
-
-  (******************************************************************************)
-  (*                                                                            *)
-  (*                                 ACHTUNG                                    *)
-  (*                                                                            *)
-  (* Die Klasse Trechentree nutzt folgende Zeichen :                            *)
-  (*                                                                            *)
-  (*                  ] , § , $ , ! , ? , ~ , # , % , [ , «                     *)
-  (*                                                                            *)
-  (* Diese Zeichen dürfen in "allowedchars" nicht enthalten sein !!!!!!!!!!!    *)
-  (*                                                                            *)
-  (******************************************************************************)
 Var
   Form1: TForm1;
-
-  blankPerIdent, // gibt die Anzahl der Einrückungen an die In einer Procedur gemacht werden
-  Colorsheme, // Gibt an welches Farbschema gerade benutzt wird
-  AktualDebugLine, // Gibt die zeile an in der sich der Debugger Aktuell befindet
-  Aktualerrorline // ist die Zeile in die der Compiler als erstes Springt wenn er einen Fehler Findet
-  : int64;
-
-  CompilableLines, // Jede int64 Zahl die hier aufgelistet ist steht für eine Compilierbare Zeile
-  Brakepoints, // Jede int64 Zahl die Hier aufgelistet ist steht für einen Brakepoint
-  Watched_vars // Der Index der Überwachten Variablen im Array
-  : Array Of int64;
-
-  RemoveDoubleBlank, // Gibt an op Doppelt vorkommende Leerzeilen gelöscht werden dürfen
-  allow2varnotconst, // Wenn Tru dann darf die 2. Variable eines Operandes auch eine Variable sein.
-  allowminus, // Wenn True dann kann das Modifizierte Minus benutzt werden
-  allowMulti, // Wenn True dann ist die Multiplikatin erlaubt
-  allowklammern, // Wenn True dann dürfen mehere Ausdrücke in eine Zeile
-  allowothernames, // Wenn True dann dürfen Variablen auch anders heisen als X1.. XN
-  allowfunction, // Erlaubt das Deklarieren von Functionen
-  allowdiv, // Erlaubt den Div Operator
-  allowif, // Erlaubt IF then Else
-  allowgroeserKleiner, // Wenn If Then Else Erlaubt ist kann man Auch > < erlauben
-  allowMod, // Erlaubt den Mod OPerator
-  first, // Ist zum Laden einer Datei die Via Drag and Drop auf die Exe geschoben wird
-  Projektchanged, // Speichert ob der Code verändert wurde
-  Havetosave // Wenn True mus die Datei gespeichert werden bevor compiliert wird
-  : Boolean;
-
-  AktualFilename // Hier wird die Aktuell geladene Filename gespeichert
-  : String;
-
-  Usercheme // Hier werden die Highlighter optionnen für User definiert eingestellt, ist mit schema Standart vorbelegt.
-  : Tusercheme;
-
-  UserFont // Hier wird die Schriftart und Größe des Users gespeichert
-  : TUserFont;
 
   // Setzt die zu Highlightenden Schlüsselworte
 Procedure SetKeywords;
@@ -619,7 +544,7 @@ Begin
     sl := TStringList.Create;
     sl.LoadFromFile(extractfilepath(application.exename) + PathDelim + 'User.ini');
     s := sl[0];
-    If Strtofloat(s, fs) = ver Then Begin
+    If Strtofloat(s, fs) = LoopVer Then Begin
       s := sl[1];
       allowMod := odd(strtoint(s));
       s := sl[2];
@@ -693,7 +618,7 @@ Begin
   fs := DefaultFormatSettings;
   fs.DecimalSeparator := '.'; // ENG
   sl := TStringList.Create;
-  sl.add(floattostr(ver, fs));
+  sl.add(floattostr(LoopVer, fs));
   sl.add(inttostr(ord(allowMod)));
   sl.add(inttostr(ord(allowif)));
   sl.add(inttostr(ord(allowdiv)));
@@ -1016,7 +941,7 @@ Begin
   CompiledCode.Code := Nil;
   LoopRechner := TLoopStack.create;
   Aktualerrorline := -1;
-  defcaption := 'Loop Interpreter ver. ' + floattostrf(ver, FFFixed, 7, 2);
+  defcaption := 'Loop Interpreter ver. ' + floattostrf(LoopVer, FFFixed, 7, 2);
   form1.Caption := defcaption;
   opendialog1.InitialDir := extractfilepath(application.exename);
   savedialog1.InitialDir := extractfilepath(application.exename);
@@ -1100,7 +1025,7 @@ Procedure TForm1.CodeSpecialLineColors(Sender: TObject; Line: integer;
 Var
   ln: Boolean;
 Begin
-  ln := isBrakepoint(line); // Das ergebnis deiser Berehcnung wird 2 mal gebraucht also berechnen wir es nur einmal ;)
+  ln := isBrakepoint(line);
   // Zeichen des Roten Hintergrundes für die Haltepunktlinie
   If ln Then Begin
     If High(CompilableLines) <> -1 Then Begin
@@ -1275,7 +1200,7 @@ Begin
     Save1Click(Nil);
     If Length(AktualFilename) = 0 Then exit;
   End;
-  If Compile(code.lines) Then Begin
+  If Compile(code.lines, Warnings_Error.Items) Then Begin
     code.Invalidate;
     showmessage('Ready.');
   End
@@ -1285,6 +1210,7 @@ Begin
     Code.Invalidate;
     showmessage('Error detected.')
   End;
+  CheckShowHideWarnings();
 End;
 
 Procedure TForm1.Run1Click(Sender: TObject);
@@ -1306,7 +1232,7 @@ Begin
       If Length(AktualFilename) = 0 Then exit;
     End;
     // Dann Kompilieren
-    If Compile(code.lines) Then Begin
+    If Compile(code.lines, warnings_Error.items) Then Begin
       code.Invalidate;
       form5.edit6.text := '';
       // zuweisen des Scrollbars
@@ -1364,6 +1290,7 @@ Begin
       Code.Invalidate;
       showmessage('Error detected.')
     End;
+    CheckShowHideWarnings();
   End;
 End;
 
@@ -1662,6 +1589,13 @@ Begin
   End
   Else
     showmessage('No Printer found.');
+End;
+
+Procedure TForm1.CheckShowHideWarnings;
+Begin
+  // Falls es Warnunen, Fehler Gibt werden diese Hier Angezeigt
+  Warnings_Error.visible := Warnings_Error.Items.count <> 0;
+  splitter2.visible := Warnings_Error.visible;
 End;
 
 (*

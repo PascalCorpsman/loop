@@ -61,7 +61,9 @@ Implementation
 
 {$R *.lfm}
 
-Uses unit1;
+Uses uLoop
+  , unit1
+  ;
 
 Function FontstyletoString(data: Tfontstyles): String;
 Var
@@ -142,7 +144,7 @@ Begin
     cmh := round(p.PageHeight / 29.7); // Die Anzahl der Pixel bestimmen die einer Höhe von 1 cm entspricht !!
     cmw := round(p.PageHeight / 21); // Die Anzahl der Pixel bestimmen die einer Breite von 1 cm entsprechen !!
     // Name des Druckauftrages
-    p.Title := 'Loopcompiler ver. : ' + floattostrf(ver, FFFixed, 7, 2);
+    p.Title := defcaption;
     P.BeginDoc;
     p.canvas.Font.size := Printfont.size;
     p.canvas.Font.Name := Printfont.name;

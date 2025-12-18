@@ -20,7 +20,7 @@ Interface
 
 Uses
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, SynEdit,
-  SynEditHighlighter, SynHighlighterAny, ImgList, uColorGrid;
+  SynEditHighlighter, SynHighlighterAny, ImgList, uColorGrid, uloop;
 
 Type
 
@@ -37,8 +37,6 @@ Type
     CheckBox3: TCheckBox;
     SynGeneralSyn1: TSynAnySyn;
     Synedit1: TSynEdit;
-    DebugMarks: TImageList;
-    BookMarks: TImageList;
     Procedure Button1Click(Sender: TObject);
     Procedure CheckBox1Click(Sender: TObject);
     Procedure FormCreate(Sender: TObject);
@@ -61,6 +59,7 @@ Type
 
 Var
   Form10: TForm10;
+
 
 Procedure loadall;
 
@@ -193,7 +192,7 @@ Begin
   usercheme[listbox1.itemindex].HG := ColorGrid1.BackgroundColor;
   usercheme[listbox1.itemindex].VG := ColorGrid1.ForegroundColor;
   Case listbox1.itemindex Of
-    0: Begin // Whitespace
+    usWhiteSpace: Begin // Whitespace
         Synedit1.Color := ColorGrid1.BackgroundColor;
         SynGeneralSyn1.CommentAttri.Background := ColorGrid1.BackgroundColor;
         SynGeneralSyn1.KeyAttri.Background := ColorGrid1.BackgroundColor;
@@ -207,17 +206,17 @@ Begin
           Usercheme[i].HG := ColorGrid1.BackgroundColor;
         SynGeneralSyn1.WhitespaceAttribute.Style := s;
       End;
-    1: Begin
+    usComment: Begin
         SynGeneralSyn1.CommentAttri.Background := ColorGrid1.BackgroundColor;
         SynGeneralSyn1.CommentAttri.Foreground := ColorGrid1.ForegroundColor;
         SynGeneralSyn1.CommentAttri.Style := s;
       End;
-    2: Begin
+    usKeyword: Begin
         SynGeneralSyn1.KeyAttri.Background := ColorGrid1.BackgroundColor;
         SynGeneralSyn1.KeyAttri.Foreground := ColorGrid1.ForegroundColor;
         SynGeneralSyn1.KeyAttri.Style := s;
       End;
-    3: Begin
+    usIdentifier: Begin
         SynGeneralSyn1.IdentifierAttri.Background := ColorGrid1.BackgroundColor;
         SynGeneralSyn1.IdentifierAttri.Foreground := ColorGrid1.ForegroundColor;
         SynGeneralSyn1.IdentifierAttri.Style := s;
@@ -228,21 +227,21 @@ Begin
         SynGeneralSyn1.PreprocessorAttri.Foreground := ColorGrid1.ForegroundColor;
         SynGeneralSyn1.PreprocessorAttri.Style := s;
       End;
-    4: Begin
+    usSymbols: Begin
         SynGeneralSyn1.SymbolAttri.Background := ColorGrid1.BackgroundColor;
         SynGeneralSyn1.SymbolAttri.Foreground := ColorGrid1.ForegroundColor;
         SynGeneralSyn1.SymbolAttri.Style := s;
       End;
-    5: Begin
+    usNumbers: Begin
         SynGeneralSyn1.NumberAttri.Background := ColorGrid1.BackgroundColor;
         SynGeneralSyn1.NumberAttri.Foreground := ColorGrid1.ForegroundColor;
         SynGeneralSyn1.NumberAttri.Style := s;
       End;
-    6: Begin
+    usMarkedBlock: Begin
         synedit1.SelectedColor.Background := ColorGrid1.BackgroundColor;
         synedit1.SelectedColor.Foreground := ColorGrid1.ForegroundColor;
       End;
-    7: Begin
+    usRightEdge: Begin
         Synedit1.RightEdgeColor := ColorGrid1.ForegroundColor;
       End;
   End;

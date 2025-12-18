@@ -105,7 +105,7 @@ Var
   CompiledCode: TProc;
 
   // Gibt 0 Zurück wenn der Code Compilierbar ist, und erstellt gleichzeitig die entsprechende Tokenstruktur
-Function Compile(Lines: Tstrings): boolean;
+Function Compile(Lines: Tstrings; Const WarningsLogger: TStrings): boolean;
 // Löscht den Speicher der Compilierbaren Zeilen ( Visueller Effect)
 Function ClearCompilableLines: Boolean;
 // Gibt die Variable CompiledCode frei
@@ -113,7 +113,7 @@ Procedure FreeCompiledcode;
 // Prüft ob ein Token in einem String enthalten ist, wenn ja wird der INdex des 1. Zeichens des Token zurückgegeben.
 Function LineContainsToken(Token, Line: String): integer;
 // Gibt True zurück wenn die Variable Existiert sonst False, ist allerdings Value ne Konstante wird Auch True zurückgegeben
-Function VarExist(Value: String; CodeLine: integer): Boolean;
+Function VarExist(Value: String; CodeLine: integer; Const WarningsLogger: TStrings): Boolean;
 // Gibt die Variable zurück die dann entweder die Globale übergeordnete ist oder eben die Lokale wie zuvor
 Function GetLokalGlobalName(Varvalue: String): String;
 // Prüft ob die Variable überhauot von Line aus Sichtbar ist , wenn Ja -> True
@@ -123,7 +123,12 @@ Function getline(Value: String): integer;
 
 Implementation
 
-Uses unit1, Parser, executer, unit8;
+Uses
+  Parser
+  , executer
+  , uloop
+  , unit8
+  ;
 
 // Prüft ob die Variable überhauot von Line aus Sichtbar ist , wenn Ja -> True
 
@@ -262,7 +267,7 @@ End;
 
 // Diese function löst hoffentlich alle noch offenen CompilerProbleme
 
-Function IsCompilableLine(Value: String): Boolean;
+Function IsCompilableLine(Value: String; Const WarningsLogger: TStrings): Boolean;
 Var
   Erg: Boolean;
   Token: integer;
@@ -284,7 +289,7 @@ Begin
       Tstring := DelFrontspace(tstring);
       If LEngth(Tstring) <> 0 Then Begin
         erg := false;
-        form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + 'Unknown "' + Tstring + '".');
+        WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + 'Unknown "' + Tstring + '".');
       End;
     End;
     // Schaun welches Token wir haben
@@ -301,7 +306,7 @@ Begin
           tstring := DelFrontspace(DelEndspace(arbeitsvar));
           If Pos(';', Tstring) = 0 Then Begin
             erg := false;
-            form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + 'Missing ";".');
+            WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + 'Missing ";".');
           End;
           delete(Tstring, pos(';', Tstring), 1); // Löschen des ; Zeichens
           tstring := DelEndspace(tstring);
@@ -311,12 +316,12 @@ Begin
           Tstring := DelFrontspace(Tstring);
           If Length(tstring) = 0 Then Begin
             erg := false;
-            form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + 'Missing argument.');
+            WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + 'Missing argument.');
           End;
           v1 := DelEndspace(v1);
           If Not checkIdentifier(V1) Then Begin
             erg := false;
-            form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
+            WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
           End;
           // Es Gibt 2 möglichkeiten der Zuweisung
           If LineContainsToken('Get', Tstring) <> 0 Then Begin
@@ -324,7 +329,7 @@ Begin
             tstring := DelFrontspace(Tstring);
             If length(tstring) <> 0 Then Begin
               erg := false;
-              form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + 'Unknown Command "' + Tstring + '" identifier.');
+              WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + 'Unknown Command "' + Tstring + '" identifier.');
             End;
           End
           Else Begin
@@ -341,7 +346,7 @@ Begin
                 If Length(V1) <> 0 Then
                   If Not checkIdentifier(Tstring) Then Begin
                     erg := false;
-                    form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + Tstring + '" Invalid Argument.');
+                    WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + Tstring + '" Invalid Argument.');
                   End;
               End;
               // Ermitteln des Operators der zur Verfügung steht
@@ -356,7 +361,7 @@ Begin
                 // Die Erste Varaible einer Summe mus immer ein Identifer = Variable sein !!
                 If Not checkIdentifier(V1) Then Begin
                   erg := false;
-                  form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
+                  WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
                 End;
                 If allow2varnotconst Then Begin
                   // eigentlich sollte man hier ne andere Variable wie Token nehmen, aber die Braucht nu eh keiner Mehr
@@ -369,7 +374,7 @@ Begin
                     Tstring := v1;
                     If Not checkIdentifier(Tstring) Then Begin
                       erg := false;
-                      form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
+                      WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
                     End;
                   End;
                 End
@@ -382,7 +387,7 @@ Begin
                   End;
                   If length(Tstring) <> 0 Then Begin
                     erg := false;
-                    form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + V1 + '" is not a const, go to extended Options to allow this.');
+                    WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + V1 + '" is not a const, go to extended Options to allow this.');
                   End;
                 End;
               End;
@@ -396,7 +401,7 @@ Begin
                 // Die Erste Varaible einer Summe mus immer ein Identifer = Variable sein !!
                 If Not checkIdentifier(V1) Then Begin
                   erg := false;
-                  form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
+                  WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
                 End;
                 If allow2varnotconst Then Begin
                   // eigentlich sollte man hier ne andere Variable wie Token nehmen, aber die Braucht nu eh keiner Mehr
@@ -409,7 +414,7 @@ Begin
                     Tstring := v1;
                     If Not checkIdentifier(Tstring) Then Begin
                       erg := false;
-                      form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
+                      WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
                     End;
                   End;
                 End
@@ -422,7 +427,7 @@ Begin
                   End;
                   If length(Tstring) <> 0 Then Begin
                     erg := false;
-                    form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + V1 + '" is not a const, go to extended Options to allow this.');
+                    WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + V1 + '" is not a const, go to extended Options to allow this.');
                   End;
                 End;
               End;
@@ -436,7 +441,7 @@ Begin
                 // Die Erste Varaible einer Summe mus immer ein Identifer = Variable sein !!
                 If Not checkIdentifier(V1) Then Begin
                   erg := false;
-                  form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
+                  WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
                 End;
                 If allow2varnotconst Then Begin
                   // eigentlich sollte man hier ne andere Variable wie Token nehmen, aber die Braucht nu eh keiner Mehr
@@ -449,7 +454,7 @@ Begin
                     Tstring := v1;
                     If Not checkIdentifier(Tstring) Then Begin
                       erg := false;
-                      form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
+                      WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
                     End;
                   End;
                 End
@@ -462,7 +467,7 @@ Begin
                   End;
                   If length(Tstring) <> 0 Then Begin
                     erg := false;
-                    form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + V1 + '" is not a const, go to extended Options to allow this.');
+                    WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + V1 + '" is not a const, go to extended Options to allow this.');
                   End;
                 End;
               End;
@@ -476,7 +481,7 @@ Begin
                 // Die Erste Varaible einer Summe mus immer ein Identifer = Variable sein !!
                 If Not checkIdentifier(V1) Then Begin
                   erg := false;
-                  form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
+                  WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
                 End;
                 If allow2varnotconst Then Begin
                   // eigentlich sollte man hier ne andere Variable wie Token nehmen, aber die Braucht nu eh keiner Mehr
@@ -489,7 +494,7 @@ Begin
                     Tstring := v1;
                     If Not checkIdentifier(Tstring) Then Begin
                       erg := false;
-                      form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
+                      WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
                     End;
                   End;
                 End
@@ -502,7 +507,7 @@ Begin
                   End;
                   If length(Tstring) <> 0 Then Begin
                     erg := false;
-                    form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + V1 + '" is not a const, go to extended Options to allow this.');
+                    WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + V1 + '" is not a const, go to extended Options to allow this.');
                   End;
                 End;
               End;
@@ -516,7 +521,7 @@ Begin
                 // Die Erste Varaible einer Summe mus immer ein Identifer = Variable sein !!
                 If Not checkIdentifier(V1) Then Begin
                   erg := false;
-                  form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
+                  WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
                 End;
                 If allow2varnotconst Then Begin
                   // eigentlich sollte man hier ne andere Variable wie Token nehmen, aber die Braucht nu eh keiner Mehr
@@ -529,7 +534,7 @@ Begin
                     Tstring := v1;
                     If Not checkIdentifier(Tstring) Then Begin
                       erg := false;
-                      form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
+                      WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
                     End;
                   End;
                 End
@@ -542,7 +547,7 @@ Begin
                   End;
                   If length(Tstring) <> 0 Then Begin
                     erg := false;
-                    form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + V1 + '" is not a const, go to extended Options to allow this.');
+                    WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + V1 + '" is not a const, go to extended Options to allow this.');
                   End;
                 End;
               End;
@@ -556,7 +561,7 @@ Begin
                 // Die Erste Varaible einer Summe mus immer ein Identifer = Variable sein !!
                 If Not checkIdentifier(V1) Then Begin
                   erg := false;
-                  form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
+                  WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
                 End;
                 If allow2varnotconst Then Begin
                   // eigentlich sollte man hier ne andere Variable wie Token nehmen, aber die Braucht nu eh keiner Mehr
@@ -569,7 +574,7 @@ Begin
                     Tstring := v1;
                     If Not checkIdentifier(Tstring) Then Begin
                       erg := false;
-                      form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
+                      WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
                     End;
                   End;
                 End
@@ -582,7 +587,7 @@ Begin
                   End;
                   If length(Tstring) <> 0 Then Begin
                     erg := false;
-                    form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + V1 + '" is not a const, go to extended Options to allow this.');
+                    WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + V1 + '" is not a const, go to extended Options to allow this.');
                   End;
                 End;
               End;
@@ -603,12 +608,12 @@ Begin
           Delete(tstring, LineContainsToken('Else', Tstring), 4);
           If Pos(';', Tstring) <> 0 Then Begin
             erg := false;
-            form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + '";" not allowed.');
+            WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + '";" not allowed.');
           End;
           Tstring := DelFrontspace(Tstring);
           If Length(Tstring) <> 0 Then Begin
             erg := false;
-            form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' Unknown value "' + Tstring + '" .');
+            WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' Unknown value "' + Tstring + '" .');
           End;
         End;
       5: Begin // Das End Token
@@ -620,18 +625,18 @@ Begin
           End
           Else Begin
             erg := false;
-            form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' Missing ";".');
+            WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' Missing ";".');
           End;
           Tstring := DelFrontspace(Tstring);
           If Length(Tstring) <> 0 Then Begin
             erg := false;
-            form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' Unknown value "' + Tstring + '" .');
+            WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' Unknown value "' + Tstring + '" .');
           End;
         End;
       6: Begin
           If LineContainsToken('Then', Arbeitsvar) = 0 Then Begin
             erg := false;
-            form1.Warnings_Error.items.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' Missing "Then".');
+            WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' Missing "Then".');
           End;
         End;
     End;
@@ -639,7 +644,7 @@ Begin
   result := erg;
 End;
 
-Function Prescan(Lines: Tstrings): Boolean;
+Function Prescan(Lines: Tstrings; Const WarningsLogger: TStrings): Boolean;
 Var
   y: Integer;
   tline, aline: String;
@@ -687,12 +692,12 @@ Begin
       Delete(aline, Pos(';', Aline), 1);
       If Pos(';', Aline) <> 0 Then Begin
         erg := true;
-        form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Only one Statement per Line Allowed');
+        WarningsLogger.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Only one Statement per Line Allowed');
       End;
     End;
     aline := tline;
     // Wenn die Zeile schon gar nicht Kompilierbar ist
-    If Not IsCompilableLine(Lines[y]) Then Begin
+    If Not IsCompilableLine(Lines[y], WarningsLogger) Then Begin
       erg := true;
     End;
     // Löschen der Leerzeichen vor dem ;
@@ -710,7 +715,7 @@ Begin
     If (Pos(' PROCEDURE ', Aline) <> 0) Or (Pos('PROCEDURE ', Aline) = 1) Then Begin
       If Procfound Then Begin
         erg := true;
-        form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Only one Procedure Allowed.');
+        WarningsLogger.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Only one Procedure Allowed.');
       End
       Else Begin
         Procfound := true;
@@ -721,11 +726,11 @@ Begin
       inc(Tiefe); // Tiefe erhöht sich um eins.
       If Infunc Then Begin
         erg := true;
-        form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'You cannot declare Functions in Functions.');
+        WarningsLogger.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'You cannot declare Functions in Functions.');
       End;
       If Not allowfunction Then Begin
         erg := true;
-        form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Functions are not allowed, go to Options to allow it.');
+        WarningsLogger.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Functions are not allowed, go to Options to allow it.');
       End;
       infunc := true;
     End;
@@ -758,60 +763,60 @@ Begin
         }
     If Not allowminus And (pos('^-', aline) <> 0) Then Begin
       erg := true;
-      form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Modified "^-" is not allowed, go to Options to allow it.');
+      WarningsLogger.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Modified "^-" is not allowed, go to Options to allow it.');
     End;
     If Not allowMulti And (pos('*', aline) <> 0) Then Begin
       erg := true;
-      form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Multiplication "*" is not allowed, go to Options to allow it.');
+      WarningsLogger.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Multiplication "*" is not allowed, go to Options to allow it.');
     End;
     If Not allowdiv And (pos(' DIV ', aline) <> 0) Then Begin
       erg := true;
-      form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Div operator is not allowed, go to Options to allow it.');
+      WarningsLogger.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Div operator is not allowed, go to Options to allow it.');
     End;
     If Not allowif And ((pos('IF ', aline) = 1) Or (pos(' IF ', aline) <> 0)) Then Begin
       erg := true;
-      form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'IF operator is not allowed, go to Options to allow it.');
+      WarningsLogger.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'IF operator is not allowed, go to Options to allow it.');
     End;
     If Not allowif And ((pos('THEN ', aline) = 1) Or (pos(' THEN ', aline) <> 0)) Then Begin
       erg := true;
-      form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'IF operator is not allowed, go to Options to allow it.');
+      WarningsLogger.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'IF operator is not allowed, go to Options to allow it.');
     End;
     If Not allowif And ((pos('ELSE ', aline) = 1) Or (pos(' ELSE ', aline) <> 0)) Then Begin
       erg := true;
-      form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'IF operator is not allowed, go to Options to allow it.');
+      WarningsLogger.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'IF operator is not allowed, go to Options to allow it.');
     End;
     If Not allowMod And (pos(' MOD ', aline) <> 0) Then Begin
       erg := true;
-      form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Mod operator is not allowed, go to Options to allow it.');
+      WarningsLogger.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Mod operator is not allowed, go to Options to allow it.');
     End;
     If Not allowgroeserKleiner And ((pos(' > ', aline) <> 0) Or
       (pos(' < ', aline) <> 0) Or (pos(' >= ', aline) <> 0) Or (pos(' <= ', aline) <> 0)) Then Begin
       erg := true;
-      form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Mod operator is not allowed, go to Options to allow it.');
+      WarningsLogger.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Mod operator is not allowed, go to Options to allow it.');
     End;
     If (pos(' NOT ', aline) <> 0) Or (pos(' NOT(', aline) <> 0) Then Begin
       erg := true;
-      form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + '"Not" not allowed use "<>" or other equivalent.');
+      WarningsLogger.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + '"Not" not allowed use "<>" or other equivalent.');
     End;
     // Findet Functionen die Fälschlicherweise im Quellcode Teil vom Hauptprogramm geschrieben sind
     If (firstbegin) And ((Pos(' FUNCTION ', aline) <> 0) Or (Pos('FUNCTION ', aline) = 1)) Then Begin
       erg := true;
-      form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Functions only in var deklarations part from the main Procedure allowed.');
+      WarningsLogger.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Functions only in var deklarations part from the main Procedure allowed.');
     End;
     // Findet Var variablen die im Quelltext stehen und da net Rein gehören
     If ((Firstbegin) Or (infuncbeg)) And (((Pos(' VAR ', aline) <> 0) Or (Pos('VAR ', aline) = 1))) Then Begin
       erg := true;
-      form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Variables can be defined only before the "Begin" block.');
+      WarningsLogger.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Variables can be defined only before the "Begin" block.');
     End;
     // Findet Functionen die im Hauotprogramm stehen
     If (Firstbegin) And (((Pos(' FUNCTION ', aline) <> 0) Or (Pos('FUNCTION ', aline) = 1))) Then Begin
       erg := true;
-      form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Functions can be defined only before the "Begin" block.');
+      WarningsLogger.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Functions can be defined only before the "Begin" block.');
     End;
     If LineContainsToken('Get', aline) <> 0 Then Begin
       If Not allowget Then Begin
         erg := true;
-        form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + '"Get" operand is only at the begin of Procedure allowed.');
+        WarningsLogger.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + '"Get" operand is only at the begin of Procedure allowed.');
       End;
     End
     Else Begin
@@ -831,32 +836,32 @@ Begin
     inc(y);
   End;
   If Not x0found Then Begin
-    form1.Warnings_Error.items.Add('Errorcode [0] : Warning X0 never assigned a value.');
+    WarningsLogger.Add('Errorcode [0] : Warning X0 never assigned a value.');
   End;
   // wenn Anzahl End <> Anzahl Begin
   If tiefe < 0 Then Begin
     erg := true;
-    form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'More "End" than "Begin, Or, Procedure, Function, Then " found.');
+    WarningsLogger.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'More "End" than "Begin, Or, Procedure, Function, Then " found.');
   End;
   If tiefe > 0 Then Begin
     erg := true;
-    form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Less "End" than "Begin, Or, Procedure, Function, Then " found.');
+    WarningsLogger.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'Less "End" than "Begin, Or, Procedure, Function, Then " found.');
   End;
   // Wenn gar keine Procedur gefunden Wurde.
   If Not Procfound Then Begin
     erg := true;
-    form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'No name for Main Procedure found.');
+    WarningsLogger.Add('Found Error in Line [' + inttostr(getline(Aline)) + '] : ' + 'No name for Main Procedure found.');
   End;
   If Not noemptyline Then Begin
     erg := true;
-    form1.Warnings_Error.items.Add('Found Error in Line [1] : ' + 'Could not find any compilable code.');
+    WarningsLogger.Add('Found Error in Line [1] : ' + 'Could not find any compilable code.');
   End;
   result := erg;
 End;
 
 // Gibt True zurück wenn die Variable Existiert sonst False, ist allerdings Value ne Konstante wird Auch True zurückgegeben
 
-Function VarExist(Value: String; CodeLine: integer): Boolean;
+Function VarExist(Value: String; CodeLine: integer; Const WarningsLogger: TStrings): Boolean;
 Var
   erg: Boolean;
   x: integer;
@@ -868,7 +873,7 @@ Begin
     For x := 0 To high(CompiledCode.vars) Do
       If CompareStr(s, CompiledCode.vars[x].Name) = 0 Then erg := true;
     If Not erg Then
-      form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(CodeLine) + '] : ' + 'Unknown value "' + Value + '" .');
+      WarningsLogger.Add('Found Error in Line [' + inttostr(CodeLine) + '] : ' + 'Unknown value "' + Value + '" .');
     result := erg;
   End
   Else Begin
@@ -919,7 +924,7 @@ End;
 
 // Gibt true Zurück wenn der Code Compilierbar ist, und erstellt gleichzeitig die entsprechende Tokenstruktur
 
-Function Compile(Lines: Tstrings): boolean;
+Function Compile(Lines: Tstrings; Const WarningsLogger: TStrings): boolean;
 // Gibt True zurück wenn ein Fehler war.
   Function getprocvars(Value: Integer): Boolean;
   Var
@@ -948,10 +953,10 @@ Function Compile(Lines: Tstrings): boolean;
           If r <> 'æ' Then
             If Length(r) <> 0 Then Begin
               If r = 'X0' Then
-                form1.Warnings_Error.items.Add('Errorcode [' + inttostr(line) + '] : Warning X0 need not to be specifieed in var')
+                WarningsLogger.Add('Errorcode [' + inttostr(line) + '] : Warning X0 need not to be specifieed in var')
               Else Begin
                 If VarExist2(uppercase(r), line) Then Begin
-                  form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'double existing var name.');
+                  WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'double existing var name.');
                   erg := true;
                 End
                 Else Begin
@@ -965,7 +970,7 @@ Function Compile(Lines: Tstrings): boolean;
                     (Uppercase(r) = 'VAR') Or (Uppercase(r) = 'GET') Or (Uppercase(r) = 'IF') Or
                     (Uppercase(r) = 'THEN') Or (Uppercase(r) = 'OR') Or (Uppercase(r) = 'AND') Or
                     (Uppercase(r) = 'MOD') Or (Uppercase(r) = 'DIV') Then Begin
-                    form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + '"' + r + '" is a reserved word it cannont be used as a var name.');
+                    WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + '"' + r + '" is a reserved word it cannont be used as a var name.');
                     erg := true;
                   End
                   Else Begin
@@ -979,11 +984,11 @@ Function Compile(Lines: Tstrings): boolean;
                       If Not allowothernames Then
                         If Not CheckVarName(CompiledCode.vars[x].Name) Then Begin
                           erg := true;
-                          form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Other var names not allowed, go to Options to allow it.');
+                          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Other var names not allowed, go to Options to allow it.');
                         End;
                       If Not checkIdentifier(CompiledCode.vars[x].Name) Then Begin
                         erg := true;
-                        form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(Line) + '] : ' + 'Invalid Var name.');
+                        WarningsLogger.Add('Found Error in Line [' + inttostr(Line) + '] : ' + 'Invalid Var name.');
                       End;
                     End;
                   End;
@@ -993,7 +998,7 @@ Function Compile(Lines: Tstrings): boolean;
             Else Begin
               // Falls die Variable ein Leerzring ist
               erg := true;
-              form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Invalid Var name.');
+              WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Invalid Var name.');
             End;
         End;
       End;
@@ -1027,7 +1032,7 @@ Var
       If CompareStr(s, CompiledCode.vars[x].name) = 0 Then b := true;
     If Not b Then Begin
       erg := true;
-      form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + 'Unknown value "' + s + '" .');
+      WarningsLogger.Add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + 'Unknown value "' + s + '" .');
     End;
     // Prüfen ob die Variable bereits aufgenommen wurde
     b := false;
@@ -1035,7 +1040,7 @@ Var
       If CompareStr(s, CompiledCode.getvars[x].name) = 0 Then b := true;
     If B Then Begin
       erg := true;
-      form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + 'You could use the "get" instruction only one times per variable.');
+      WarningsLogger.Add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + 'You could use the "get" instruction only one times per variable.');
     End
     Else Begin
       setlength(CompiledCode.getvars, high(CompiledCode.getvars) + 2);
@@ -1127,12 +1132,12 @@ Var
         If s <> 'æ' Then
           If Length(s) = 0 Then Begin
             Mistake := true;
-            form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Argument');
+            WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Argument');
           End
           Else Begin
             If (Not VarExist2(s, line)) And (Not isnum(s)) Then Begin // Variable gibt es nicht -> Error
               Mistake := true;
-              form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Unknown value "' + s + '".');
+              WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Unknown value "' + s + '".');
             End
             Else Begin // Die Variable ist Gültig wir können sie übernehmen
               setlength(erg, high(erg) + 2);
@@ -1165,7 +1170,7 @@ Var
         // Speichern das die Variable benutzt wird
         If aw^.Ergebniss >= 0 Then
           compiledcode.vars[aw^.Ergebniss].used := true;
-        aw^.Rechnung := MakeRechentree(von[x], line, mistake, '', []);
+        aw^.Rechnung := MakeRechentree(von[x], line, mistake, '', [], WarningsLogger);
         aw^.Line := line;
         z^.ID := 1;
         z^.code := aw;
@@ -1196,10 +1201,10 @@ Var
     // Speichern das die Variable benutzt wird
     If aw^.Ergebniss >= 0 Then
       compiledcode.vars[aw^.Ergebniss].used := true;
-    aw^.Rechnung := MakeRechentree(von, line, Mistake, '', []);
+    aw^.Rechnung := MakeRechentree(von, line, Mistake, '', [], WarningsLogger);
     // prüfen ob unsere Loop Variable auch wirklich eine ist sichtbare Variable ist
     If Not CheckVarVisible(aw^.Ergebniss, line) Then Begin
-      form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(Line) + '] : ' + 'Unknown value "' + Nach + '" .');
+      WarningsLogger.Add('Found Error in Line [' + inttostr(Line) + '] : ' + 'Unknown value "' + Nach + '" .');
       Mistake := True;
     End;
     aw^.Line := line;
@@ -1243,7 +1248,7 @@ Var
       While depth <> 0 Do Begin
         inc(From);
         If From >= Lines.count Then Begin
-          form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(from - 1) + '] : ' + 'Parsing error please contact the programmer.');
+          WarningsLogger.Add('Found Error in Line [' + inttostr(from - 1) + '] : ' + 'Parsing error please contact the programmer.');
           Fehler := True;
           Goto raus; // Abbruch des weiteren Aufbau's des Quellcode's
         End;
@@ -1262,7 +1267,7 @@ Var
             Aline := ''; // Mus so gemacht werden sonst denkt der Compiler X0:= get sei eine Anweisung !!
           End
           Else Begin
-            form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(aline)) + '] : ' + ' "Get" not allowed in Functions.');
+            WarningsLogger.Add('Found Error in Line [' + inttostr(getline(aline)) + '] : ' + ' "Get" not allowed in Functions.');
             Fehler := True;
             Goto raus; // Abbruch des weiteren Aufbau's des Quellcode's
           End;
@@ -1288,16 +1293,16 @@ Var
           z := ne; // Sprung des Aktuell Pointers auf den Nächsten Befehl
           // prüfen ob unsere Loop Variable auch wirklich eine ist sichtbare Variable ist
           If Not CheckVarVisible(lp^.WiederhohlungenVar, lp^.line) Then Begin
-            form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(lp^.Line) + '] : ' + 'Unknown or illegal value ' + Varstring + '.');
+            WarningsLogger.Add('Found Error in Line [' + inttostr(lp^.Line) + '] : ' + 'Unknown or illegal value ' + Varstring + '.');
             Fehler := True;
           End;
           If Not checkIdentifier(GetLokalGlobalName(Ebene + Varstring)) Then
             If Not isnum(GetLokalGlobalName(Ebene + Varstring)) Then Begin
-              form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(lp^.Line) + '] : ' + 'Unknown or illegal value ' + Varstring + '.');
+              WarningsLogger.Add('Found Error in Line [' + inttostr(lp^.Line) + '] : ' + 'Unknown or illegal value ' + Varstring + '.');
               Fehler := True;
               Goto raus; // Abbruch des weiteren Aufbau's des Quellcode's
             End;
-          If Not VarExist(GetLokalGlobalName(ebene + Varstring), lp^.Line) Then Begin
+          If Not VarExist(GetLokalGlobalName(ebene + Varstring), lp^.Line, WarningsLogger) Then Begin
             Fehler := True;
             Goto raus; // Abbruch des weiteren Aufbau's des Quellcode's
           End;
@@ -1327,7 +1332,7 @@ Var
             ne^.ID := 0; // null Befehl
             ne^.Code := Nil; // null Befehl
             new(aw); // Anweisungscode
-            If Not VarExist(GetLokalGlobalName(ebene + v1), getline(lines[From])) Then Begin
+            If Not VarExist(GetLokalGlobalName(ebene + v1), getline(lines[From]), WarningsLogger) Then Begin
               Fehler := True;
             End;
             aw^.Line := getline(lines[From]); // Extrahieren der Code Zeile
@@ -1337,10 +1342,10 @@ Var
               compiledcode.vars[aw^.Ergebniss].used := true;
             // prüfen ob unsere Loop Variable auch wirklich eine ist sichtbare Variable ist
             If Not CheckVarVisible(aw^.Ergebniss, aw^.line) Then Begin
-              form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(aw^.Line) + '] : ' + 'Unknown or illegal value ' + V1 + '.');
+              WarningsLogger.Add('Found Error in Line [' + inttostr(aw^.Line) + '] : ' + 'Unknown or illegal value ' + V1 + '.');
               Fehler := True;
             End;
-            aw^.Rechnung := MakeRechentree(uppercase(copy(Tstring, pos(':=', tstring) + 2, length(Tstring))), aw^.line, b, ebene, []); // Ausrechnen des Ausdruckes
+            aw^.Rechnung := MakeRechentree(uppercase(copy(Tstring, pos(':=', tstring) + 2, length(Tstring))), aw^.line, b, ebene, [], WarningsLogger); // Ausrechnen des Ausdruckes
             aw^.Next := ne;
             AddCompilableLine(aw^.line);
             z^.ID := 1; // enifügen in den bisher erstelleten Code
@@ -1363,11 +1368,11 @@ Var
             If Not b Then Begin
               If High(para) < high(CompiledCode.Func[tmpfuncindex].uebergabeparameter) Then Begin
                 b := true;
-                form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(aline)) + '] : ' + 'To few arguments.');
+                WarningsLogger.Add('Found Error in Line [' + inttostr(getline(aline)) + '] : ' + 'To few arguments.');
               End;
               If High(para) > high(CompiledCode.Func[tmpfuncindex].uebergabeparameter) Then Begin
                 b := true;
-                form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(getline(aline)) + '] : ' + 'To many arguments.');
+                WarningsLogger.Add('Found Error in Line [' + inttostr(getline(aline)) + '] : ' + 'To many arguments.');
               End;
             End;
             // Wir haben wohl Passend viele Variablen also können wir die Funciton aufrufen
@@ -1387,7 +1392,7 @@ Var
                 // Berechnen der Ergebnis Variable
                 Tstring := uppercase(copy(aline, 1, pos(':', aline) - 1));
                 Tstring := DelFrontspace(DelEndspace(Tstring));
-                If Not VarExist(Tstring, getline(aline)) Then Begin
+                If Not VarExist(Tstring, getline(aline), WarningsLogger) Then Begin
                   b := true;
                 End
                 Else Begin
@@ -1413,13 +1418,13 @@ Var
           ifthen^.Next := ne;
           Ifthen^.Line := getline(lines[From]); // Die Zeile in der die If anweisung steht
           AddCompilableLine(Ifthen^.line);
-          ifthen^.Bedingung := makerechentree(getbedingung(aline), ifthen^.line, b, ebene, []);
+          ifthen^.Bedingung := makerechentree(getbedingung(aline), ifthen^.line, b, ebene, [], WarningsLogger);
           If b Then Begin
             Fehler := True;
             Goto raus; // Abbruch des weiteren Aufbau's des Quellcode's
           End;
           If Length(DelFrontspace(getbedingung(aline))) = 0 Then Begin
-            form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(Ifthen^.Line) + '] : ' + 'Missing Argument in "If" ');
+            WarningsLogger.Add('Found Error in Line [' + inttostr(Ifthen^.Line) + '] : ' + 'Missing Argument in "If" ');
             Fehler := True;
             Goto raus; // Abbruch des weiteren Aufbau's des Quellcode's
           End;
@@ -1456,7 +1461,7 @@ Var
     s := copy(data[Startindex], LineContainsToken('Function', data[Startindex]) + 8, length(data[Startindex]));
     y := pos(';', s);
     If y = 0 Then Begin
-      form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(Startindex) + '] : ' + 'Missing ";" ');
+      WarningsLogger.Add('Found Error in Line [' + inttostr(Startindex) + '] : ' + 'Missing ";" ');
       Fehler := true;
     End;
     delete(s, y, length(s));
@@ -1465,7 +1470,7 @@ Var
       delete(s, y, length(s));
     s := DelFrontspace(DelEndspace(s));
     If length(s) = 0 Then Begin
-      form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(Startindex) + '] : ' + 'Invalid Function name.');
+      WarningsLogger.Add('Found Error in Line [' + inttostr(Startindex) + '] : ' + 'Invalid Function name.');
       Fehler := true;
     End;
     erg.Name := s;
@@ -1478,7 +1483,7 @@ Var
       inc(y);
     End;
     If X = -1 Then Begin
-      form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(Startindex) + '] : ' + 'Parsing Error no Begin for " ' + s + ' " found.');
+      WarningsLogger.Add('Found Error in Line [' + inttostr(Startindex) + '] : ' + 'Parsing Error no Begin for " ' + s + ' " found.');
       Fehler := true;
     End;
     erg.beg := x;
@@ -1508,7 +1513,7 @@ Var
         v := DelFrontspace(DelEndspace(v));
         If Length(v) <> 0 Then Begin
           If VarExist2(name + 'æ' + uppercase(v), line) Then Begin
-            form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'double existing var name.');
+            WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'double existing var name.');
             erg := true;
           End
           Else Begin
@@ -1518,7 +1523,7 @@ Var
               (Uppercase(v) = 'VAR') Or (Uppercase(v) = 'GET') Or (Uppercase(v) = 'IF') Or
               (Uppercase(v) = 'THEN') Or (Uppercase(v) = 'OR') Or (Uppercase(v) = 'AND') Or
               (Uppercase(v) = 'MOD') Or (Uppercase(v) = 'DIV') Then Begin
-              form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + '"' + v + '" is a reserved word it cannont be used as a var name.');
+              WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + '"' + v + '" is a reserved word it cannont be used as a var name.');
               erg := true;
             End
             Else Begin
@@ -1534,7 +1539,7 @@ Var
         End
         Else Begin
           erg := true;
-          form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Invalid Function parameter');
+          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Invalid Function parameter');
         End;
       End;
       v := s;
@@ -1542,7 +1547,7 @@ Var
       v := DelFrontspace(DelEndspace(v));
       If Length(v) <> 0 Then Begin
         If VarExist2(name + 'æ' + uppercase(v), line) Then Begin
-          form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'double existing var name.');
+          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'double existing var name.');
           erg := true;
         End
         Else Begin
@@ -1552,7 +1557,7 @@ Var
             (Uppercase(v) = 'VAR') Or (Uppercase(v) = 'GET') Or (Uppercase(v) = 'IF') Or
             (Uppercase(v) = 'THEN') Or (Uppercase(v) = 'OR') Or (Uppercase(v) = 'AND') Or
             (Uppercase(v) = 'MOD') Or (Uppercase(v) = 'DIV') Then Begin
-            form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + '"' + v + '" is a reserved word it cannont be used as a var name.');
+            WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + '"' + v + '" is a reserved word it cannont be used as a var name.');
             erg := true;
           End
           Else Begin
@@ -1568,7 +1573,7 @@ Var
       End
       Else Begin
         erg := true;
-        form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Invalid Function parameter');
+        WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Invalid Function parameter');
       End;
     End;
     // Prüfen auf Gültige Variablennamen
@@ -1576,11 +1581,11 @@ Var
       If Not allowothernames Then
         If Not CheckVarName(CompiledCode.vars[x].Name) Then Begin
           erg := true;
-          form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Other var names not allowed, go to Options to allow it.');
+          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Other var names not allowed, go to Options to allow it.');
         End;
       If Not checkIdentifier(CompiledCode.vars[x].Name) Then Begin
         erg := true;
-        form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Invalid Var name.');
+        WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Invalid Var name.');
       End;
     End;
     result := erg;
@@ -1619,7 +1624,7 @@ Var
             If r <> 'æ' Then
               If Length(r) <> 0 Then Begin
                 If VarExist2(Functionsname + 'æ' + uppercase(r), line) Then Begin
-                  form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'double existing var name.');
+                  WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'double existing var name.');
                   erg := true;
                 End
                 Else Begin
@@ -1629,7 +1634,7 @@ Var
                     (Uppercase(r) = 'VAR') Or (Uppercase(r) = 'GET') Or (Uppercase(r) = 'IF') Or
                     (Uppercase(r) = 'THEN') Or (Uppercase(r) = 'OR') Or (Uppercase(r) = 'AND') Or
                     (Uppercase(r) = 'MOD') Or (Uppercase(r) = 'DIV') Then Begin
-                    form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + '"' + r + '" is a reserved word it cannont be used as a var name.');
+                    WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + '"' + r + '" is a reserved word it cannont be used as a var name.');
                     erg := true;
                   End
                   Else Begin
@@ -1642,7 +1647,7 @@ Var
               End
               Else Begin
                 erg := true;
-                form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Invalid Function parameter');
+                WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Invalid Function parameter');
               End;
           End;
         End;
@@ -1658,7 +1663,7 @@ Begin
   erg := true;
   lines := DeleteComments(lines);
   // Löschen altern Warnungen , Fehler
-  form1.Warnings_Error.clear;
+  WarningsLogger.clear;
   // Löschen der Bisher gefundenen Compilierbaren Zeilen
   ClearCompilableLines;
   // Löschen eines bisher Compilierten Code's
@@ -1669,12 +1674,12 @@ Begin
   CompiledCode.vars[0].Value := 0;
   // Löschen der functionen die es Vielleicht so gibt
   // Durchführen eines Kleinen Prescan's damit schon mal viele Fehler vor dem eigentlichen Compilieren gefunden werden können.
-  If Prescan(Lines) Then Begin
+  If Prescan(Lines, WarningsLogger) Then Begin
     erg := false;
     Goto Abbruch;
   End;
   // Hier ist ein Verbesserter Versuch des Prescanners
-  If PrePrescan(lines) Then Begin
+  If PrePrescan(lines, WarningsLogger) Then Begin
     erg := false;
     Goto Abbruch;
   End;
@@ -1755,19 +1760,16 @@ Begin
       If Not Compiledcode.Func[y].used Then Begin
         s := Compiledcode.Func[y].name;
         s := copy(s, 1, length(s) - 1);
-        form1.Warnings_Error.items.Add('Errorcode [' + inttostr(Compiledcode.Func[y].realline) + '] : Warning "' + s + '" is never used -> "' + s + '" will not be checked."')
+        WarningsLogger.Add('Errorcode [' + inttostr(Compiledcode.Func[y].realline) + '] : Warning "' + s + '" is never used -> "' + s + '" will not be checked."')
       End;
     // Nachschaun ob auch alle Variablen benutzt wurden
     For y := 1 To high(compiledcode.vars) Do
       If Not compiledcode.vars[y].Used Then Begin
         s := compiledcode.vars[y].Name;
         s := getuserVarname(s);
-        form1.Warnings_Error.items.Add('Errorcode [' + inttostr(compiledcode.vars[y].line) + '] : ' + 'Warning ' + s + ' never assigned a value');
+        WarningsLogger.Add('Errorcode [' + inttostr(compiledcode.vars[y].line) + '] : ' + 'Warning ' + s + ' never assigned a value');
       End;
   End;
-  // Falls es Warnunen, Fehler Gibt werden diese Hier Angezeigt
-  form1.Warnings_Error.visible := form1.Warnings_Error.Items.count <> 0;
-  form1.splitter2.visible := form1.Warnings_Error.visible;
   // Wenn wir nicht Compilieren Konnten löschen wir hier den bisher erstellten Code
   If Not erg Then Begin
     FreeCompiledcode;

@@ -43,7 +43,10 @@ Var
 
 Implementation
 
-Uses Unit1;
+Uses
+  uloop
+  , Unit1
+  ;
 
 {$R *.lfm}
 

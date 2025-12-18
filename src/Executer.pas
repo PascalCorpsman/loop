@@ -41,7 +41,11 @@ Function PointerVar_To_RealVar(Value: int64): int64;
 
 Implementation
 
-Uses unit5, parser, Unit1;
+Uses
+  uloop
+  , parser
+  , unit1
+  , unit5;
 
 Procedure SetUnknown;
   Function getun(Value: String): String;

@@ -18,7 +18,7 @@ Unit RechenBaum;
 
 Interface
 
-Uses Sysutils, dialogs;
+Uses Sysutils, dialogs, Classes;
 
 Type
   // Zeiger auf unsere Bäumchen
@@ -33,13 +33,14 @@ Type
 
 Procedure Freerechentree(Var Value: PRechenTree);
 Function RechneTree(Value: PRechenTree): int64;
-Function MakeRechentree(Value: String; Line: int64; Var Error: Boolean; Ebene: String; AlreadyFound: Array Of Prechentree): Prechentree;
+Function MakeRechentree(Value: String; Line: int64; Var Error: Boolean; Ebene: String; AlreadyFound: Array Of Prechentree; Const WarningsLogger: TStrings): Prechentree;
 // Rückt die Zeicehn  ( ) ebenfalls weg
 Function Preclear(Value: String): String;
 
 Implementation
 
-Uses unit1, executer, compiler, Parser;
+Uses
+  executer, compiler, Parser;
 
 // Gibt einen Trechentree Frei und setzt ihn auf NIL
 
@@ -312,7 +313,7 @@ Ermittelt ist diese Reihenfolge aus der Genauen Analyse des Delphi Kompilers sow
 
 *)
 
-Function MakeRechentree(Value: String; Line: int64; Var Error: Boolean; Ebene: String; AlreadyFound: Array Of Prechentree): Prechentree;
+Function MakeRechentree(Value: String; Line: int64; Var Error: Boolean; Ebene: String; AlreadyFound: Array Of Prechentree; Const WarningsLogger: TStrings): Prechentree;
 Const
   Trennzeichen = '«';
 Var
@@ -326,19 +327,19 @@ Var
   Begin
     If Pos(Trennzeichen, Data) <> 0 Then Begin
       error := true;
-      form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(Line) + '] : ' + 'Invalid Operation.');
+      WarningsLogger.Add('Found Error in Line [' + inttostr(Line) + '] : ' + 'Invalid Operation.');
       result := Nil;
     End
     Else Begin
       new(erg);
       erg^.IsValue := true;
       // Wir Prüfen auch gleich ob's die Variable überhaubt gibt
-      If VarExist(GetLokalGlobalName(ebene + data), Line) Then Begin
+      If VarExist(GetLokalGlobalName(ebene + data), Line, WarningsLogger) Then Begin
         b := false;
         erg^.Value := GetVarindex(GetLokalGlobalName(ebene + Data), b);
         If b Then Begin
           error := true;
-          form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(Line) + '] : ' + 'Value out of range.');
+          WarningsLogger.Add('Found Error in Line [' + inttostr(Line) + '] : ' + 'Value out of range.');
         End;
         // Merken das die Variable benutzt wird
         If Erg^.value >= 0 Then
@@ -346,11 +347,11 @@ Var
       End
       Else Begin
         error := true;
-        form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(Line) + '] : ' + 'Unknown value "' + Data + '" .');
+        WarningsLogger.Add('Found Error in Line [' + inttostr(Line) + '] : ' + 'Unknown value "' + Data + '" .');
         erg^.Value := -1; // Zuweisen der 0
       End;
       If Not CheckVarVisible(erg^.Value, line) Then Begin
-        form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(Line) + '] : ' + 'Unknown value "' + data + '" .');
+        WarningsLogger.Add('Found Error in Line [' + inttostr(Line) + '] : ' + 'Unknown value "' + data + '" .');
         Error := True;
         erg^.Value := -1; // Zuweisen der 0
       End;
@@ -541,17 +542,17 @@ Begin
   // Wenn ein Leerstring übergeben wird
   If Length(Value) = 0 Then Begin
     error := true;
-    form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Argument .');
+    WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Argument .');
     result := Nil;
     exit;
   End;
   If Not Korrektklammern(Value) Then Begin
     error := true;
-    form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing parenthesis .');
+    WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing parenthesis .');
     result := Nil;
     exit;
   End;
-  setlength(Klammern, 0); // initialisieren unseres Merkers für die verscheidenen Wurzel der unterbäume
+  Klammern := Nil; // initialisieren unseres Merkers für die verscheidenen Wurzel der unterbäume
   // Wenn wir in verschachtelten Ausdrücken sind brauchen wir ein paar Tricks zum Parsen der inneren Variablen
   // So können wir ermitteln welche Pointer es noch in Offenen Klammern gibt
   If high(Alreadyfound) <> -1 Then Begin
@@ -571,7 +572,7 @@ Begin
     While x >= 0 Do Begin
       If x = 0 Then Begin // Wenn keine "(" Gefunden wurde
         error := True;
-        form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing "(" .');
+        WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing "(" .');
         result := Nil;
         Goto Fehler;
       End
@@ -593,7 +594,7 @@ Begin
         Delete(value, y, x - y + 1); // Rauschneiden des Klammerausdruckes und
         Setlength(klammern, high(Klammern) + 2); // Merken welche Wurzel auf die Klammer verweist
         insert(Trennzeichen + inttostr(high(Klammern)) + Trennzeichen, Value, Y); // Einfügen des Verweises auf die Stelle im Globalen Klammer Array
-        klammern[high(Klammern)] := MakeRechentree(s, line, error, ebene, Klammern); // Berechnen der Klammer
+        klammern[high(Klammern)] := MakeRechentree(s, line, error, ebene, Klammern, WarningsLogger); // Berechnen der Klammer
         // Wenn ein Fehler in einer Klammer gefunden wurde und wir hier nicht wegspringen würden
         // Kämen wir in eine Endlosschleife !!
         If Error Then Begin
@@ -669,7 +670,7 @@ Begin
         back := getafter(Value, x);
         If { (Front = -1) Or }(Back = -1) Then Begin
           Error := true;
-          form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
+          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
           Result := Nil;
           Goto Fehler;
         End
@@ -708,7 +709,7 @@ Begin
         back := getafter(Value, x);
         If (Front = -1) Or (Back = -1) Then Begin
           Error := true;
-          form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
+          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
           Result := Nil;
           Goto Fehler;
         End
@@ -754,7 +755,7 @@ Begin
         back := getafter(Value, x);
         If (Front = -1) Or (Back = -1) Then Begin
           Error := true;
-          form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
+          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
           Result := Nil;
           Goto Fehler;
         End
@@ -800,7 +801,7 @@ Begin
         back := getafter(Value, x);
         If (Front = -1) Or (Back = -1) Then Begin
           Error := true;
-          form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
+          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
           Result := Nil;
           Goto Fehler;
         End
@@ -846,7 +847,7 @@ Begin
         back := getafter(Value, x);
         If (Front = -1) Or (Back = -1) Then Begin
           Error := true;
-          form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
+          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
           Result := Nil;
           Goto Fehler;
         End
@@ -892,7 +893,7 @@ Begin
         back := getafter(Value, x);
         If (Front = -1) Or (Back = -1) Then Begin
           Error := true;
-          form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
+          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
           Result := Nil;
           Goto Fehler;
         End
@@ -938,7 +939,7 @@ Begin
         back := getafter(Value, x);
         If (Front = -1) Or (Back = -1) Then Begin
           Error := true;
-          form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
+          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
           Result := Nil;
           Goto Fehler;
         End
@@ -984,7 +985,7 @@ Begin
         back := getafter(Value, x);
         If (Front = -1) Or (Back = -1) Then Begin
           Error := true;
-          form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
+          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
           Result := Nil;
           Goto Fehler;
         End
@@ -1030,7 +1031,7 @@ Begin
         back := getafter(Value, x);
         If (Front = -1) Or (Back = -1) Then Begin
           Error := true;
-          form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
+          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
           Result := Nil;
           Goto Fehler;
         End
@@ -1076,7 +1077,7 @@ Begin
         back := getafter(Value, x);
         If (Front = -1) Or (Back = -1) Then Begin
           Error := true;
-          form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
+          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
           Result := Nil;
           Goto Fehler;
         End
@@ -1122,7 +1123,7 @@ Begin
         back := getafter(Value, x);
         If (Front = -1) Or (Back = -1) Then Begin
           Error := true;
-          form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
+          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
           Result := Nil;
           Goto Fehler;
         End
@@ -1168,7 +1169,7 @@ Begin
         back := getafter(Value, x);
         If (Front = -1) Or (Back = -1) Then Begin
           Error := true;
-          form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
+          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
           Result := Nil;
           Goto Fehler;
         End
@@ -1214,7 +1215,7 @@ Begin
         back := getafter(Value, x);
         If (Front = -1) Or (Back = -1) Then Begin
           Error := true;
-          form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
+          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
           Result := Nil;
           Goto Fehler;
         End
@@ -1260,7 +1261,7 @@ Begin
         back := getafter(Value, x);
         If (Front = -1) Or (Back = -1) Then Begin
           Error := true;
-          form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
+          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
           Result := Nil;
           Goto Fehler;
         End
@@ -1306,7 +1307,7 @@ Begin
         back := getafter(Value, x);
         If (Front = -1) Or (Back = -1) Then Begin
           Error := true;
-          form1.Warnings_Error.items.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
+          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
           Result := Nil;
           Goto Fehler;
         End

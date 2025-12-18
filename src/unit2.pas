@@ -68,7 +68,12 @@ Implementation
 
 {$R *.lfm}
 
-Uses Unit1, unit10, unit11;
+Uses
+  uloop
+  , Unit1
+  , unit10
+  , unit11
+  ;
 
 Procedure TForm2.Button1Click(Sender: TObject);
 Begin

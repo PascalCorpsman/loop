@@ -39,7 +39,7 @@ Function GetclearedString(Value: String; ClearDoublespace: Boolean): String;
 
 Implementation
 
-Uses unit1;
+Uses uLoop;
 
 // Löscht Führende Leerzeichen
 

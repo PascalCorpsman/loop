@@ -67,7 +67,9 @@ Implementation
 
 {$R *.lfm}
 
-Uses Unit1, SynEditTypes;
+Uses SynEditTypes
+  , uLoop
+  , unit1;
 
 // prüft ob das wort Text bereits in den Items enthalten ist , wenn Ja dann True
 

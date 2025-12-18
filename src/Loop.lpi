@@ -144,6 +144,10 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="uColorGrid"/>
       </Unit>
+      <Unit>
+        <Filename Value="uloop.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

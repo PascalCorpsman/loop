@@ -23,7 +23,7 @@ Uses
   sysutils,
   unit1, unit2, unit3, unit4, unit5, unit6, unit7, unit8, unit9, unit10,
   unit11
-  , Compiler // Why is this unit needed here ?
+  , Compiler, uloop // Why is this unit needed here ?
   ;
 
 {$R *.res}
