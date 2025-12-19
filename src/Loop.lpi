@@ -21,6 +21,9 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="Printer4Lazarus"/>
+      </Item>
+      <Item>
         <PackageName Value="uniqueinstance_package"/>
       </Item>
       <Item>
@@ -120,7 +123,7 @@
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="Compiler.pas"/>
+        <Filename Value="ucompiler.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>

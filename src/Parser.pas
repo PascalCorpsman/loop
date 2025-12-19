@@ -18,7 +18,7 @@ Unit Parser;
 
 Interface
 
-Uses Sysutils, Classes, Forms, comctrls, Compiler, {Debuggen} Dialogs {Debuggen Ende};
+Uses Sysutils, Classes, Forms, comctrls, {Debuggen} Dialogs {Debuggen Ende};
 
 // Ermittelt alle Funcitonen und Proceduren die so im Text in Lines drin stehen und schreibt sie in TV als Baum Nieder
 Procedure GetFunnames(Lines: Tstrings; Var TV: TTreeview);
@@ -36,6 +36,9 @@ Function DelFrontspace(Value: String): String;
 Function CheckVarName(Value: String): boolean;
 // Formatiert genau 1 Zeile ist Global da die Function  LineContainsToken das Braucht
 Function GetclearedString(Value: String; ClearDoublespace: Boolean): String;
+
+// Prüft ob ein Token in einem String enthalten ist, wenn ja wird der INdex des 1. Zeichens des Token zurückgegeben.
+Function LineContainsToken(Token, Line: String): integer;
 
 Implementation
 
@@ -750,6 +753,38 @@ Begin
   If Assigned(knoten) Then Knoten.expand(true); // Aufklappen des Baumes
   // Freigeben der Variablen
   code.free;
+End;
+
+// Prüft ob ein Token in einem String enthalten ist, wenn ja wird der INdex des 1. Zeichens des Token zurückgegeben.
+
+Function LineContainsToken(Token, Line: String): integer;
+Var
+  Erg: integer;
+  ttoken, tline: String;
+Begin
+  // Löschen eines steuerzeichens in Functionsnamen
+  If pos('æ', token) <> 0 Then
+    delete(Token, pos('æ', token), 1);
+  erg := 0;
+  // Die Tausend Möglichkeiten auf eine Beschränken
+  TToken := Uppercase(Token);
+  TLine := Uppercase(Line);
+  // Fall 1 Wort steht links
+  If pos(TToken + ' ', Tline) = 1 Then erg := 1;
+  // Fall 2 Token steht in der Mitte , getestet
+  If erg = 0 Then
+    If pos(' ' + TToken + ' ', Tline) <> 0 Then Begin
+      erg := pos(' ' + TToken + ' ', Tline) + 1;
+    End;
+  //  Fall 3 der Token steht genau Rechts
+  If Erg = 0 Then
+    If Pos(' ' + TTOken, Tline) = Length(Tline) - Length(TTOken) Then
+      If Length(Tline) - Length(TTOken) <> 0 Then
+        erg := Pos(' ' + TTOken, Tline) + 1;
+  // Fall 4 Die Zeile ist genau der Token , getestet
+  If erg = 0 Then
+    If Line = Token Then erg := 1;
+  result := erg;
 End;
 
 End.

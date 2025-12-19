@@ -18,7 +18,7 @@ Unit Executer;
 
 Interface
 
-Uses forms, sysutils, Compiler, Rechenbaum, LoopStack, unit8, {Debuggen} Dialogs {Debuggen Ende};
+Uses forms, sysutils, uCompiler, Rechenbaum, LoopStack, {Debuggen} Dialogs {Debuggen Ende};
 
 Var
   LoopRechner: TLoopStack;
@@ -43,9 +43,10 @@ Implementation
 
 Uses
   uloop
-  , parser
   , unit1
-  , unit5;
+  , unit5 // Programm_Simulation
+  , unit8 // Controlled_Vars
+  ;
 
 Procedure SetUnknown;
   Function getun(Value: String): String;

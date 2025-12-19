@@ -24,8 +24,6 @@ Function PrePrescan(Lines: Tstrings; Const WarningsLogger: TStrings): Boolean;
 
 Implementation
 
-Uses compiler;
-
 Function PrePrescan(Lines: Tstrings; Const WarningsLogger: TStrings): Boolean;
 Var
   erg: boolean;
@@ -37,4 +35,5 @@ Begin
 End;
 
 End.
+
 

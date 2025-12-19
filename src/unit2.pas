@@ -44,8 +44,6 @@ Type
     FontDialog1: TFontDialog;
     Label5: TLabel;
     Edit4: TEdit;
-    Procedure Button1Click(Sender: TObject);
-    Procedure Button2Click(Sender: TObject);
     Procedure ComboBox1Change(Sender: TObject);
     Procedure FormPaint(Sender: TObject);
     Procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
@@ -70,31 +68,9 @@ Implementation
 
 Uses
   uloop
-  , Unit1
+  , unit1
   , unit10
-  , unit11
   ;
-
-Procedure TForm2.Button1Click(Sender: TObject);
-Begin
-  Havetosave := checkbox1.checked;
-  ColorSheme := Combobox1.itemindex;
-  SETColorSheme;
-  Userfont.Name := edit1.text;
-  userfont.Size := strtointdef(edit2.text, userfont.Size);
-  userfont.style := getFontstylefromstring(edit3.text);
-  form1.code.font.size := userfont.Size;
-  form1.code.font.Name := userfont.Name;
-  form1.code.font.Style := userfont.Style;
-  form1.code.RightEdge := strtointdef(edit4.text, 80);
-  close;
-End;
-
-Procedure TForm2.Button2Click(Sender: TObject);
-Begin
-  SETColorSheme;
-  close;
-End;
 
 Procedure TForm2.FormPaint(Sender: TObject);
 Begin
@@ -172,4 +148,5 @@ Begin
 End;
 
 End.
+
 

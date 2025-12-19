@@ -149,7 +149,7 @@ Interface
 Uses
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   Menus, SynEdit, SynEditHighlighter, SynHighlighterPas, StdCtrls,
-  ComCtrls, ExtCtrls, ImgList, Parser, compiler, Executer,
+  ComCtrls, ExtCtrls, ImgList, Parser, ucompiler, Executer,
   SynEditMiscClasses, Registry, SynEditTypes,
   Printers, UniqueInstance, SynEditMarks, SynHighlighterAny, uloop;
 
@@ -306,7 +306,7 @@ Uses
   unit6, // Code_Formater
   unit7, //Instructions
   LoopStack,
-  unit8, // Controled_Vars
+  unit8, // Controlled_Vars
   unit9, // Replacer
   // unit10, Extended_Color_Options
   unit11 // Printdialog
@@ -983,12 +983,23 @@ Procedure TForm1.Colorsheme1Click(Sender: TObject);
 Begin
   form2.checkbox1.checked := Havetosave;
   form2.Combobox1.itemindex := Colorsheme;
-  form2.Combobox1.text := form2.combobox1.items[ColorSheme];
+  form2.Combobox1.text := form2.combobox1.items[form2.Combobox1.itemindex]; // Diese Zeile müsste doch eigentlich gar nicht sein ?
   form2.Edit1.text := userfont.name;
   form2.Edit2.text := inttostr(userfont.Size);
   form2.Edit3.text := FontstyletoString(userfont.style);
   form2.Edit4.text := inttostr(code.RightEdge);
-  form2.showmodal;
+  If form2.showmodal = mrOK Then Begin
+    Havetosave := form2.checkbox1.checked;
+    ColorSheme := form2.Combobox1.itemindex;
+    Userfont.Name := form2.edit1.text;
+    userfont.Size := strtointdef(form2.edit2.text, userfont.Size);
+    userfont.style := getFontstylefromstring(form2.edit3.text);
+    code.font.size := userfont.Size;
+    code.font.Name := userfont.Name;
+    code.font.Style := userfont.Style;
+    code.RightEdge := strtointdef(form2.edit4.text, 80);
+  End;
+  SETColorSheme;
 End;
 
 Procedure TForm1.CodeKeyPress(Sender: TObject; Var Key: Char);
@@ -1567,15 +1578,12 @@ Begin
 End;
 
 Procedure TForm1.Print1Click(Sender: TObject);
-Var
-  P: Tprinter;
 Begin
-  p := Printer;
-  p.PrinterIndex := -1;
-  form11.ComboBox1.Items := p.Printers;
+  printer.PrinterIndex := -1;
+  form11.ComboBox1.Items := printer.Printers;
   form11.CheckBox1.checked := code.SelStart <> code.selend;
   If form11.Combobox1.items.count <> 0 Then Begin
-    form11.ComboBox1.Text := form11.ComboBox1.items[p.PrinterIndex];
+    form11.ComboBox1.Text := form11.ComboBox1.items[printer.PrinterIndex];
     If Not Assigned(Printfont) Then Begin
       Printfont := Tfont.create;
     End;

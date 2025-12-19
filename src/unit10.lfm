@@ -52,7 +52,7 @@ object Form10: TForm10
     OnClick = ListBox1Click
   end
   object GroupBox1: TGroupBox
-    Left = 320
+    Left = 248
     Height = 97
     Top = 32
     Width = 113

@@ -40,36 +40,11 @@ Type
 Var
   Form8: TForm8;
 
-  // Liefert den Korrekten Namen der Variable, so wie der User ihn eingegeben hat.
-Function getuserVarname(Value: String): String;
-
 Implementation
 
-Uses Compiler, unit1, executer;
+Uses ucompiler, Executer, uloop;
 
 {$R *.lfm}
-
-// Diese Function soll dann später wenn der Compiler mal Functionen kann die entsprechenden
-// Korrekten Namen rausparsen aber bis dahin macht sie nix.
-
-Function getuserVarname(Value: String): String;
-Var
-  f, b: String;
-Begin
-  If Pos('æ', Value) = 0 Then
-    result := value
-  Else Begin
-    f := copy(value, 1, pos('æ', value) - 1);
-    b := copy(value, length(f) + 2, length(value));
-    //    result := 'Function(' + f + '), Value :' + b;
-    If Uppercase(b) = 'RESULT' Then Begin
-      result := 'Function ' + f;
-    End
-    Else Begin
-      result := b + ' in (' + f + ')';
-    End;
-  End;
-End;
 
 Procedure TForm8.Button1Click(Sender: TObject);
 Begin

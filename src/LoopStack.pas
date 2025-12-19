@@ -18,7 +18,7 @@ Unit LoopStack;
 
 Interface
 
-Uses Compiler;
+Uses ucompiler;
 
 Type
 

@@ -67,7 +67,7 @@ Var
 
 Implementation
 
-Uses Compiler
+Uses ucompiler
   , uloop
   , Unit1
   , unit8;

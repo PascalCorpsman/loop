@@ -20,7 +20,7 @@ Interface
 
 Uses
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, SynEdit,
-  SynEditHighlighter, SynHighlighterAny, ImgList, uColorGrid, uloop;
+  SynEditHighlighter, SynHighlighterAny, ImgList, uColorGrid;
 
 Type
 
@@ -52,6 +52,7 @@ Type
       Y: Integer);
   private
     { Private-Deklarationen }
+    Procedure ForceSelectedText;
   public
     { Public-Deklarationen }
     Procedure LoadScheme;
@@ -60,12 +61,12 @@ Type
 Var
   Form10: TForm10;
 
-
 Procedure loadall;
 
 Implementation
 
-Uses Unit1;
+Uses
+  uloop;
 
 {$R *.lfm}
 
@@ -249,32 +250,33 @@ End;
 
 Procedure TForm10.FormPaint(Sender: TObject);
 Begin
-  // Anzeigen des Selectierten Textes
-  synedit1.BlockBegin := point(0, 12);
-  synedit1.BlockEnd := point(length(Synedit1.Lines[11]) - 1, 12);
+  ForceSelectedText;
 End;
 
 Procedure TForm10.Synedit1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 Begin
-  synedit1.BlockBegin := point(0, 12);
-  synedit1.BlockEnd := point(length(Synedit1.Lines[11]) - 1, 12);
+  ForceSelectedText;
 End;
 
 Procedure TForm10.Synedit1MouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 Begin
-  synedit1.BlockBegin := point(0, 12);
-  synedit1.BlockEnd := point(length(Synedit1.Lines[11]) - 1, 12);
+  ForceSelectedText;
 End;
 
 Procedure TForm10.Synedit1MouseMove(Sender: TObject; Shift: TShiftState; X,
   Y: Integer);
 Begin
   If ssleft In shift Then Begin
-    synedit1.BlockBegin := point(0, 12);
-    synedit1.BlockEnd := point(length(Synedit1.Lines[11]) - 1, 12);
+    ForceSelectedText;
   End;
+End;
+
+Procedure TForm10.ForceSelectedText;
+Begin
+  synedit1.BlockBegin := point(0, 12);
+  synedit1.BlockEnd := point(length(Synedit1.Lines[11]) - 1, 12);
 End;
 
 End.

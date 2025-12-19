@@ -40,7 +40,11 @@ Function Preclear(Value: String): String;
 Implementation
 
 Uses
-  executer, compiler, Parser;
+  executer
+  , Parser
+  , uloop
+  , ucompiler
+  ;
 
 // Gibt einen Trechentree Frei und setzt ihn auf NIL
 

@@ -113,7 +113,77 @@ Var
   UserFont // Hier wird die Schriftart und Größe des Users gespeichert
   : TUserFont;
 
+
+  // Liefert den Korrekten Namen der Variable, so wie der User ihn eingegeben hat.
+Function getuserVarname(Value: String): String;
+
+Function FontstyletoString(data: Tfontstyles): String;
+Function getFontstylefromstring(Data: String): Tfontstyles;
+
 Implementation
+
+// Diese Function soll dann später wenn der Compiler mal Functionen kann die entsprechenden
+// Korrekten Namen rausparsen aber bis dahin macht sie nix.
+
+Function getuserVarname(Value: String): String;
+Var
+  f, b: String;
+Begin
+  If Pos('æ', Value) = 0 Then
+    result := value
+  Else Begin
+    f := copy(value, 1, pos('æ', value) - 1);
+    b := copy(value, length(f) + 2, length(value));
+    //    result := 'Function(' + f + '), Value :' + b;
+    If Uppercase(b) = 'RESULT' Then Begin
+      result := 'Function ' + f;
+    End
+    Else Begin
+      result := b + ' in (' + f + ')';
+    End;
+  End;
+End;
+
+Function FontstyletoString(data: Tfontstyles): String;
+Var
+  erg: String;
+Begin
+  erg := '';
+  If fsBold In data Then erg := 'Bold';
+  If fsItalic In data Then Begin
+    If Length(Erg) = 0 Then
+      erg := 'Italic'
+    Else
+      erg := erg + ', Italic';
+  End;
+  If fsUnderline In data Then Begin
+    If Length(Erg) = 0 Then
+      erg := 'Underline'
+    Else
+      erg := erg + ', Underline';
+  End;
+  If fsStrikeout In data Then Begin
+    If Length(Erg) = 0 Then
+      erg := 'Strikeout'
+    Else
+      erg := erg + ', Strikeout';
+  End;
+  If length(erg) = 0 Then
+    erg := 'Standard';
+  result := erg;
+End;
+
+Function getFontstylefromstring(Data: String): Tfontstyles;
+Var
+  erg: Tfontstyles;
+Begin
+  erg := [];
+  If Pos('Bold', data) <> 0 Then include(erg, fsbold);
+  If Pos('Italic', data) <> 0 Then include(erg, fsItalic);
+  If Pos('Underline', data) <> 0 Then include(erg, fsUnderline);
+  If Pos('Strikeout', data) <> 0 Then include(erg, fsStrikeout);
+  result := Erg;
+End;
 
 End.
 

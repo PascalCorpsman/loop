@@ -40,7 +40,6 @@ Type
     Edit3: TEdit;
     Procedure Button2Click(Sender: TObject);
     Procedure Button1Click(Sender: TObject);
-    Procedure ComboBox1KeyPress(Sender: TObject; Var Key: Char);
     Procedure Edit1KeyPress(Sender: TObject; Var Key: Char);
     Procedure Button3Click(Sender: TObject);
     Procedure Edit1Change(Sender: TObject);
@@ -54,57 +53,14 @@ Var
   Form11: TForm11;
   PrintFont: Tfont;
 
-Function FontstyletoString(data: Tfontstyles): String;
-Function getFontstylefromstring(Data: String): Tfontstyles;
-
 Implementation
 
 {$R *.lfm}
 
-Uses uLoop
+Uses
+  uLoop
   , unit1
   ;
-
-Function FontstyletoString(data: Tfontstyles): String;
-Var
-  erg: String;
-Begin
-  erg := '';
-  If fsBold In data Then erg := 'Bold';
-  If fsItalic In data Then Begin
-    If Length(Erg) = 0 Then
-      erg := 'Italic'
-    Else
-      erg := erg + ', Italic';
-  End;
-  If fsUnderline In data Then Begin
-    If Length(Erg) = 0 Then
-      erg := 'Underline'
-    Else
-      erg := erg + ', Underline';
-  End;
-  If fsStrikeout In data Then Begin
-    If Length(Erg) = 0 Then
-      erg := 'Strikeout'
-    Else
-      erg := erg + ', Strikeout';
-  End;
-  If length(erg) = 0 Then
-    erg := 'Standard';
-  result := erg;
-End;
-
-Function getFontstylefromstring(Data: String): Tfontstyles;
-Var
-  erg: Tfontstyles;
-Begin
-  erg := [];
-  If Pos('Bold', data) <> 0 Then include(erg, fsbold);
-  If Pos('Italic', data) <> 0 Then include(erg, fsItalic);
-  If Pos('Underline', data) <> 0 Then include(erg, fsUnderline);
-  If Pos('Strikeout', data) <> 0 Then include(erg, fsStrikeout);
-  result := Erg;
-End;
 
 Procedure TForm11.Button2Click(Sender: TObject);
 Begin
@@ -188,12 +144,6 @@ Begin
   End
   Else
     showmessage('Nothing to Print');
-End;
-
-Procedure TForm11.ComboBox1KeyPress(Sender: TObject; Var Key: Char);
-Begin
-  // Realisieren eines ReadOnly = True;
-  key := #0;
 End;
 
 Procedure TForm11.Edit1KeyPress(Sender: TObject; Var Key: Char);
