@@ -222,6 +222,7 @@ Type
     Procedure Close1Click(Sender: TObject);
     Procedure CodeGutterClick(Sender: TObject; X, Y, Line: integer;
       mark: TSynEditMark);
+    Procedure CodePaint(Sender: TObject; ACanvas: TCanvas);
     Procedure FormCreate(Sender: TObject);
     Procedure Colorsheme1Click(Sender: TObject);
     Procedure CodeKeyPress(Sender: TObject; Var Key: Char);
@@ -236,7 +237,6 @@ Type
     Procedure Save1Click(Sender: TObject);
     Procedure Info1Click(Sender: TObject);
     Procedure Extendedoptions1Click(Sender: TObject);
-    Procedure CodeGutterPaint(Sender: TObject; aLine, X, Y: integer);
     Procedure CodeChange(Sender: TObject);
     Procedure FormShow(Sender: TObject);
     Procedure New1Click(Sender: TObject);
@@ -277,11 +277,13 @@ Type
     Procedure Print1Click(Sender: TObject);
   private
     { Private-Deklarationen }
+    FormShowOnce: Boolean;
     Procedure CheckShowHideWarnings;
+    Procedure ToggleBrakepoint(Line: int64);
+    Procedure LoadProject(Filename: String);
   public
     { Public-Deklarationen }
   End;
-
 
 Var
   Form1: TForm1;
@@ -312,9 +314,15 @@ Uses
   unit11 // Printdialog
   ;
 
+Const
+  IndexBreakPoint = 0;
+  IndexDebugablaLine = 1;
+  IndexAktualDebugLine = 2;
+  IndexNotDebugableLine = 3;
+
 {$R *.lfm}
 
-// Wird ein Index im Text überge ben so Ermittelt die Function die Zeile in der der Index steht
+  // Wird ein Index im Text übergeben so Ermittelt die Function die Zeile in der der Index steht
 
 Function IndextoLine(Const Data: Tstrings; Index: Integer): integer;
 Var
@@ -330,8 +338,14 @@ Begin
   result := erg;
 End;
 
-Procedure LoadProject(Filename: String);
+Procedure TForm1.LoadProject(Filename: String);
 Begin
+  If Not FileExists(Filename) Then Begin
+    showmessage('Error: ' + Filename + ' does not exist.');
+    exit;
+  End;
+  ClearCompilableLines; // Löschen der Compilable Lines
+  Stop1Click(Nil); // Abbrechen aller Aktionen
   If (length(AktualFilename) <> 0) And Projektchanged Then Begin
     Case Application.Messagebox(pchar(extractfilename(AktualFilename) + ' is not saved yet do you want to save it now ?'), 'Info', MB_YESNO + MB_ICONQUESTION) Of
       ID_YES: Begin
@@ -647,21 +661,15 @@ Begin
   sl.free;
 End;
 
-Procedure ToggleBrakepoint(Line: int64);
+Procedure TForm1.ToggleBrakepoint(Line: int64);
 Var
-  x, vi, j: integer;
-  m: TSynEditMark;
+  x, vi
+    : integer;
 Begin
   //Es sollte noch der Rote Punkt Links rein
   If Not isBrakepoint(line) Then Begin // Hinzufügen eines Brakepoints
     setlength(Brakepoints, high(Brakepoints) + 2);
     Brakepoints[high(Brakepoints)] := line;
-    m := TSynEditMark.Create(form1.code);
-    m.Line := line;
-    m.Visible := true;
-    m.ImageList := form1.DebugMarks;
-    m.ImageIndex := 0;
-    form1.code.Marks.Add(m);
   End
   Else Begin // Löschen des Brakepoints
     vi := -1;
@@ -672,14 +680,8 @@ Begin
         Brakepoints[x] := Brakepoints[x + 1];
     End;
     setlength(Brakepoints, high(Brakepoints));
-    For j := 0 To form1.Code.Marks.Count - 1 Do Begin
-      If form1.Code.Marks[j].Line = line Then Begin
-        form1.Code.Marks.Delete(j);
-        break;
-      End;
-    End;
   End;
-  form1.code.Invalidate;
+  code.Invalidate;
 End;
 
 Procedure SpringezuZeile(value: int64);
@@ -931,6 +933,34 @@ Begin
   ToggleBrakepoint(Line);
 End;
 
+Procedure TForm1.CodePaint(Sender: TObject; ACanvas: TCanvas);
+Var
+  index, aline, y, x: Integer;
+Begin
+  For aline := code.TopLine To code.TopLine + code.Height Div code.LineHeight + 1 Do Begin
+    y := code.LineHeight * (aline - 1);
+    x := 0;
+    index := -1;
+    // Anzeigen aller Zeilen die der Rechner als Kompilierbar ansieht -> schwächste Prio
+    If IsCompilableLine(aline) Then index := IndexDebugablaLine;
+    If isBrakepoint(aline) Then Begin
+      If index = -1 Then Begin
+        index := IndexNotDebugableLine;
+      End
+      Else Begin
+        index := IndexBreakPoint;
+      End;
+    End;
+    // Im Debugg Modus die Aktuelle Zeile Anzeigen -> Höchste Prio
+    If ALine = AktualDebugLine Then Begin
+      index := IndexAktualDebugLine;
+    End;
+    If index <> -1 Then Begin
+      DebugMarks.draw(code.Canvas, x + 4, y, index);
+    End;
+  End;
+End;
+
 Procedure TForm1.FormCreate(Sender: TObject);
 Begin
   // Initialisierne der Liste für die Compilierten Codes
@@ -961,7 +991,7 @@ Begin
   splitter1.align := alleft;
   code.align := alclient;
   SETColorSheme;
-  first := true;
+  FormShowOnce := true;
   application.title := 'Loop Compiler';
 End;
 
@@ -1077,6 +1107,11 @@ Begin
           FG := clwhite;
           BG := clblue;
         End;
+      4: Begin
+          // TODO: Custom Colorset fehlt hier noch
+          FG := clwhite;
+          BG := clblue;
+        End;
     End;
   End;
   // ist die LinienFarbe wenn Der Compiler einen Fehler Bringt und der Rechenr da hinspringt
@@ -1099,8 +1134,6 @@ End;
 Procedure TForm1.Load1Click(Sender: TObject);
 Begin
   If Opendialog1.execute Then Begin
-    ClearCompilableLines; // Löschen der Compilable Lines
-    Stop1Click(Nil); // Abbrechen aller Aktionen
     LoadProject(Opendialog1.FileName); // Neu Laden des Codes aus der Datei
   End;
 End;
@@ -1172,7 +1205,8 @@ End;
 Procedure TForm1.FormShow(Sender: TObject);
 Begin
   // Mus so gemacht werden da es bei OnCreate noch nicht machbar ist
-  If First Then Begin
+  If FormShowOnce Then Begin
+    FormShowOnce := false;
     If (length(Paramstr(1)) <> 0) Then Begin
       If FileExists(Paramstr(1)) Then Begin
         // Laden eines EVTL als Parameter übergebenen Quellcodes
@@ -1191,8 +1225,8 @@ Begin
       code.lines.add('Begin');
       code.lines.add('End;');
     End;
+    LoadProject('Dokumentationssample.Loop'); // Debug to be removed
   End;
-  first := false;
 End;
 
 Procedure TForm1.New1Click(Sender: TObject);
@@ -1212,16 +1246,15 @@ Begin
     If Length(AktualFilename) = 0 Then exit;
   End;
   If Compile(code.lines, Warnings_Error.Items) Then Begin
-    code.Invalidate;
     showmessage('Ready.');
   End
   Else Begin
     SpringezuZeile(geterrorline(warnings_Error.items.count - 1));
     Aktualerrorline := geterrorline(warnings_Error.items.count - 1);
-    Code.Invalidate;
     showmessage('Error detected.')
   End;
   CheckShowHideWarnings();
+  Code.Invalidate;
 End;
 
 Procedure TForm1.Run1Click(Sender: TObject);
@@ -1604,37 +1637,6 @@ Begin
   // Falls es Warnunen, Fehler Gibt werden diese Hier Angezeigt
   Warnings_Error.visible := Warnings_Error.Items.count <> 0;
   splitter2.visible := Warnings_Error.visible;
-End;
-
-(*
- * Inaktive Methoden, welche auf andere Weißen noch implementiert werden müssen !
- *)
-
-Procedure TForm1.CodeGutterPaint(Sender: TObject; aLine, X, Y: integer);
-Begin
-  // TODO: Das hier muss gemäß  https://forum.lazarus.freepascal.org/index.php?topic=13105.0
-  //       Umgeschrieben werden in TSynEditMarks
-  // Der Anfang ist in ToggleBrakepoint() gemacht und die Breakpoints
-  // sind da nun "Sichtbar", das umschalten auf Index3 anhand der IsCompilableLine fehlt aber noch..
-  // Zeichnet zu den Haltepunkt Linien den Roten Punkt Links
-  If isBrakepoint(aline) Then Begin
-    If High(CompilableLines) <> -1 Then Begin
-      If IsCompilableLine(Aline) Then
-        DebugMarks.draw(code.Canvas, x + 4, y, 0)
-      Else
-        DebugMarks.draw(code.Canvas, x + 4, y, 3)
-    End
-    Else
-      DebugMarks.draw(code.Canvas, x + 4, y, 0);
-  End;
-  // Anzeigen aller Zeilen die der Rechner als Kompilierbar ansieht
-  If IsCompilableLine(Aline) Then Begin
-    DebugMarks.draw(code.Canvas, x + 4, y, 1);
-  End;
-  // Im Debugg Modus die Aktuelle Zeile Anzeigen
-  If ALine = AktualDebugLine Then Begin
-    DebugMarks.draw(code.Canvas, x + 4 + 14, y, 2);
-  End;
 End;
 
 End.

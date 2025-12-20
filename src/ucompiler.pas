@@ -125,7 +125,7 @@ Uses
   Parser
   , executer
   , uloop
-//  , unit8
+  //  , unit8
   ;
 
 // Prüft ob die Variable überhauot von Line aus Sichtbar ist , wenn Ja -> True
@@ -1085,6 +1085,7 @@ Var
     line: Integer;
     s: String;
   Begin
+    erg := Nil;
     setlength(erg, 0);
     line := getline(data);
     Data := Uppercase(copy(data, pos('(', data) + 1, length(data)));
@@ -1115,7 +1116,7 @@ Var
     result := erg;
   End;
 
-  Function Getfuninitialisiation(Von, Nach: Tpara; NAme: String; Line: integer; Var Mistake: Boolean): Pbefehl;
+  Function Getfuninitialisiation(Von, Nach: Tpara; Name: String; Line: integer; Var Mistake: Boolean): Pbefehl;
   Var
     erg: Pbefehl;
     aw: Panweisung;
@@ -1124,6 +1125,7 @@ Var
     b: Boolean;
   Begin
     erg := Nil;
+    b := false;
     // Falls es überhaupt parameter gibt
     If high(von) <> -1 Then Begin
       new(erg); // neuesrtelen des Ergebnisses
@@ -1163,6 +1165,7 @@ Var
     t^.Code := Nil;
     erg^.ID := 1;
     erg^.Code := aw;
+    b := false;
     aw^.Ergebniss := getvarindex(Nach, b);
     // Speichern das die Variable benutzt wird
     If aw^.Ergebniss >= 0 Then
@@ -1745,5 +1748,4 @@ Begin
 End;
 
 End.
-
 

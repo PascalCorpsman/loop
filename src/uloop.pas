@@ -99,7 +99,6 @@ Var
   allowif, // Erlaubt IF then Else
   allowgroeserKleiner, // Wenn If Then Else Erlaubt ist kann man Auch > < erlauben
   allowMod, // Erlaubt den Mod OPerator
-  first, // Ist zum Laden einer Datei die Via Drag and Drop auf die Exe geschoben wird
   Projektchanged, // Speichert ob der Code verändert wurde
   Havetosave // Wenn True mus die Datei gespeichert werden bevor compiliert wird
   : Boolean;

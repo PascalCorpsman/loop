@@ -574,6 +574,7 @@ object Form1: TForm1
     LineHighlightColor.Foreground = clNone
     OnChange = CodeChange
     OnGutterClick = CodeGutterClick
+    OnPaint = CodePaint
     OnSpecialLineColors = CodeSpecialLineColors
     inline SynLeftGutterPartList1: TSynGutterPartList
       object SynGutterMarks1: TSynGutterMarks

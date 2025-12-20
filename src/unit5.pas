@@ -118,11 +118,12 @@ Begin
     CompiledCode.vars[x].value := 0;
   End;
   // Zuweisen der Übergebenen Varuablen
+  b := false;
   For x := 0 To high(CompiledCode.getvars) Do Begin
     CompiledCode.vars[GetVarindex(CompiledCode.getvars[x].name, b)].value := CompiledCode.getvars[x].value;
   End;
   // Erst müssen noch alle Variablen gesetzt werden und dann kann ausgeführt werden.
-  TimeVar := Gettickcount;
+  TimeVar := GetTickCount64;
   startExecute;
 End;
 

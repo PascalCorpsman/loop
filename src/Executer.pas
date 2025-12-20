@@ -18,11 +18,11 @@ Unit Executer;
 
 Interface
 
-Uses forms, sysutils, uCompiler, Rechenbaum, LoopStack, {Debuggen} Dialogs {Debuggen Ende};
+Uses forms, sysutils, uCompiler, RechenBaum, LoopStack, {Debuggen} Dialogs {Debuggen Ende};
 
 Var
   LoopRechner: TLoopStack;
-  TimeVar: Dword;
+  TimeVar: QWord;
 
   // Startet eine Berechnung
 Procedure StartExecute;
@@ -195,7 +195,7 @@ Var
   PAktBefehl: PBefehl;
   onedone, Braked: Boolean;
   alp, BLine: int64;
-  v2: Dword;
+  v2: QWord;
 Begin
   alp := -1;
   onedone := false;
@@ -357,7 +357,7 @@ Begin
       Form5.BringToFront;
       If form5.Checkbox1.Checked Then Begin
         form5.Checkbox1.enabled := true;
-        v2 := GetTickCount;
+        v2 := GetTickCount64;
         If High(compiledcode.vars) <> -1 Then
           showmessage('It took ' + FloattostrF((v2 - TimeVar) / 1000, FFFixed, 7, 3) + ' sec. to execute Programm.');
       End;
@@ -386,7 +386,7 @@ Begin
     Form5.BringToFront;
     form5.Checkbox1.enabled := true;
     If form5.Checkbox1.Checked Then Begin
-      v2 := GetTickCount;
+      v2 := GetTickCount64;
       If High(compiledcode.vars) <> -1 Then
         showmessage('It took ' + FloattostrF((v2 - TimeVar) / 1000, FFFixed, 7, 3) + ' sec. to execute Programm.');
     End;
