@@ -330,8 +330,8 @@ Var
   x: integer;
 Begin
   erg := 0;
-  x := 0;
-  While x < index Do Begin
+  x := 1;
+  While (x < index) And (x <= length(data.Text)) Do Begin
     If data.Text[x] = #13 Then inc(erg);
     inc(x);
   End;

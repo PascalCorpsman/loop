@@ -18,7 +18,13 @@ Unit ucompiler;
 
 Interface
 
-Uses Sysutils, Classes, RechenBaum, Forms, comctrls, PrePrescanner, {Debuggen} Dialogs {Debuggen Ende};
+Uses
+  Sysutils
+  , Classes
+  , RechenBaum
+  , PrePrescanner
+  , {Debuggen} Dialogs {Debuggen Ende}
+  ;
 
 Type
 
@@ -123,9 +129,8 @@ Implementation
 
 Uses
   Parser
-  , executer
+  , Executer
   , uloop
-  //  , unit8
   ;
 
 // Prüft ob die Variable überhauot von Line aus Sichtbar ist , wenn Ja -> True
@@ -176,6 +181,7 @@ Procedure FreeCompiledcode;
             Dispose(PLoop(value^.Code));
           End;
         3: Begin // Freigeben eines If Konstruktes
+            Freerechentree(Pif(value^.Code)^.Bedingung);
             Frei(Pif(value^.Code)^.BedNext);
             Frei(Pif(value^.Code)^.ElseNext);
             Frei(Pif(value^.Code)^.Next);
@@ -1406,7 +1412,7 @@ Var
           If LineContainsToken('Else', lines[From]) <> 0 Then Begin
             ifthen^.ElseNext := GetCode(from, Fehler, ebene); // Zuweisen des Auszuführenden Code's
           End;
-          z^.ID := 3; // eifügen in den bisher erstelleten Code
+          z^.ID := 3; // einfügen in den bisher erstelleten Code
           z^.Code := Ifthen; // eifügen in den bisher erstelleten Code
           z := ne;
         End;
@@ -1655,9 +1661,9 @@ Begin
   y := 0;
   // Erzeugen der Struktur für das Hauptprogramm
   (*       Vorgehensweise :
-                            1. Wegparsen Aller Functionen Vor dem ersten BEGIN    beim Parsen Von Functionen prüfen ob diese Andered Functionen Aufrufen, das soll nicht erlaubt sein !!
+                            1. Wegparsen Aller Funktionen vor dem ersten BEGIN    beim Parsen Von Funktionen prüfen ob diese nndere Funktionen aufrufen, das soll nicht erlaubt sein !!
                             2. Rausparsen der Variablen für das Hauptprogramm
-                            3. Parsen Schritweise durch das Hauptprogramm Durch
+                            3. Parsen Schrittweise durch das Hauptprogramm durch
 
   *)
   tiefe := 0;
@@ -1722,7 +1728,7 @@ Begin
   End;
   // Der Folgende Code mus auf alle Fälle ausgeführt werden, egal ob wir einen Compilierbaren Code haben oder nicht
   abbruch:
-  // Es mahct nur sinnd as aus z geben wenn der Code ansich Kompilierbar ist.
+  // Es macht nur sinn das aus zu geben wenn der Code ansich Kompilierbar ist.
   If Erg Then Begin
     For y := 0 To high(Compiledcode.Func) Do
       // Nachschaun ob auch alle Functionen aufgerufen wurden
@@ -1744,6 +1750,7 @@ Begin
     FreeCompiledcode;
     ClearCompilableLines;
   End;
+  lines.free;
   result := erg;
 End;
 
