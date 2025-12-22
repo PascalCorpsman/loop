@@ -46,7 +46,7 @@
 (*                         beliebige schachtelungen und "<", ">", ">=", "<="  *)
 (*                      o Hinzufügen eines Suchen Ersetzen Dialoges für den   *)
 (*                         Editor                                             *)
-(*               0.06 : o Einbau der "Functionen" in den Compiler             *)
+(*               0.06 : o Einbau der "Funktionen" in den Compiler             *)
 (*                        - inklusive entsprechendem bindungsbereich der      *)
 (*                          Variablen                                         *)
 (*                      o Einrichtung der Unterstützung für die Dateiendung   *)
@@ -55,7 +55,7 @@
 (*                      o Umschreiben des Ausdruckparsers Fehler der Art      *)
 (*                        X0:= -X1; weden nun erkannt.                        *)
 (*                      o Einbau eines Suchen Dialoges                        *)
-(*                      o Anzeigen unbenutzter Functionen / Variablen         *)
+(*                      o Anzeigen unbenutzter Funktionen / Variablen         *)
 (*               0.07 : o schreiben eines Uninstallers                        *)
 (*                      o Automatisches Speichern vor Compilieren (Optional)  *)
 (*               0.08 : o Umbau des Codeformaters Leerzeichen in Kommentaren  *)
@@ -102,7 +102,7 @@
 (*     vergessen wird ( 0.08 )                                                *)
 (*  - Zeitmessung wurde nach dem Ersten Runn deaktiviert und konnte nicht mehr*)
 (*     aktiviert werden. ( 0.10 )                                             *)
-(*  - Codeformater hat schlüsselwort Var falsch behandelt und eingerückt.     *)
+(*  - Codeformater hat Schlüsselwort Var falsch behandelt und eingerückt.     *)
 (*     ( 0.10 )                                                               *)
 (*  - Beim Neustart des Betriebssystemes ist das Programm manchmal kurz       *)
 (*     sichtbar gewesen. ( 0.12 )                                             *)
@@ -110,7 +110,7 @@
 (*
 Bisher noch nicht Behobene Bugs :
 
-Sind der Codeviewer und der Loop Kompiler Gleichzeitig geöffnet functioniert das
+Sind der Codeviewer und der Loop Kompiler Gleichzeitig geöffnet funktioniert das
 automatische öffnen von dateien nicht mehr, Fehlerhaft.
 
 Das Copy und Paste tut mal gar nicht !!
@@ -228,6 +228,7 @@ Type
     Procedure FormCreate(Sender: TObject);
     Procedure Colorsheme1Click(Sender: TObject);
     Procedure CodeKeyPress(Sender: TObject; Var Key: Char);
+    Procedure FormDropFiles(Sender: TObject; Const FileNames: Array Of String);
     Procedure ShowExplorer1Click(Sender: TObject);
     Procedure ShowcontrolledValues1Click(Sender: TObject);
     Procedure CodeSpecialLineColors(Sender: TObject; Line: integer;
@@ -1048,6 +1049,12 @@ Begin
   End;
   // Würden wir dieses Zeichen erlauben dann bekäme unser Parser so manches Problem
   If Not (key In allowedchars) Then key := #0;
+End;
+
+Procedure TForm1.FormDropFiles(Sender: TObject; Const FileNames: Array Of String
+  );
+Begin
+  LoadProject(FileNames[0]);
 End;
 
 Procedure TForm1.ShowExplorer1Click(Sender: TObject);

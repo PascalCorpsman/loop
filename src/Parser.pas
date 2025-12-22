@@ -591,7 +591,7 @@ Begin
   result := erg;
 End;
 
-// Löscht alle Kommentare aus einem Gegebensn Source Code und fügt hinter jede Zeile LineSeparator Orginal Zeilennummer
+// Löscht alle Kommentare aus einem Gegebenen Source Code und fügt hinter jede Zeile LineSeparator Orginal Zeilennummer
 
 (* Kommentare sind
 
@@ -613,9 +613,8 @@ Begin
   erg.clear;
   x := 0;
   CommentType := 0;
-  // Auslesen des Quellcodes unter beachtung Kommentare
+  // Auslesen des Quellcodes unter Beachtung Kommentare
   While x < lines.count Do Begin
-    Application.ProcessMessages;
     line := Lines[x];
     rLine := '';
     y := 1;
@@ -632,13 +631,19 @@ Begin
         End;
       End;
       // Ein Kommentar öffnet sich
-      If ((Line[y] = '{') Or ((Line[y] = '(') And (Line[y + 1] = '*')) Or
-        ((Line[y] = '/') And (Line[y + 1] = '/'))) And (CommentType = 0) Then Begin
-        If line[y] = '/' Then CommentType := 1;
-        If line[y] = '{' Then CommentType := 2;
-        If line[y] = '(' Then Begin
-          CommentType := 3;
-          y := y + 2;
+      If (CommentType = 0) Then Begin
+        If ((y <= length(line)) And (Line[y] = '{')) Or
+          ((y < length(line)) And (
+          ((Line[y] = '(') And (Line[y + 1] = '*')) Or
+          ((Line[y] = '/') And (Line[y + 1] = '/'))
+          ))
+          Then Begin
+          If line[y] = '/' Then CommentType := 1;
+          If line[y] = '{' Then CommentType := 2;
+          If line[y] = '(' Then Begin
+            CommentType := 3;
+            y := y + 2;
+          End;
         End;
       End;
       // Zu Parsender String, das Letze Zeichen einer Zeile wir weiter unten im Sonderfall erst gelesen

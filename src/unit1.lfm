@@ -3,6 +3,7 @@ object Form1: TForm1
   Height = 480
   Top = 107
   Width = 732
+  AllowDropFiles = True
   Caption = 'Form1'
   ClientHeight = 480
   ClientWidth = 732
@@ -15,6 +16,7 @@ object Form1: TForm1
   LCLVersion = '4.99.0.0'
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDropFiles = FormDropFiles
   OnShow = FormShow
   object Splitter1: TSplitter
     Left = 440
