@@ -1,0 +1,30 @@
+(*
+ * This application does not calculate any usefull thing, it just
+ * demonstrates, what the Loop interpreter is capable of doing ;)
+ *)
+Procedure Sample;
+  
+Var x1, x2, x4, Var5;
+  
+  Function Modulo(v1, v2);
+  Var z;
+  Begin
+    z := 0;
+    result := v1 Mod v2 + z;
+  End;
+  
+Begin
+  x1 := Get;
+  x2 := ( x1 - 3 ) * 1;
+  x4 := x1 ^- x2;
+  Var5 := 5 + Modulo(x4, x2);
+  If Var5 = 0 Then
+    x4 := 1;
+  Else
+    x4 := x4 Div x1;
+  End;
+  x0 := 0;
+  Loop x4 Do
+    x0 := x0 + 1;
+  End;
+End;
