@@ -21,6 +21,13 @@ Interface
 Uses
   Classes, SysUtils, Graphics;
 
+Const
+  (*
+   * Die Zeichen müssen unterschiedlich sein und einen ASCII Wert < 128 haben !
+   *)
+  LineSeparator = '\'; // Separator für die ZeilenNummer im Code war früher mal "æ"
+  Trennzeichen = '.'; // RechenBaum Token Trenner, muss unterschiedlich zu LineSeparator sein ! war Früher mal "«"
+
 Type
   TUserHiglighter = Record
     VG: Integer;
@@ -62,6 +69,7 @@ Const
   ';', ':', '=', ' ', ',', // Steuerzeichen
   '/', '{', '}', '(', ')' // Kommentarzeichen
   ];
+
   (******************************************************************************)
   (*                                                                            *)
   (*                                 ACHTUNG                                    *)
@@ -119,7 +127,14 @@ Function getuserVarname(Value: String): String;
 Function FontstyletoString(data: Tfontstyles): String;
 Function getFontstylefromstring(Data: String): Tfontstyles;
 
+Procedure Nop; // To have a breakpoint that does not hurt ;)
+
 Implementation
+
+Procedure Nop;
+Begin
+
+End;
 
 // Diese Function soll dann später wenn der Compiler mal Functionen kann die entsprechenden
 // Korrekten Namen rausparsen aber bis dahin macht sie nix.
@@ -128,10 +143,10 @@ Function getuserVarname(Value: String): String;
 Var
   f, b: String;
 Begin
-  If Pos('æ', Value) = 0 Then
+  If Pos(LineSeparator, Value) = 0 Then
     result := value
   Else Begin
-    f := copy(value, 1, pos('æ', value) - 1);
+    f := copy(value, 1, pos(LineSeparator, value) - 1);
     b := copy(value, length(f) + 2, length(value));
     //    result := 'Function(' + f + '), Value :' + b;
     If Uppercase(b) = 'RESULT' Then Begin

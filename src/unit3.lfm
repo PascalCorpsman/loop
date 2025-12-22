@@ -94,8 +94,8 @@ object Form3: TForm3
       Left = 8
       Height = 22
       Top = 128
-      Width = 147
-      Caption = 'Allow  " >", "<", "<=", ">="'
+      Width = 173
+      Caption = 'Allow  " >", "<", "<=", ">=", "<>"'
       Enabled = False
       TabOrder = 5
     end

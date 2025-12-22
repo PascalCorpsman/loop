@@ -234,7 +234,7 @@ End;
 
 Function getline(Value: String): integer;
 Begin
-  result := strtointdef(copy(value, pos('æ', value) + 1, length(Value)), 0) + 1;
+  result := strtointdef(copy(value, pos(LineSeparator, value) + 1, length(Value)), 0) + 1;
 End;
 
 // Diese function löst hoffentlich alle noch offenen CompilerProbleme
@@ -246,7 +246,7 @@ Var
   tstring, v1, arbeitsvar: String;
 Begin
   // WEgschneiden der Zeilen information
-  arbeitsvar := copy(Value, 1, pos('æ', value) - 1);
+  arbeitsvar := copy(Value, 1, pos(LineSeparator, value) - 1);
   erg := True;
   // Ermitteln des Types der Zeile
   If Length(arbeitsvar) <> 0 Then Begin
@@ -792,7 +792,7 @@ Begin
       End;
     End
     Else Begin
-      If Length(delfrontspace(copy(aline, 1, pos('æ', aline) - 1))) <> 0 Then Begin
+      If Length(delfrontspace(copy(aline, 1, pos(LineSeparator, aline) - 1))) <> 0 Then Begin
         allowget := false;
       End;
     End;
@@ -850,8 +850,8 @@ Begin
   End
   Else Begin
     // Löschend er evtlen information das diese Konstante in einer Funciton steht
-    If Pos('æ', value) <> 0 Then
-      delete(Value, 1, Pos('æ', value));
+    If Pos(LineSeparator, value) <> 0 Then
+      delete(Value, 1, Pos(LineSeparator, value));
     If isnum(Value) Then
       result := true
     Else
@@ -883,13 +883,13 @@ End;
 
 Function GetLokalGlobalName(Varvalue: String): String;
 Begin
-  If Pos('æ', Varvalue) = 0 Then
+  If Pos(LineSeparator, Varvalue) = 0 Then
     result := Varvalue
   Else Begin
     If Varexist2(Varvalue, 0) Then
       result := Varvalue
     Else Begin // Wir haben genau den Fall erwischt das wir ne Globale Variable suchen.
-      result := copy(Varvalue, pos('æ', Varvalue) + 1, length(Varvalue));
+      result := copy(Varvalue, pos(LineSeparator, Varvalue) + 1, length(Varvalue));
     End;
   End;
 End;
@@ -909,20 +909,20 @@ Function Compile(Lines: Tstrings; Const WarningsLogger: TStrings): boolean;
     While b Do Begin
       s := GetclearedString(lines[value], true);
       line := getline(s);
-      d := copy(S, 1, pos('æ', s) - 1);
+      d := copy(S, 1, pos(LineSeparator, s) - 1);
       // löschendes Evtlenen Schlüsselwortes Var
       If LineContainsToken('Var', d) <> 0 Then Begin
         delete(d, LineContainsToken('Var', d), 3);
       End;
       If Pos(';', d) <> 0 Then d[Pos(';', d)] := ',';
       If Length(d) <> 0 Then Begin
-        d := d + 'æ,';
+        d := d + LineSeparator + ',';
         While Length(d) <> 0 Do Begin
           r := copy(d, 1, pos(',', d));
           delete(d, 1, length(r));
           delete(r, length(r), 1);
           r := uppercase(DelFrontspace(DelEndspace(r)));
-          If r <> 'æ' Then
+          If r <> LineSeparator Then
             If Length(r) <> 0 Then Begin
               If r = 'X0' Then
                 WarningsLogger.Add('Errorcode [' + inttostr(line) + '] : Warning X0 need not to be specifieed in var')
@@ -932,8 +932,8 @@ Function Compile(Lines: Tstrings; Const WarningsLogger: TStrings): boolean;
                   erg := true;
                 End
                 Else Begin
-                  If Pos('æ', r) <> 0 Then Begin
-                    delete(r, Pos('æ', r), length(r));
+                  If Pos(LineSeparator, r) <> 0 Then Begin
+                    delete(r, Pos(LineSeparator, r), length(r));
                     r := DelEndspace(r);
                   End;
                   If (Uppercase(r) = 'RESULT') Or (Uppercase(r) = 'DO') Or (Uppercase(r) = 'LOOP') Or
@@ -1027,7 +1027,7 @@ Var
     erg: String;
   Begin
     erg := DelFrontspace(Value);
-    Delete(erg, pos('æ', erg), length(erg)); // Löschen der zeileninformation
+    Delete(erg, pos(LineSeparator, erg), length(erg)); // Löschen der zeileninformation
     Delete(erg, 1, 4); // Löschen des Wortes LOOP
     erg := DelEndspace(erg);
     Delete(erg, Length(erg) - 1, 2); // Löschen des Wortes do
@@ -1069,7 +1069,7 @@ Var
   Var
     erg: String;
   Begin
-    delete(value, pos('æ', value), length(Value)); // Löschen des Steuerzeichens
+    delete(value, pos(LineSeparator, value), length(Value)); // Löschen des Steuerzeichens
     erg := uppercase(DelFrontspace(DelEndspace(value)));
     delete(erg, 1, 2); // Löschen des If
     delete(erg, length(erg) - 3, 4); // Löschen des Then
@@ -1097,12 +1097,12 @@ Var
     Data := Uppercase(copy(data, pos('(', data) + 1, length(data)));
     Data := copy(data, 1, pos(')', data) - 1);
     If Length(data) <> 0 Then Begin
-      data := data + ',æ,';
+      data := data + ',' + LineSeparator + ',';
       While length(data) <> 0 Do Begin
         s := uppercase(copy(data, 1, pos(',', data) - 1));
         delete(data, 1, length(s) + 1);
         s := DelFrontspace(DelEndspace(s));
-        If s <> 'æ' Then
+        If s <> LineSeparator Then
           If Length(s) = 0 Then Begin
             Mistake := true;
             WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Argument');
@@ -1307,12 +1307,17 @@ Var
             ne^.ID := 0; // null Befehl
             ne^.Code := Nil; // null Befehl
             new(aw); // Anweisungscode
-            If Not VarExist(GetLokalGlobalName(ebene + v1), getline(lines[From]), WarningsLogger) Then Begin
-              Fehler := True;
-            End;
             aw^.Line := getline(lines[From]); // Extrahieren der Code Zeile
-            aw^.Ergebniss := GetVarindex(GetLokalGlobalName(Ebene + v1), d); // Auslesen der Variable die den Wert bekommt
+            If Not VarExist(GetLokalGlobalName(ebene + v1), aw^.Line, WarningsLogger) Then Begin
+              Fehler := True;
+              Dispose(ne);
+              WarningsLogger.Add('Found Error in Line [' + inttostr(aw^.Line) + '] : ' + 'Unknown or illegal value ' + V1 + '.');
+              Dispose(aw);
+              Fehler := True;
+              Goto raus;
+            End;
             // Speichern das die Variable benutzt wird
+            aw^.Ergebniss := GetVarindex(GetLokalGlobalName(Ebene + v1), d); // Auslesen der Variable die den Wert bekommt
             If aw^.Ergebniss >= 0 Then
               compiledcode.vars[aw^.Ergebniss].used := true;
             // prüfen ob unsere Loop Variable auch wirklich eine ist sichtbare Variable ist
@@ -1395,16 +1400,24 @@ Var
           AddCompilableLine(Ifthen^.line);
           ifthen^.Bedingung := makerechentree(getbedingung(aline), ifthen^.line, b, ebene, [], WarningsLogger);
           If b Then Begin
+            Dispose(ne);
+            Dispose(ifthen);
             Fehler := True;
             Goto raus; // Abbruch des weiteren Aufbau's des Quellcode's
           End;
           If Length(DelFrontspace(getbedingung(aline))) = 0 Then Begin
             WarningsLogger.Add('Found Error in Line [' + inttostr(Ifthen^.Line) + '] : ' + 'Missing Argument in "If" ');
+            Dispose(ne);
+            Dispose(ifthen);
+            Freerechentree(ifthen^.Bedingung);
             Fehler := True;
             Goto raus; // Abbruch des weiteren Aufbau's des Quellcode's
           End;
           If Not CheckIfKlausel(getbedingung(aline)) Then Begin
             Fehler := true;
+            Dispose(ne);
+            Dispose(ifthen);
+            Freerechentree(ifthen^.Bedingung);
             Goto raus; // Abbruch des weiteren Aufbau's des Quellcode's
           End;
           ifthen^.BedNext := GetCode(from, Fehler, ebene); // Zuweisen des Auszuführenden Code's
@@ -1413,7 +1426,7 @@ Var
             ifthen^.ElseNext := GetCode(from, Fehler, ebene); // Zuweisen des Auszuführenden Code's
           End;
           z^.ID := 3; // einfügen in den bisher erstelleten Code
-          z^.Code := Ifthen; // eifügen in den bisher erstelleten Code
+          z^.Code := Ifthen; // einfügen in den bisher erstelleten Code
           z := ne;
         End;
         // Der Abbruch des Parsen ist wenn die Tiefe wieder = der Tiefe des Eingangsparsen's ist
@@ -1462,7 +1475,7 @@ Var
       Fehler := true;
     End;
     erg.beg := x;
-    erg.name := uppercase(erg.name) + 'æ';
+    erg.name := uppercase(erg.name) + LineSeparator;
     erg.Used := false;
     result := erg;
   End;
@@ -1487,7 +1500,7 @@ Var
         delete(s, 1, length(v) + 1);
         v := DelFrontspace(DelEndspace(v));
         If Length(v) <> 0 Then Begin
-          If VarExist2(name + 'æ' + uppercase(v), line) Then Begin
+          If VarExist2(name + LineSeparator + uppercase(v), line) Then Begin
             WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'double existing var name.');
             erg := true;
           End
@@ -1521,7 +1534,7 @@ Var
       delete(s, 1, length(v) + 1);
       v := DelFrontspace(DelEndspace(v));
       If Length(v) <> 0 Then Begin
-        If VarExist2(name + 'æ' + uppercase(v), line) Then Begin
+        If VarExist2(name + LineSeparator + uppercase(v), line) Then Begin
           WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'double existing var name.');
           erg := true;
         End
@@ -1580,7 +1593,7 @@ Var
     For x := von To bis Do Begin
       s := GetclearedString(lines[x], true);
       line := getline(s);
-      delete(s, pos('æ', s), length(s));
+      delete(s, pos(LineSeparator, s), length(s));
       If LineContainsToken('Var', s) <> 0 Then b := true;
       If B Then Begin
         d := S;
@@ -1590,15 +1603,15 @@ Var
         End;
         If Pos(';', d) <> 0 Then d[Pos(';', d)] := ',';
         If Length(d) <> 0 Then Begin
-          d := d + 'æ,';
+          d := d + LineSeparator + ',';
           While Length(d) <> 0 Do Begin
             r := copy(d, 1, pos(',', d));
             delete(d, 1, length(r));
             delete(r, length(r), 1);
             r := DelFrontspace(DelEndspace(r));
-            If r <> 'æ' Then
+            If r <> LineSeparator Then
               If Length(r) <> 0 Then Begin
-                If VarExist2(Functionsname + 'æ' + uppercase(r), line) Then Begin
+                If VarExist2(Functionsname + LineSeparator + uppercase(r), line) Then Begin
                   WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'double existing var name.');
                   erg := true;
                 End
@@ -1728,7 +1741,7 @@ Begin
   End;
   // Der Folgende Code mus auf alle Fälle ausgeführt werden, egal ob wir einen Compilierbaren Code haben oder nicht
   abbruch:
-  // Es macht nur sinn das aus zu geben wenn der Code ansich Kompilierbar ist.
+  // Es macht nur Sinn das aus zu geben wenn der Code ansich Kompilierbar ist.
   If Erg Then Begin
     For y := 0 To high(Compiledcode.Func) Do
       // Nachschaun ob auch alle Functionen aufgerufen wurden

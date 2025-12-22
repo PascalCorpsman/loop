@@ -83,8 +83,8 @@ Var
 Begin
   erg := Length(value) <> 0;
   // Wenn wir lokale Functionsvariablen haben müssen wir den Verweis auf die Function erst abschneiden
-  If Pos('æ', value) <> 0 Then
-    delete(value, 1, Pos('æ', value));
+  If Pos(LineSeparator, value) <> 0 Then
+    delete(value, 1, Pos(LineSeparator, value));
   If Erg Then
     erg := Uppercase(Value)[1] = 'X';
   If Erg Then Begin
@@ -108,8 +108,8 @@ Var
   z: Integer;
 Begin
   // Wenn wir lokale Functionsvariablen haben müssen wir den Verweis auf die Function erst abschneiden
-  If Pos('æ', value) <> 0 Then
-    delete(value, 1, Pos('æ', value));
+  If Pos(LineSeparator, value) <> 0 Then
+    delete(value, 1, Pos(LineSeparator, value));
   erg := Length(value) <> 0;
   // Ein Identifier darf nur mit Buchstaben oder underline anfangen
   If Erg Then
@@ -153,10 +153,12 @@ Begin
   // Erzeugen der Leerstellen vor gewissen schlüsselzeichen
   x := 2;
   While x <= length(Value) Do Begin
-    // Die Auflistung aller zeichen die Ganz Gewiss ein Führendes Leerzeichen haben sollen
-    If (Value[x] In ['+', '^', ':', '<', '>']) And (Value[x - 1] <> ' ') Then
-      insert(' ', value, x);
-    // Die Zeicehn die nicht unbedingt ein Leerzeichen vor sich haben.
+    // Die Auflistung aller Zeichen die Ganz Gewiss ein Führendes Leerzeichen haben sollen
+    If (Value[x] In ['+', '^', ':', '<', '>']) And (Value[x - 1] <> ' ') Then Begin
+      If (Value[x] = '>') And (Value[x - 1] <> '<') Then // das <> Zeichen darf nicht "getrennt" werden ;)
+        insert(' ', value, x);
+    End;
+    // Die Zeichen die nicht unbedingt ein Leerzeichen vor sich haben.
     If (Value[x] = '-') And (Value[x - 1] <> '^') And (Value[x - 1] <> ' ') Then
       insert(' ', value, x);
     If (Value[x] = '=') And (Value[x - 1] <> '<') And (Value[x - 1] <> '>') And (Value[x - 1] <> ':') And (Value[x - 1] <> ' ') Then
@@ -259,7 +261,7 @@ Begin
     // Die Zeicehn die nicht unbedingt ein Leerzeichen hinter sich haben.
     If (Value[x] = '*') And (Value[x + 1] <> '*') And (Value[x + 1] <> ')') And (Value[x + 1] <> ' ') Then
       insert(' ', value, x + 1);
-    If (Value[x] = '<') And (Value[x + 1] <> '=') And (Value[x + 1] <> ' ') Then
+    If (Value[x] = '<') And (Value[x + 1] <> '=') And (Value[x + 1] <> ' ') And (Value[x + 1] <> '>') Then
       insert(' ', value, x + 1);
     If (Value[x] = '>') And (Value[x + 1] <> '=') And (Value[x + 1] <> ' ') Then
       insert(' ', value, x + 1);
@@ -589,7 +591,7 @@ Begin
   result := erg;
 End;
 
-// Löscht alle Kommentare aus einem Gegebensn Source Code und fügt hinter jede Zeile æ Orginal Zeilennummer
+// Löscht alle Kommentare aus einem Gegebensn Source Code und fügt hinter jede Zeile LineSeparator Orginal Zeilennummer
 
 (* Kommentare sind
 
@@ -659,7 +661,7 @@ Begin
     If CommentType = 1 Then CommentType := 0;
     // So der Hier landende Quellcode ist ohne Kommentare und steht in Rline, Im Orginaltext an Zeile X
     If (Length(Rline) <> 0) Then Begin
-      erg.add(Rline + ' æ' + inttostr(x));
+      erg.add(Rline + ' ' + LineSeparator + inttostr(x));
     End;
     inc(x);
   End;
@@ -687,7 +689,7 @@ Begin
     If (y <> 0) And Not ProcFound Then Begin
       line := (Code[x]);
       // Löschen der Steuerzeichen dei der Kommententferner einfügt
-      delete(line, pos('æ', line), length(line));
+      delete(line, pos(LineSeparator, line), length(line));
       Procname := '';
       z := length(Line);
       If z >= 10 Then
@@ -719,8 +721,8 @@ Begin
     // Wir Suchen nun nach evtl eingetragenen Functionen
     If (y <> 0) And Allowfunction And ProcFound Then Begin
       line := (Code[x]);
-      // Löschen der Steuerzeichen dei der Kommententferner einfügt
-      delete(line, pos('æ', line), length(line));
+      // Löschen der Steuerzeichen die der Kommententferner einfügt
+      delete(line, pos(LineSeparator, line), length(line));
       Procname := '';
       z := length(Line);
       If z >= 9 Then
@@ -763,8 +765,8 @@ Var
   ttoken, tline: String;
 Begin
   // Löschen eines steuerzeichens in Functionsnamen
-  If pos('æ', token) <> 0 Then
-    delete(Token, pos('æ', token), 1);
+  If pos(LineSeparator, token) <> 0 Then
+    delete(Token, pos(LineSeparator, token), 1);
   erg := 0;
   // Die Tausend Möglichkeiten auf eine Beschränken
   TToken := Uppercase(Token);

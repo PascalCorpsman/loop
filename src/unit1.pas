@@ -151,7 +151,7 @@ Uses
   Menus, SynEdit, SynEditHighlighter, SynHighlighterPas, StdCtrls,
   ComCtrls, ExtCtrls, ImgList, Parser, ucompiler, Executer,
   SynEditMiscClasses, Registry, SynEditTypes,
-  Printers, UniqueInstance, SynEditMarks, SynHighlighterAny, uloop;
+  Printers, UniqueInstance, SynEditMarks, SynHighlighterAny, uloop, Types;
 
 Type
 
@@ -222,6 +222,8 @@ Type
     Procedure Close1Click(Sender: TObject);
     Procedure CodeGutterClick(Sender: TObject; X, Y, Line: integer;
       mark: TSynEditMark);
+    Procedure CodeMouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; Var Handled: Boolean);
     Procedure CodePaint(Sender: TObject; ACanvas: TCanvas);
     Procedure FormCreate(Sender: TObject);
     Procedure Colorsheme1Click(Sender: TObject);
@@ -283,6 +285,8 @@ Type
     Procedure LoadProject(Filename: String);
   public
     { Public-Deklarationen }
+    // Springt an die Zeile Value:
+    Procedure SpringeZuZeile(value: int64);
   End;
 
 Var
@@ -294,8 +298,6 @@ Procedure SetKeywords;
 Procedure SETColorSheme;
 // Gibt True zurück wenn die in Value stehende int64 Zahl in brakepoints enthalten ist
 Function isBrakepoint(value: int64): Boolean;
-// Springt an die Zeile Value:
-Procedure SpringezuZeile(value: int64);
 
 Implementation
 
@@ -684,13 +686,11 @@ Begin
   code.Invalidate;
 End;
 
-Procedure SpringezuZeile(value: int64);
+Procedure TForm1.SpringezuZeile(value: int64);
 Begin
-  With form1.code Do Begin
-    CaretX := 1;
-    CaretY := value;
-    SetFocus;
-  End;
+  Code.CaretX := 1;
+  Code.CaretY := value;
+  Code.SetFocus;
 End;
 
 Procedure SETColorSheme;
@@ -933,12 +933,18 @@ Begin
   ToggleBrakepoint(Line);
 End;
 
+Procedure TForm1.CodeMouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint; Var Handled: Boolean);
+Begin
+  code.Invalidate;
+End;
+
 Procedure TForm1.CodePaint(Sender: TObject; ACanvas: TCanvas);
 Var
   index, aline, y, x: Integer;
 Begin
   For aline := code.TopLine To code.TopLine + code.Height Div code.LineHeight + 1 Do Begin
-    y := code.LineHeight * (aline - 1);
+    y := code.LineHeight * (aline - code.TopLine);
     x := 0;
     index := -1;
     // Anzeigen aller Zeilen die der Rechner als Kompilierbar ansieht -> schwächste Prio
@@ -1348,9 +1354,14 @@ End;
 Procedure TForm1.CodeFormater2Click(Sender: TObject);
 Var
   x: int64;
+  Dummy: TStrings;
 Begin
   x := Code.CaretY;
-  code.lines := FormatCode(code.lines, RemoveDoubleBlank, blankPerIdent);
+  Dummy := FormatCode(code.lines, RemoveDoubleBlank, blankPerIdent);
+  // Sieht komisch aus, aber code kopiert sich das aus Dummy raus
+  code.lines := Dummy;
+  // -> Dummy mus damit separat freigegeben werden.
+  Dummy.free;
   Projektchanged := true;
   StatusBar1.Panels[1].Text := 'Changed';
   code.CaretY := x;

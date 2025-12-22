@@ -118,6 +118,7 @@ object Form1: TForm1
     OnClick = CodeClick
     OnKeyDown = CodeKeyDown
     OnKeyPress = CodeKeyPress
+    OnMouseWheel = CodeMouseWheel
     Gutter.Width = 57
     Gutter.MouseActions = <>
     RightGutter.Width = 0

@@ -105,8 +105,8 @@ Var
   x: integer;
 Begin
   // Wegschneiden der Evtlen Ebene
-  If pos('æ', Value) <> 0 Then
-    delete(value, 1, pos('æ', Value));
+  If pos(LineSeparator, Value) <> 0 Then
+    delete(value, 1, pos(LineSeparator, Value));
   For x := 0 To 9 Do
     While pos(inttostr(x), Value) <> 0 Do
       delete(value, pos(inttostr(x), Value), 1);
@@ -123,8 +123,8 @@ Var
   f: String;
 Begin
   f := '';
-  If Pos('æ', Value) <> 0 Then Begin
-    f := copy(value, 1, Pos('æ', Value));
+  If Pos(LineSeparator, Value) <> 0 Then Begin
+    f := copy(value, 1, Pos(LineSeparator, Value));
     delete(value, 1, length(f));
   End;
   If isnum(Value) Then Begin
@@ -138,7 +138,7 @@ Begin
     End;
   End
   Else Begin
-    erg := High(int64); // Sorg das bei nicht gefunden eine Exception geworfen wird
+    erg := High(int64); // Sorgt dafür das bei nicht gefunden eine Exception geworfen wird
     For x := 0 To high(CompiledCode.vars) Do
       If CompiledCode.vars[x].Name = (f + Value) Then erg := x;
   End;
@@ -362,19 +362,19 @@ Begin
           showmessage('It took ' + FloattostrF((v2 - TimeVar) / 1000, FFFixed, 7, 3) + ' sec. to execute Programm.');
       End;
       AktualDebugLine := -1;
-      form1.code.Repaint;
+      form1.code.Invalidate;
     End
     Else Begin
       Form1.BringToFront;
       AktualDebugLine := Bline;
-      SpringezuZeile(Bline);
-      form1.code.Repaint;
+      form1.SpringezuZeile(Bline);
+      form1.code.Invalidate;
       Checkforwantedvalues(alp);
     End;
   End
   Else Begin
     AktualDebugLine := -1;
-    form1.code.Repaint;
+    form1.code.Invalidate;
     // Wieder Freischalten des Run Button
     SetUnknown;
     form5.Button1.enabled := true;

@@ -40,7 +40,7 @@ Function Preclear(Value: String): String;
 Implementation
 
 Uses
-  executer
+  Executer
   , Parser
   , uloop
   , ucompiler
@@ -299,7 +299,7 @@ Index   | Operand | Schlüsselzeichen | Bindung
 
   9         Not             ]          Bindet Am Stärksten
   4          *              *
-  5         Mod             §
+  5         Mod             &
   6         Div             $
   2          -              -
   3         ^-              !
@@ -318,8 +318,6 @@ Ermittelt ist diese Reihenfolge aus der Genauen Analyse des Delphi Kompilers sow
 *)
 
 Function MakeRechentree(Value: String; Line: int64; Var Error: Boolean; Ebene: String; AlreadyFound: Array Of Prechentree; Const WarningsLogger: TStrings): Prechentree;
-Const
-  Trennzeichen = '«';
 Var
   Klammern: Array Of Prechentree; // Dient zum zwischenspeichern aller Klammern
 
@@ -372,12 +370,13 @@ Var
   "-" -> "-"
   "^-" -> "!"
   "*" -> "*"
-  "Mod" -> "§"
+  "Mod" -> "&"
   "Div" -> "$"
   "And" -> "%"
   "Or" -> "["
   "Not" -> "]"
   "=" -> "="
+  "<>" -> "?"
   ">" -> ">"
   ">=" -> "~"
   "<" -> "<"
@@ -396,7 +395,7 @@ Var
     x := LineContainsToken('Mod', Data);
     While x <> 0 Do Begin
       Delete(data, x, 2);
-      data[x] := '§';
+      data[x] := '&';
       x := LineContainsToken('Mod', Data);
     End;
     x := LineContainsToken('Div', Data);
@@ -497,7 +496,7 @@ Var
   Begin
     erg := false;
     If Pos('$', data) <> 0 Then erg := true;
-    If Pos('§', data) <> 0 Then erg := true;
+    If Pos('&', data) <> 0 Then erg := true;
     If Pos('*', data) <> 0 Then erg := true;
     If Pos('-', data) <> 0 Then erg := true;
     If Pos('!', data) <> 0 Then erg := true;
@@ -533,7 +532,7 @@ Var
   End;
 
 Const
-  Steuerzeichen = ['$', '§', '*', '-', '!', '+', '=', '?', '%', '[', '>', '<', '~', '#'];
+  Steuerzeichen = ['$', '&', '*', '-', '!', '+', '=', '?', '%', '[', '>', '<', '~', '#'];
 Label
   Fehler;
 Var
@@ -543,17 +542,16 @@ Var
   s: String;
   b: Boolean;
 Begin
+  result := Nil;
   // Wenn ein Leerstring übergeben wird
   If Length(Value) = 0 Then Begin
     error := true;
     WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Argument .');
-    result := Nil;
     exit;
   End;
   If Not Korrektklammern(Value) Then Begin
     error := true;
     WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing parenthesis .');
-    result := Nil;
     exit;
   End;
   Klammern := Nil; // initialisieren unseres Merkers für die verscheidenen Wurzel der unterbäume
@@ -570,14 +568,13 @@ Begin
     delete(Value, pos(' ', value), 1); // Also raus damit
   // zuerst lösen wir mal alle ineren Klammern auf
   While Pos(')', Value) <> 0 Do Begin
-    // Suchen der "(" klammer
+    // Suchen der "(" klammer passend zur gefundenen ")"
     x := Pos(')', Value);
     y := -1;
     While x >= 0 Do Begin
       If x = 0 Then Begin // Wenn keine "(" Gefunden wurde
         error := True;
         WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing "(" .');
-        result := Nil;
         Goto Fehler;
       End
       Else Begin
@@ -602,7 +599,6 @@ Begin
         // Wenn ein Fehler in einer Klammer gefunden wurde und wir hier nicht wegspringen würden
         // Kämen wir in eine Endlosschleife !!
         If Error Then Begin
-          result := Nil;
           Goto Fehler;
         End;
       End
@@ -615,7 +611,7 @@ Begin
   End;
   // So nun haben wir definitiv nur noch einen Ausdruck ohne Klammern
   // Als erstes müssen wir alle Variablen in ein Blatt Packen
-  Value := value + '+'; // das Brauchen wir damit der PArser die Letzte Variable auch Parst
+  Value := value + '+'; // das Brauchen wir damit der Parser die Letzte Variable auch Parst
   b := true;
   While b Do Begin
     b := false;
@@ -652,10 +648,11 @@ Begin
             klammern[high(Klammern)] := an; // Merken des Pointer's
             Delete(value, y, x - y); // Rauschneiden des Klammerausdruckes und
             insert(Trennzeichen + inttostr(high(Klammern)) + Trennzeichen, Value, Y); // Einfügen des Verweises auf die Stelle im Globalen Klammer Array
-            x := high(integer) - 1;
+            x := Length(value);
           End
           Else Begin
-            result := Nil;
+            Freerechentree(an);
+            an := Nil;
             Goto Fehler;
           End;
         End;
@@ -750,10 +747,10 @@ Begin
     End;
   End;
   // Das Mod
-  While Pos('§', Value) <> 0 Do Begin // Wir müssen von hinten nach Forne gehen
+  While Pos('&', Value) <> 0 Do Begin // Wir müssen von hinten nach Forne gehen
     x := length(Value);
     While x >= 1 Do Begin
-      If Value[x] = '§' Then Begin
+      If Value[x] = '&' Then Begin
         // Wir haben unser Div gefunen nun müssen wir ein Blatt daraus machen.
         front := getBefor(Value, x);
         back := getafter(Value, x);
@@ -1355,8 +1352,9 @@ Begin
   Fehler:
   // wenn ein Fehler War dann müssen wir die Pointer wieder Frei geben
   If Error Then Begin
-    For x := 0 To high(Klammern) Do
-      Dispose(klammern[x]);
+    For x := 0 To high(Klammern) Do begin
+      Freerechentree(klammern[x]);
+    end;
   End;
   setlength(Klammern, 0);
 End;
