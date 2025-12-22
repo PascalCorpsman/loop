@@ -1,0 +1,20 @@
+(******************************************************************************) 
+(* Geschrieben von Uwe Schaechterle                                17_12_2005 *)
+(*                                                                            *) 
+(* Dieses Programm berechnet dDie Addition zweier Zahlen                      *)
+(*                                                                            *)
+(* Es werden die Zahlen X1, X2 eingelesen und der Wert X1 + X2 ausgegeben     *)
+(*                                                                            *)
+(******************************************************************************) 
+Procedure Plus;
+Var x1, x2;
+Begin
+  // Einlesen der bergabeparameter der Function
+  x1 := Get;
+  x2 := Get;
+  // Berechnen des Ergebnisses
+  x0 := x1;
+  Loop x2 Do
+    x0 := x0 + 1;
+  End;
+End;

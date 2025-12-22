@@ -1,0 +1,23 @@
+(******************************************************************************)
+(* Geschrieben von Uwe Schaechterle                                19_12_2005 *)
+(*                                                                            *)
+(* Dieses Programm Liest X1 ein und gibt X1 Hoch X1 aus                       *)
+(*                                                                            *)
+(* Bei X1 = 0 wird 0 ausgegeben                                               *)
+(*                                                                            *)
+(******************************************************************************)
+Procedure N_Hoch_N;
+Var x1, x2, x3;
+Begin
+  x1 := Get;
+  x0 := 1;
+  Loop x1 Do
+    x2 := x0;
+    x3 := x1 - 1;
+    Loop x3 Do
+      Loop x2 Do
+        x0 := X0 + 1;
+      End;
+    End;
+  End;
+End;

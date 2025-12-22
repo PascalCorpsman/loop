@@ -1,0 +1,42 @@
+(******************************************************************************)
+(* Geschrieben von Uwe Schaechterle                                17_12_2005 *)
+(*                                                                            *)
+(* Dieses Programm berechnet das Modulo                                       *)
+(*                                                                            *)
+(* Es werden die Zahlen X1 und X2 eingelesen und das Ergebnis                 *)
+(* X1 Mod X2 Ausgegeben                                                       *)
+(*                                                                            *)
+(******************************************************************************) 
+Procedure Modulo;
+Var x1, x2, x4, x5, x6; // Benoetigte Variablen
+Begin
+  // Einlesen der Uebergabeparameter der Function
+  x1 := Get;
+  x2 := Get;
+  x0 := x1;
+  // Wir versuchen einfach X1 mal X2 Abzuziehen
+  Loop X1 Do
+    // Wenn X0 >= X2 ist dann ist nachher X4 = 0
+    x4 := x2;
+    Loop x0 Do
+      // Durchfuehren eines Modifizierten Minus x4 := x4 - 1
+      x6 := 0;
+      Loop x4 Do
+        x4 := x6;
+        x6 := x6 + 1;
+      End;
+    End;
+    // Wenn X4 = 0 dann ist nachher X5 = 1
+    x5 := 1;
+    Loop x4 Do
+      x5 := 0;
+    End;
+    // Wenn X5 = 1 und damit dann X0 >= X2 dann koennen wir
+    // ohne Bedenken noch einmal X2 von X0 abziehen
+    Loop x5 Do
+      Loop x2 Do
+        x0 := x0 - 1;
+      End;
+    End;
+  End;
+End;

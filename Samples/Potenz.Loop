@@ -1,0 +1,40 @@
+(******************************************************************************)
+(* Geschrieben von Uwe Schaechterle                                19_12_2005 *)
+(*                                                                            *)
+(* Dieses Programm Liest X1 und X2 ein und gibt X1 Hoch X2 aus                *)
+(*                                                                            *)
+(* Bei X1 = 0 und X2 = 0 wird 0 ausgegeben                                    *)
+(*                                                                            *)
+(******************************************************************************)
+Procedure Potenz;
+Var x1, x2, x3, x4;
+Begin
+  // Einlesen der eingabeparameter
+  x1 := Get;
+  x2 := Get;
+  // Die Sonderfaelle wie 0 Hoch X und X hoch 0 muessen auch behAndelt werden
+  Loop X2 Do
+    x0 := 1;
+  End;
+  x4 := 1;
+  Loop x1 Do
+    x4 := 0;
+  End;
+  Loop x4 Do
+    x0 := 0;
+  End;
+  // Das Eigentliche Berechnen des X1 Hoch X2
+  Loop x2 Do
+    x2 := x0;
+    X4 := 0;
+    Loop X1 Do
+      x3 := x4;
+      x4 := x4 + 1;
+    End;
+    Loop x3 Do
+      Loop x2 Do
+        x0 := X0 + 1;
+      End;
+    End;
+  End;
+End;

@@ -1,0 +1,19 @@
+(******************************************************************************)
+(* Geschrieben von Uwe Schaechterle                                xx_xx_2005 *)
+(*                                                                            *)
+(* Dieses Programm Liest x1 ein und berechnet die Summe aller Natrürlichen    *)
+(* Zahlen <= x1                                                               *)
+(*                                                                            *)
+(******************************************************************************)
+Procedure Sum_long;
+Var x1, x2;
+Begin
+  x1 := Get;
+  x2 := 1;
+  Loop x1 Do
+    Loop x2 Do
+      x0 := x0 + 1;
+    End;
+    x2 := x2 + 1;
+  End;
+End;

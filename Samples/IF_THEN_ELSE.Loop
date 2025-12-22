@@ -1,0 +1,30 @@
+(******************************************************************************) 
+(* Geschrieben von Uwe Schaechterle                                17_12_2005 *)
+(*                                                                            *) 
+(* Dieses Programm berechnet eine If then else Bedingung                      *)
+(*                                                                            *)
+(* Es wird die Zahl X1 Eingelesen ist X1 = 0 dann wird 1 ausgegeben sonst 2   *)
+(*                                                                            *)
+(******************************************************************************) 
+Procedure If_Then_Else;
+Var x1, x2, x3;
+Begin
+  // Einlesen der bergabeparameter der Function
+  x1 := Get;
+  x2 := 1;
+  x3 := 1;
+  // Wenn X1 = 0 ist dann bleibt X2 auf 1
+  Loop x1 Do
+    x2 := 0;
+  End;
+  // Wenn X1 = 0 dann wird der If Teil ausgefhuert
+  Loop x2 Do
+    x0 := 1;
+    x3 := 0;
+  End;
+  // Wenn der If Teil nicht ausgefuehrt wurde dann ist X3 noch auf 1 und es
+  // Wird der Else Teil Ausgefuehrt
+  Loop x3 Do
+    x0 := 2;
+  End;
+End;

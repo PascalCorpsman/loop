@@ -1,0 +1,41 @@
+(******************************************************************************) 
+(* Geschrieben von Uwe Schaechterle                                18_12_2005 *)
+(*                                                                            *) 
+(* Dieses Programm berechnet die Wurzel aus X1                                *)
+(*                                                                            *)
+(* Es wird die Zahl X1 eingelesen und Wurzel X1 ausgegeben                    *)
+(*                                                                            *)
+(******************************************************************************)
+(*
+ * Achtung, ist nicht gerade schnell
+ *)
+Procedure Wurzel;
+Var x1, x2, x3, x4, x5;
+Begin
+  // Einlesen der bergabeparameter der Function
+  x1 := Get;
+  x2 := 0;
+  Loop x1 Do
+    x3 := 0;
+    Loop X2 Do
+      Loop x2 Do
+        X3 := x3 + 1;
+      End;
+    End;
+    Loop X1 Do
+      x4 := 0;
+      Loop x3 Do
+        x3 := x4;
+        X4 := x4 + 1;
+      End;
+    End;
+    x5 := 1;
+    Loop X3 Do
+      x5 := 0;
+    End;
+    Loop x5 Do
+      x0 := x2;
+    End;
+    x2 := x2 + 1;
+  End;
+End;

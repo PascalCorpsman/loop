@@ -1,0 +1,21 @@
+(******************************************************************************) 
+(* Geschrieben von Uwe Schaechterle                                17_12_2005 *)
+(*                                                                            *) 
+(* Dieses Programm berechnet die Multiplikation                               *)
+(*                                                                            *)
+(* Es werden die Zahlen X1, X2 eingelesen und der Wert X1 * X2 ausgegeben     *)
+(*                                                                            *)
+(******************************************************************************) 
+Procedure Mal;
+Var x1, x2;
+Begin
+  // Einlesen der bergabeparameter der Function
+  x1 := Get;
+  x2 := Get;
+  // Berechnen des Ergebnisses
+  Loop x2 Do
+    Loop x1 Do
+      x0 := x0 + 1;
+    End;
+  End;
+End;
