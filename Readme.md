@@ -21,6 +21,7 @@ The Interpreter features:
   - Div, integer division
   - functions
   - other variable names than x*
+- implicit variable initialization with 0
 - Breakpoints and a step by step debugger
 - Whatched variables
 - Lots of samples
