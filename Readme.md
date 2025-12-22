@@ -1,20 +1,26 @@
 # Loop
 
->
-> Attention, this is a work in progress ...
->
+Loop is a fully usable interpreter for the Loop language (additional sources: [wikipedia](https://en.wikipedia.org/wiki/LOOP_(programming_language)))
+
+![](Documentation/preview.png)
 
 As a student of Computer Science at the University of Stuttgart, I developed this loop interpreter for Windows in Delphi 5 as a semester project in 2006.
-In this repository, I am working to revive the “old” code using Lazarus and to make it platform-independent.
 
-Loop is a µ-recursive language that is not Turing-complete and always terminates. As students, we were able to explore the properties of this language (additional sources: [wikipedia](https://en.wikipedia.org/wiki/LOOP_(programming_language))
-).
+In this repository, I am working to revive the “old” code using Lazarus and to make it platform-independent and make it usable for more students who want to test their Loop applications ;).
 
-Unfortunately, all programming tasks for Loop had to be carried out purely as thought experiments and on paper. The interpreter I designed changes this situation by enabling programs to be written and executed.
-
-### Progress of porting the code to Lazarus
-
-2025.12.11 - create initial GitHub repository<br>
-2025.12.12 - first version that compiles and does not crash during startup (did FPC_Understand analysis)
-![](Documentation/FPC_Understand_before.png)
-2025.12.13 - Empty program does compile ;)
+The Interpreter features:
+- Multiple color chemes
+- Code formator
+- Optional Language enhancements:
+  - ^- modified substraction
+  - \* multiplication
+  - "complex" arithmetics like x0 := x1 + x2 * x3
+  - If then else
+  - integer to boolean operands like >, <, >=, <=, <>
+  - Mod, modulo
+  - Div, integer division
+  - functions
+  - other variable names than x*
+- Breakpoints and a step by step debugger
+- Whatched variables
+- Lots of samples
