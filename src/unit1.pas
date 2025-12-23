@@ -164,7 +164,6 @@ Type
     asd1: TMenuItem;
     AktuallLoopcount1: TMenuItem;
     SearchReplace1: TMenuItem;
-    //    SynEditSearch1: TSynEditSearch;
     SaveAs1: TMenuItem;
     FindDialog1: TFindDialog;
     Find1: TMenuItem;
@@ -261,8 +260,6 @@ Var
 Procedure SetKeywords;
 // Setzt den Higlighter auf das Actuelle Farbschema
 Procedure SETColorSheme;
-// Gibt True zurück wenn die in Value stehende int64 Zahl in brakepoints enthalten ist
-Function isBrakepoint(value: int64): Boolean;
 
 Implementation
 
@@ -343,22 +340,6 @@ Begin
   erg := false;
   For x := 0 To high(CompilableLines) Do
     If CompilableLines[x] = Value Then Begin
-      erg := true;
-      break;
-    End;
-  result := erg;
-End;
-
-// Gibt True zurück wenn die in Value stehende int64 Zahl in brakepoints enthalten ist
-
-Function isBrakepoint(value: int64): Boolean;
-Var
-  erg: Boolean;
-  x: Integer;
-Begin
-  erg := false;
-  For x := 0 To high(brakepoints) Do
-    If brakepoints[x] = Value Then Begin
       erg := true;
       break;
     End;
@@ -880,7 +861,6 @@ End;
 Procedure TForm1.CodeGutterClick(Sender: TObject; X, Y, Line: integer;
   mark: TSynEditMark);
 Begin
-  // Für alle Maus user *würg*
   ToggleBrakepoint(Line);
 End;
 
@@ -1434,10 +1414,12 @@ End;
 
 Procedure TForm1.SearchReplace1Click(Sender: TObject);
 Begin
+  If code.ReadOnly Then exit;
   form9.CheckBox2.Checked := code.BlockBegin <> Code.BlockEnd;
   If form9.CheckBox2.checked Then
     form9.ComboBox1.text := code.SelText;
   form9.CheckBox1.Checked := Not form9.CheckBox2.Checked;
+  form9.FormShowOnce := true;
   form9.showmodal;
 End;
 
@@ -1622,6 +1604,4 @@ Begin
 End;
 
 End.
-
-
 

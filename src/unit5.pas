@@ -78,13 +78,10 @@ Procedure TForm5.Button2Click(Sender: TObject);
 Var
   b: Boolean;
 Begin
-  //  form1.Stop1Click(Nil);
   SetUnknown;
   LoopRechner.clear; // Löschen des Stacks
   AktualDebugLine := -1; // Debugganzeige löschen
   Aktualerrorline := -1; // Löschen der zeile mit dem Aktuellen Fehler
-  form1.code.readonly := false; // Schreibrechte wieder erlauben
-  form1.code.Repaint; // Neuzeichnen, damit Löschen der Roten Zeilen
   setlength(CompiledCode.vars, 0); // Löschen der Überwachten Variablen damit sie in Controlled nicht mehr gezeigt werden.
   // Löschen der überwachten Ausdrücke
   If form8.CheckListBox1.Items.count <> 0 Then Begin
@@ -97,7 +94,7 @@ Begin
   // Rücksetzen der Statusanzeige
   form1.Caption := defcaption;
   form1.code.readonly := false;
-  form1.code.Repaint;
+  form1.code.Invalidate;
   Checkbox1.enabled := true;
   close;
 End;
@@ -149,10 +146,8 @@ Var
   x: integer;
 Begin
   For x := 1 To 5 Do Begin
-    TLabel(findcomponent('Label' + inttostr(x))).Caption :=
-      CompiledCode.getvars[Scrollbar1.position + x - 1].Name;
-    TEdit(findcomponent('Edit' + inttostr(x))).text := inttostr(
-      CompiledCode.getvars[Scrollbar1.position + x - 1].Value);
+    TLabel(findcomponent('Label' + inttostr(x))).Caption := CompiledCode.getvars[Scrollbar1.position + x - 1].Name;
+    TEdit(findcomponent('Edit' + inttostr(x))).text := inttostr(CompiledCode.getvars[Scrollbar1.position + x - 1].Value);
   End;
 End;
 
@@ -161,7 +156,7 @@ Begin
   LoopRechner.clear;
   AktualDebugLine := -1;
   form1.code.readonly := false;
-  form1.code.Repaint;
+  form1.code.Invalidate;
   close;
 End;
 
@@ -189,7 +184,7 @@ Begin
   // Rücksetzen der Statusanzeige
   form1.Caption := defcaption;
   form1.code.readonly := false;
-  form1.code.Repaint;
+  form1.code.Invalidate;
 End;
 
 End.

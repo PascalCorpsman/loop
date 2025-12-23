@@ -23,6 +23,9 @@ Uses
   StdCtrls, SynEditMiscClasses, SynEditSearch;
 
 Type
+
+  { TForm9 }
+
   TForm9 = Class(TForm)
     Label1: TLabel;
     Label2: TLabel;
@@ -46,6 +49,7 @@ Type
     CheckBox9: TCheckBox;
     CheckBox10: TCheckBox;
     Procedure Button3Click(Sender: TObject);
+    Procedure FormCreate(Sender: TObject);
     Procedure FormPaint(Sender: TObject);
     Procedure ComboBox2KeyPress(Sender: TObject; Var Key: Char);
     Procedure Button2Click(Sender: TObject);
@@ -58,6 +62,7 @@ Type
     { Private-Deklarationen }
   public
     { Public-Deklarationen }
+    FormShowOnce: Boolean;
   End;
 
 Var
@@ -89,9 +94,17 @@ Begin
   close;
 End;
 
+Procedure TForm9.FormCreate(Sender: TObject);
+Begin
+  FormShowOnce := true;
+End;
+
 Procedure TForm9.FormPaint(Sender: TObject);
 Begin
-  Combobox1.SetFocus;
+  If FormShowOnce Then Begin
+    FormShowOnce := false;
+    Combobox1.SetFocus;
+  End;
 End;
 
 Procedure TForm9.ComboBox2KeyPress(Sender: TObject; Var Key: Char);
@@ -100,7 +113,7 @@ Begin
   If Key = #27 Then close;
   If Key = #8 Then exit;
   // Es dürfen natürlich nur alle erlaubten Zeichen eingegeben werden.
-  If Not (key In allowedchars) Then key := #0;
+  If Not (key In allowedchars + [#9]) Then key := #0;
 End;
 
 Procedure TForm9.Button2Click(Sender: TObject);
@@ -118,14 +131,14 @@ Begin
   Include(Options, ssoReplaceAll); // Alle Vorkommen ersetzen
   If CheckBox10.checked Then Begin // der Unterschied zwischen ExCursor und From beginning
     If checkbox7.checked Then Begin
-      If form1.code.Selstart <> form1.code.selend Then
-        form1.code.CaretY := form1.code.SelStart
+      If form1.code.BlockBegin <> form1.code.BlockEnd Then
+        form1.code.CaretY := form1.code.BlockBegin.y
       Else
         form1.code.CaretY := 0;
     End
     Else Begin
-      If form1.code.Selstart <> form1.code.selend Then
-        form1.code.CaretY := form1.code.SelEnd
+      If form1.code.BlockBegin <> form1.code.BlockEnd Then
+        form1.code.CaretY := form1.code.BlockEnd.y
       Else
         form1.code.CaretY := form1.Code.lines.count - 1;
     End;
@@ -153,14 +166,14 @@ Begin
   Include(Options, ssoReplace); // Nur ein mal ersetzen
   If CheckBox10.checked Then Begin // der Unterschied zwischen ExCursor und From beginning
     If checkbox7.checked Then Begin
-      If form1.code.Selstart <> form1.code.selend Then
-        form1.code.CaretY := form1.code.SelStart
+      If form1.code.BlockBegin <> form1.code.BlockEnd Then
+        form1.code.CaretY := form1.code.BlockBegin.Y
       Else
         form1.code.CaretY := 0;
     End
     Else Begin
-      If form1.code.Selstart <> form1.code.selend Then
-        form1.code.CaretY := form1.code.SelEnd
+      If form1.code.BlockBegin <> form1.code.BlockEnd Then
+        form1.code.CaretY := form1.code.BlockEnd.Y
       Else
         form1.code.CaretY := form1.Code.lines.count - 1;
     End;

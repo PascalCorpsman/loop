@@ -130,6 +130,8 @@ Function getFontstylefromstring(Data: String): Tfontstyles;
 Procedure Nop; // To have a breakpoint that does not hurt ;)
 
 Function LineWithoutLineInfo(aLine: String): String; // Schneited alles nach LineSeparator ab
+// Gibt True zurück wenn die in Value stehende int64 Zahl in brakepoints enthalten ist
+Function isBrakepoint(value: int64): Boolean;
 
 Implementation
 
@@ -149,6 +151,22 @@ Begin
   Else Begin
     result := aLine;
   End;
+End;
+
+// Gibt True zurück wenn die in Value stehende int64 Zahl in brakepoints enthalten ist
+
+Function isBrakepoint(value: int64): Boolean;
+Var
+  erg: Boolean;
+  x: Integer;
+Begin
+  erg := false;
+  For x := 0 To high(brakepoints) Do
+    If brakepoints[x] = Value Then Begin
+      erg := true;
+      break;
+    End;
+  result := erg;
 End;
 
 // Diese Function soll dann später wenn der Compiler mal Functionen kann die entsprechenden
