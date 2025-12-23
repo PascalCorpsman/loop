@@ -484,15 +484,12 @@ Var
   sl: TStringList;
   s: String;
   x: integer;
-  fs: TFormatSettings;
 Begin
   If Fileexists(extractfilepath(application.exename) + PathDelim + 'User.ini') Then Begin
-    fs := DefaultFormatSettings;
-    fs.DecimalSeparator := '.'; // ENG
     sl := TStringList.Create;
     sl.LoadFromFile(extractfilepath(application.exename) + PathDelim + 'User.ini');
     s := sl[0];
-    If Strtofloat(s, fs) = LoopVer Then Begin
+    If s = Version Then Begin
       s := sl[1];
       allowMod := odd(strtoint(s));
       s := sl[2];
@@ -561,12 +558,9 @@ Procedure Writeini;
 Var
   sl: TStringList;
   x: integer;
-  fs: TFormatSettings;
 Begin
-  fs := DefaultFormatSettings;
-  fs.DecimalSeparator := '.'; // ENG
   sl := TStringList.Create;
-  sl.add(floattostr(LoopVer, fs));
+  sl.add(Version);
   sl.add(inttostr(ord(allowMod)));
   sl.add(inttostr(ord(allowif)));
   sl.add(inttostr(ord(allowdiv)));
@@ -919,7 +913,7 @@ Begin
   CompiledCode.Code := Nil;
   LoopRechner := TLoopStack.create;
   Aktualerrorline := -1;
-  defcaption := 'Loop Interpreter ver. ' + floattostrf(LoopVer, FFFixed, 7, 2);
+  defcaption := 'Loop Interpreter ver. ' + Version;
   form1.Caption := defcaption;
   opendialog1.InitialDir := extractfilepath(application.exename);
   savedialog1.InitialDir := extractfilepath(application.exename);

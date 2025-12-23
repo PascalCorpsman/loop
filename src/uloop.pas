@@ -60,7 +60,7 @@ Type
 
 Const
 
-  LoopVer = 0.13;
+  Version = '0.13';
 
   allowedchars = [// Auflistung aller Erlaubten Zeichen
   'a'..'z', 'A'..'Z', '_', // Namen
