@@ -25,7 +25,7 @@
 (* History     : 0.01 : o Grundprogramm                                       *)
 (*                        - Code Formater                                     *)
 (*                        - Highlighter                                       *)
-(*                        - Explorer ( zum anzeigen evtler Functionsnamen)    *)
+(*                        - Explorer ( zum anzeigen evtler Funktionsnamen)    *)
 (*                        - Laden / Speichern                                 *)
 (*                        - Compiler zum ausführen der Loop Programme         *)
 (*                      o Zulassen erweiterter Variablennamen                 *)
@@ -38,7 +38,7 @@
 (*                           Zähler                                           *)
 (*               0.04 : o Umschreiben der Compilerstruktur, dadruch           *)
 (*                         erheblicher Geschwindigkeitsgewinn.                *)
-(*               0.05 : o Umschreiben der Datenstruktur für anweisungen und   *)
+(*               0.05 : o Umschreiben der Datenstruktur für Anweisungen und   *)
 (*                         If abfragen                                        *)
 (*                        - Ermöglichen von Mehrfachbedingungen und Mehrfach  *)
 (*                           zuweisungen ( z.B. : X0:= X1 +X2 +X3; )          *)
@@ -85,52 +85,12 @@
 (*                         Editor                                             *)
 (*               0.13 : o Port nach Lazarus / FreePascal                      *)
 (*                                                                            *)
-(* Bisher Behobene Bugs :                                                     *)
-(*                                                                            *)
-(*  - Erlauben von Konstanten bei Functionsaufrufen ( 0.06 )                  *)
-(*  - Einstellige Functionsaufrufe wurden nicht geparst. ( 0.06 )             *)
-(*  - Falsch geklammerte Ausdrücke werden nun erkanne. ( 0.07 )               *)
-(*  - Das Autospeichern hat die Aktion das Speichern nicht gespeichert.       *)
-(*     ( 0.08 )                                                               *)
-(*  - Der Codeformater und damit auch Der Kompiler haben Anweisungen der Art  *)
-(*     <= und >= nicht erkennen können. ( 0.08 )                              *)
-(*  - >= und <= wurden nur erkannt wenn ein Leerzeichen davor stand. ( 0.08 ) *)
-(*  - Bei Drücken von STRG + F2 wenn das Programm ganz Normal Lief ist alles  *)
-(*     Abgeraucht. ( 0.08 )                                                   *)
-(*  - Fehlerhafte If Blöcke solten nun erkannt werden. ( 0.08 )               *)
-(*  - Das Programm stürzt nicht mehr ab wenn hinter Var ein Deklarationsteil  *)
-(*     vergessen wird ( 0.08 )                                                *)
-(*  - Zeitmessung wurde nach dem Ersten Runn deaktiviert und konnte nicht mehr*)
-(*     aktiviert werden. ( 0.10 )                                             *)
-(*  - Codeformater hat Schlüsselwort Var falsch behandelt und eingerückt.     *)
-(*     ( 0.10 )                                                               *)
-(*  - Beim Neustart des Betriebssystemes ist das Programm manchmal kurz       *)
-(*     sichtbar gewesen. ( 0.12 )                                             *)
-(*  - x * 0 hat Division durch 0 Fehler gegeben. ( 0.12 )                     *)
 (*
 Bisher noch nicht Behobene Bugs :
 
-Sind der Codeviewer und der Loop Kompiler Gleichzeitig geöffnet funktioniert das
-automatische öffnen von dateien nicht mehr, Fehlerhaft.
-
-Das Copy und Paste tut mal gar nicht !!
-
-Proceduren Und Functionen dürfen keine Schlüsselworte Sein !!!
-
-Wenn ALT + F4 Gedrückt wird in der Programmsimulation dann wird der Komplette Compiler Beendet
+Proceduren Und Functionen dürfen keine Schlüsselworte sein !!!
 
 Es können irgendwo Begin wörter stehen obwohl sie überhaupt keinen Sinn machen die sollten erkannt werden
-
-Procedure Project1;
-  Function Test(a, b);
-  Begin
-    result := a + b;
-  End;
-Begin
-  x0 := 4 + test(5, 6);
-End;
-
-Hat das Ergebnis 11 und nicht 15 !!!
 
 -------------------------------------------------------------------------
 
@@ -149,9 +109,12 @@ Interface
 Uses
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   Menus, SynEdit, SynEditHighlighter, SynHighlighterPas, StdCtrls,
-  ComCtrls, ExtCtrls, ImgList, Parser, ucompiler, Executer,
-  SynEditMiscClasses, Registry, SynEditTypes,
-  Printers, UniqueInstance, SynEditMarks, SynHighlighterAny, uloop, Types;
+  ComCtrls, ExtCtrls, ImgList, SynEditMiscClasses, Registry, SynEditTypes,
+  Printers, UniqueInstance, SynEditMarks, SynHighlighterAny, Types
+  , uloop
+  , Parser
+  , ucompiler
+  , Executer;
 
 Type
 
@@ -225,6 +188,7 @@ Type
     Procedure CodeMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; Var Handled: Boolean);
     Procedure CodePaint(Sender: TObject; ACanvas: TCanvas);
+    Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
     Procedure FormCreate(Sender: TObject);
     Procedure Colorsheme1Click(Sender: TObject);
     Procedure CodeKeyPress(Sender: TObject; Var Key: Char);
@@ -325,22 +289,6 @@ Const
 
 {$R *.lfm}
 
-  // Wird ein Index im Text übergeben so Ermittelt die Function die Zeile in der der Index steht
-
-Function IndextoLine(Const Data: Tstrings; Index: Integer): integer;
-Var
-  erg: Integer;
-  x: integer;
-Begin
-  erg := 0;
-  x := 1;
-  While (x < index) And (x <= length(data.Text)) Do Begin
-    If data.Text[x] = #13 Then inc(erg);
-    inc(x);
-  End;
-  result := erg;
-End;
-
 Procedure TForm1.LoadProject(Filename: String);
 Begin
   If Not FileExists(Filename) Then Begin
@@ -348,11 +296,12 @@ Begin
     exit;
   End;
   ClearCompilableLines; // Löschen der Compilable Lines
+  setlength(Brakepoints, 0); // Löschen aller bisherigen Breakpoints
   Stop1Click(Nil); // Abbrechen aller Aktionen
   If (length(AktualFilename) <> 0) And Projektchanged Then Begin
     Case Application.Messagebox(pchar(extractfilename(AktualFilename) + ' is not saved yet do you want to save it now ?'), 'Info', MB_YESNO + MB_ICONQUESTION) Of
       ID_YES: Begin
-          form1.SaveAs1Click(Nil);
+          SaveAs1Click(Nil);
           AktualFilename := '';
           LoadProject(filename);
         End;
@@ -365,13 +314,14 @@ Begin
   Else Begin
     Projektchanged := false;
     AktualFilename := filename;
-    form1.StatusBar1.Panels[2].Text := extractfilename(filename);
-    form1.StatusBar1.Panels[1].Text := '';
-    form1.StatusBar1.Panels[0].Text := ' 1: 1';
-    form1.Code.Lines.LoadFromFile(filename);
-    form1.opendialog1.InitialDir := extractfilepath(form1.Opendialog1.FileName);
-    form1.savedialog1.InitialDir := extractfilepath(form1.Opendialog1.FileName);
-    If form1.Explorer.visible Then GetFunnames(form1.Code.Lines, form1.explorer);
+    StatusBar1.Panels[2].Text := extractfilename(filename);
+    StatusBar1.Panels[1].Text := '';
+    StatusBar1.Panels[0].Text := ' 1: 1';
+    Code.Lines.LoadFromFile(filename);
+    Code.Invalidate;
+    opendialog1.InitialDir := extractfilepath(Opendialog1.FileName);
+    savedialog1.InitialDir := extractfilepath(Opendialog1.FileName);
+    If Explorer.visible Then GetFunnames(Code.Lines, explorer);
   End;
 End;
 
@@ -968,8 +918,19 @@ Begin
   End;
 End;
 
+Procedure TForm1.FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
+Begin
+  // Wir sind grad im Debuggen und wollten eigentlich die Ausführung beenden ;)
+  If code.ReadOnly Then Begin
+    Form5.Button2.Click;
+    CanClose := false;
+  End;
+End;
+
 Procedure TForm1.FormCreate(Sender: TObject);
 Begin
+  // - Es gibt noch Memleaks, wenn der Code nicht erfolgreich compiliert werden konnte
+  // - der "Not" Operator scheint nicht erlaubt zu sein ??
   // Initialisierne der Liste für die Compilierten Codes
   AktualFilename := '';
   Projektchanged := false;
@@ -1210,8 +1171,9 @@ Procedure TForm1.CodeChange(Sender: TObject);
 Begin
   // Aktualisieren der ExplorerView, bei Veränderungen des Code's
   If Explorer.visible Then GetFunnames(Code.Lines, explorer);
-  If ClearCompilableLines Then code.Invalidate;
+  ClearCompilableLines;
   Projektchanged := true;
+  code.Invalidate;
   StatusBar1.Panels[1].Text := 'Changed';
 End;
 
@@ -1238,7 +1200,7 @@ Begin
       code.lines.add('Begin');
       code.lines.add('End;');
     End;
-    LoadProject('Dokumentationssample.Loop'); // Debug to be removed
+    // LoadProject('Bug.Loop'); // Debug to be removed
   End;
 End;
 
@@ -1302,7 +1264,7 @@ Begin
       For x := 0 To high(CompiledCode.GETVars) Do Begin
         CompiledCode.GETVars[x].Value := 0;
       End;
-      // Schreiben der LAbel's und des Wertes
+      // Schreiben der Label's und des Wertes
       For x := 0 To 4 Do Begin
         If X <= high(CompiledCode.GETVars) Then Begin
           // Die Felder Sichtbar machen.
@@ -1472,7 +1434,7 @@ End;
 
 Procedure TForm1.SearchReplace1Click(Sender: TObject);
 Begin
-  form9.CheckBox2.Checked := code.SelStart <> Code.Selend;
+  form9.CheckBox2.Checked := code.BlockBegin <> Code.BlockEnd;
   If form9.CheckBox2.checked Then
     form9.ComboBox1.text := code.SelText;
   form9.CheckBox1.Checked := Not form9.CheckBox2.Checked;
@@ -1597,8 +1559,9 @@ Var
   sa, se, x: Integer;
   s: String;
 Begin
-  sa := IndextoLine(Code.Lines, code.selstart);
-  se := IndextoLine(Code.Lines, code.selEnd);
+  If code.ReadOnly Then exit;
+  sa := code.BlockBegin.Y - 1;
+  se := code.BlockEnd.Y;
   If Se <> sa Then dec(se);
   For x := sa To se Do Begin
     s := DelFrontspace(code.lines[x]);
@@ -1613,8 +1576,9 @@ Var
   sa, se, x: Integer;
   s: String;
 Begin
-  sa := IndextoLine(Code.Lines, code.selstart);
-  se := IndextoLine(Code.Lines, code.selEnd);
+  If code.ReadOnly Then exit;
+  sa := code.BlockBegin.Y - 1;
+  se := code.BlockEnd.Y;
   If Se <> sa Then dec(se);
   For x := sa To se Do Begin
     s := DelFrontspace(code.lines[x]);
@@ -1632,7 +1596,7 @@ Procedure TForm1.Print1Click(Sender: TObject);
 Begin
   printer.PrinterIndex := -1;
   form11.ComboBox1.Items := printer.Printers;
-  form11.CheckBox1.checked := code.SelStart <> code.selend;
+  form11.CheckBox1.checked := code.BlockBegin <> code.BlockEnd;
   If form11.Combobox1.items.count <> 0 Then Begin
     form11.ComboBox1.Text := form11.ComboBox1.items[printer.PrinterIndex];
     If Not Assigned(Printfont) Then Begin
@@ -1658,4 +1622,6 @@ Begin
 End;
 
 End.
+
+
 

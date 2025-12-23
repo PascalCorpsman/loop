@@ -131,13 +131,56 @@ Begin
   result := erg;
 End;
 
-// Löscht führende Leerzeichen in einem String, Führt um Aritmetische Zeicehn Leerzeichen ein und schreibt Schlüsselworte Groß
+// Löscht führende Leerzeichen in einem String, Führt um Aritmetische Zeichen Leerzeichen ein und schreibt Schlüsselworte Groß
 
 Function GetclearedString(Value: String; ClearDoublespace: Boolean): String;
 Var
   y, x: integer;
   s: String;
   b: Boolean;
+
+  // Prüft ob das Schlüsselwort hinter einer Zahl oder einer Klammer steht und Rückt es dann ggf weg
+  Procedure Check;
+  Begin
+    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
+      If Value[x - 1] In ['0'..'9', ')'] Then Begin
+        b := true;
+        y := x - 1;
+        While y > 0 Do Begin
+          // Wir haben das erste Blank gefunden
+          If (Value[y] = ' ') Or (Value[y] = ')') Then y := -1;
+          If (Y > 0) And (Not (Value[y] In ['0'..'9', ')'])) Then Begin
+            b := false;
+            y := -1;
+          End;
+          dec(y);
+        End;
+        // Wenn for dem String wirklich nur eine Zahl stand und kein identifier dann kann der string 1 weggeschoben werden
+        If b Then Begin
+          insert(' ', value, x);
+        End;
+      End;
+  End;
+
+  Procedure Check2;
+  Begin
+    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
+      If Value[x + length(s)] = '(' Then Begin
+        insert(' ', value, x + length(S));
+      End;
+  End;
+
+  Procedure CaseCheck;
+  Var
+    y: integer;
+  Begin
+    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then Begin
+      // Überschrieben des Textteiles mit dem Formatierten String aus s
+      For y := 1 To length(s) Do
+        Value[x + y - 1] := s[y];
+    End;
+  End;
+
 Begin
   // löscht Führende Leerzeichen
   Value := DelFrontspace(value);
@@ -147,7 +190,7 @@ Begin
     While (pos('  ', Value) <> 0) Do
       delete(Value, pos('  ', Value), 1);
   End;
-  // Löschen der Leerzeichen für dem ;
+  // Löschen der Leerzeichen vor dem ;
   While pos(' ;', Value) <> 0 Do
     delete(Value, pos(' ;', Value), 1);
   // Erzeugen der Leerstellen vor gewissen schlüsselzeichen
@@ -165,91 +208,26 @@ Begin
       insert(' ', value, x);
     If (Value[x] = '*') And (Value[x - 1] <> '*') And (Value[x - 1] <> '(') And (Value[x - 1] <> ' ') Then
       insert(' ', value, x);
+    // Wegrücken von := z.b. X2:= -> X2 :=
+    If (x < length(value)) And (Value[x] = ':') And (Value[x + 1] = '=') And (Value[x - 1] <> ' ') Then Begin
+      insert(' ', value, x);
+    End;
+    If (Value[x] = '^') And (Value[x - 1] <> ' ') Then Begin
+      insert(' ', value, x);
+    End;
     // Wegrücken bestimmter Schlüsselworte z.b. 2mod -> 2 Mod
     s := 'Then';
     If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
       If (Value[x - 1] = ')') Then
         insert(' ', value, x);
     s := 'mod';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      If Value[x - 1] In ['0'..'9', ')'] Then Begin
-        b := true;
-        y := x - 1;
-        While y > 0 Do Begin
-          // Wir haben das erste Blank gefunden
-          If (Value[y] = ' ') Or (Value[y] = ')') Then y := -1;
-          If (Y > 0) And (Not (Value[y] In ['0'..'9', ')'])) Then Begin
-            b := false;
-            y := -1;
-          End;
-          dec(y);
-        End;
-        // Wenn for dem String wirklich nur eine Zahl stand und kein identifier dann kann der string 1 weggeschoben werden
-        If b Then Begin
-          insert(' ', value, x);
-        End;
-      End;
+    Check;
     s := 'Div';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      If Value[x - 1] In ['0'..'9', ')'] Then Begin
-        b := true;
-        y := x - 1;
-        While y > 0 Do Begin
-          // Wir haben das erste Blank gefunden
-          If (Value[y] = ' ') Or (Value[y] = ')') Then y := -1;
-          If (Y > 0) And (Not (Value[y] In ['0'..'9', ')'])) Then Begin
-            b := false;
-            y := -1;
-          End;
-          dec(y);
-        End;
-        // Wenn for dem String wirklich nur eine Zahl stand und kein identifier dann kann der string 1 weggeschoben werden
-        If b Then Begin
-          insert(' ', value, x);
-        End;
-      End;
+    Check;
     s := 'And';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      If Value[x - 1] In ['0'..'9', ')'] Then Begin
-        b := true;
-        y := x - 1;
-        While y > 0 Do Begin
-          // Wir haben das erste Blank gefunden
-          If (Value[y] = ' ') Or (Value[y] = ')') Then y := -1;
-          If (Y > 0) And (Not (Value[y] In ['0'..'9', ')'])) Then Begin
-            b := false;
-            y := -1;
-          End;
-          dec(y);
-        End;
-        // Wenn for dem String wirklich nur eine Zahl stand und kein identifier dann kann der string 1 weggeschoben werden
-        If b Then Begin
-          insert(' ', value, x);
-        End;
-      End;
+    Check;
     s := 'Or';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      If Value[x - 1] In ['0'..'9', ')'] Then Begin
-        b := true;
-        y := x - 1;
-        While y > 0 Do Begin
-          // Wir haben das erste Blank gefunden
-          If (Value[y] = ' ') Or (Value[y] = ')') Then y := -1;
-          If (Y > 0) And (Not (Value[y] In ['0'..'9', ')'])) Then Begin
-            b := false;
-            y := -1;
-          End;
-          dec(y);
-        End;
-        // Wenn for dem String wirklich nur eine Zahl stand und kein identifier dann kann der string 1 weggeschoben werden
-        If b Then Begin
-          insert(' ', value, x);
-        End;
-      End;
+    Check;
     inc(x);
   End;
   // Erzeugen der Leerstellen nach gewissen Schlüsselzeichen
@@ -267,102 +245,39 @@ Begin
       insert(' ', value, x + 1);
     // nach so Manchen Schlüsselworten wird auch weggerückt
     s := 'If';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      If Value[x + length(s)] = '(' Then Begin
-        insert(' ', value, x + length(S));
-      End;
+    Check2();
     s := 'And';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      If Value[x + length(s)] = '(' Then Begin
-        insert(' ', value, x + length(S));
-      End;
+    Check2();
     s := 'or';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      If Value[x + length(s)] = '(' Then Begin
-        insert(' ', value, x + length(S));
-      End;
+    Check2();
     s := 'not';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      If Value[x + length(s)] = '(' Then Begin
-        insert(' ', value, x + length(S));
-      End;
+    Check2();
     s := 'Mod';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      If Value[x + length(s)] = '(' Then Begin
-        insert(' ', value, x + length(S));
-      End;
+    Check2();
     s := 'div';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      If Value[x + length(s)] = '(' Then Begin
-        insert(' ', value, x + length(S));
-      End;
+    Check2();
     inc(x);
   End;
   // Großschreiben der Schlüsselworte
   x := 1;
   While x <= Length(Value) Do Begin
-    // Großschreiben von Loop
+    // Umschreiben der Schlüsselworte in die Exakte form von s
     s := 'Loop';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      // Überschrieben des Textteiles mit dem Formatierten String aus s
-      For y := 1 To length(s) Do
-        Value[x + y - 1] := s[y];
-    // Großschreiben von Do
+    CaseCheck();
     s := 'Do';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      // Überschrieben des Textteiles mit dem Formatierten String aus s
-      For y := 1 To length(s) Do
-        Value[x + y - 1] := s[y];
-    // Großschreiben von End
+    CaseCheck();
     s := 'End';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      // Überschrieben des Textteiles mit dem Formatierten String aus s
-      For y := 1 To length(s) Do
-        Value[x + y - 1] := s[y];
-    // Großschreiben von Begin
+    CaseCheck();
     s := 'Begin';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      // Überschrieben des Textteiles mit dem Formatierten String aus s
-      For y := 1 To length(s) Do
-        Value[x + y - 1] := s[y];
-    // Großschreiben von Procedure
+    CaseCheck();
     s := 'Procedure';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      // Überschrieben des Textteiles mit dem Formatierten String aus s
-      For y := 1 To length(s) Do
-        Value[x + y - 1] := s[y];
-    // Großschreiben von Var
+    CaseCheck();
     s := 'Var';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      // Überschrieben des Textteiles mit dem Formatierten String aus s
-      For y := 1 To length(s) Do
-        Value[x + y - 1] := s[y];
-    // Großschreiben von Get
+    CaseCheck();
     s := 'Get';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      // Überschrieben des Textteiles mit dem Formatierten String aus s
-      For y := 1 To length(s) Do
-        Value[x + y - 1] := s[y];
-    // Großschreiben von Function
+    CaseCheck();
     s := 'Function';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      // Überschrieben des Textteiles mit dem Formatierten String aus s
-      For y := 1 To length(s) Do
-        Value[x + y - 1] := s[y];
+    CaseCheck();
     // Großschreiben von If
     s := 'If';
     // Schaun ob das Schlüsselwort hier zufällig im String steht
@@ -379,46 +294,17 @@ Begin
       End;
     // Großschreiben von Then
     s := 'Then';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      // Überschrieben des Textteiles mit dem Formatierten String aus s
-      For y := 1 To length(s) Do
-        Value[x + y - 1] := s[y];
-    // Großschreiben von Else
+    CaseCheck();
     s := 'Else';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      // Überschrieben des Textteiles mit dem Formatierten String aus s
-      For y := 1 To length(s) Do
-        Value[x + y - 1] := s[y];
-    // Großschreiben von Or
+    CaseCheck();
     s := 'Or';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      // Überschrieben des Textteiles mit dem Formatierten String aus s
-      For y := 1 To length(s) Do
-        Value[x + y - 1] := s[y];
-    // Großschreiben von And
+    CaseCheck();
     s := 'And';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      // Überschrieben des Textteiles mit dem Formatierten String aus s
-      For y := 1 To length(s) Do
-        Value[x + y - 1] := s[y];
-    // Großschreiben von Mod
+    CaseCheck();
     s := 'Mod';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      // Überschrieben des Textteiles mit dem Formatierten String aus s
-      For y := 1 To length(s) Do
-        Value[x + y - 1] := s[y];
-    // Großschreiben von Div
+    CaseCheck();
     s := 'Div';
-    // Schaun ob das Schlüsselwort hier zufällig im String steht
-    If comparestr(Lowercase(s), lowercase(copy(value, x, length(s)))) = 0 Then
-      // Überschrieben des Textteiles mit dem Formatierten String aus s
-      For y := 1 To length(s) Do
-        Value[x + y - 1] := s[y];
+    CaseCheck();
     inc(x);
   End;
   result := value;
@@ -464,7 +350,7 @@ Begin
     // Einzeiliger Kommentar wieder Rückgängig machen
     If Commenttype = 1 Then commenttype := 0;
     singleback := false;
-    // Suchen nach einrückParametern
+    // Suchen nach einrück Parametern
     x := 1;
     erg_line := '';
     While x <= length(line) Do Begin
@@ -478,14 +364,14 @@ Begin
           x := x + 2;
         End;
         // öffnen des Comment Token für //
-        If (line[x] = '/') And (line[x + 1] = '/') And (commenttype = 0) Then Begin
+        If (x < length(line)) And (line[x] = '/') And (line[x + 1] = '/') And (commenttype = 0) Then Begin
           Commenttype := 1;
           Erg_line := Erg_line + Line[x];
           Erg_line := Erg_line + Line[x + 1];
           x := x + 2;
         End;
         // Öffnen des (* Tokens
-        If (line[x] = '(') And (line[x + 1] = '*') And (commenttype = 0) Then Begin
+        If (x < length(line)) And (line[x] = '(') And (line[x + 1] = '*') And (commenttype = 0) Then Begin
           Commenttype := 3;
           Erg_line := Erg_line + Line[x];
           Erg_line := Erg_line + Line[x + 1];
@@ -493,20 +379,20 @@ Begin
         End;
       End;
       // Schliesen des  } Tokens
-      If (line[x] = '}') And (Commenttype = 2) Then Begin
+      If (x <= length(line)) And (line[x] = '}') And (Commenttype = 2) Then Begin
         Commenttype := 0;
         Erg_line := Erg_line + Line[x];
         x := x + 1;
       End;
       // Öffnen des  { Tokens
-      If (line[x] = '{') And (Commenttype = 0) Then Begin
+      If (x <= length(line)) And (line[x] = '{') And (Commenttype = 0) Then Begin
         Commenttype := 2;
         Erg_line := Erg_line + Line[x];
         x := x + 1;
       End;
       // Wir befinden uns nicht in einem Kommentar , also können wir nach einrückbefehlen suchen
       If Commenttype = 0 Then Begin
-        If Lineup[x] = ' ' Then
+        If (x <= length(line)) And (Lineup[x] = ' ') Then
           inc(spacecount)
         Else
           spacecount := 0;
@@ -569,12 +455,14 @@ Begin
             inc(blcount);
           End;
       End;
-      If CommentType = 0 Then Begin
-        If Spacecount <= 1 Then
+      If x <= length(line) Then Begin
+        If CommentType = 0 Then Begin
+          If Spacecount <= 1 Then
+            Erg_line := Erg_line + Line[x];
+        End
+        Else Begin
           Erg_line := Erg_line + Line[x];
-      End
-      Else Begin
-        Erg_line := Erg_line + Line[x];
+        End;
       End;
       inc(x); // Weiterzählen der Schleife
     End;

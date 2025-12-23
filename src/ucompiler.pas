@@ -113,7 +113,7 @@ Var
   // Gibt 0 Zurück wenn der Code Compilierbar ist, und erstellt gleichzeitig die entsprechende Tokenstruktur
 Function Compile(Lines: Tstrings; Const WarningsLogger: TStrings): boolean;
 // Löscht den Speicher der Compilierbaren Zeilen ( Visueller Effect)
-Function ClearCompilableLines: Boolean;
+Procedure ClearCompilableLines;
 // Gibt die Variable CompiledCode frei
 Procedure FreeCompiledcode;
 // Gibt True zurück wenn die Variable Existiert sonst False, ist allerdings Value ne Konstante wird Auch True zurückgegeben
@@ -220,14 +220,9 @@ End;
 
 // Löscht das Array der Kompilierbaren Linien
 
-Function ClearCompilableLines: boolean;
+Procedure ClearCompilableLines;
 Begin
-  If High(CompilableLines) <> -1 Then Begin
-    result := true;
-    setlength(CompilableLines, 0);
-  End
-  Else
-    result := false;
+  setlength(CompilableLines, 0);
 End;
 
 // Gibt die Orginal Quellcde Zeile zurück
@@ -244,6 +239,52 @@ Var
   Erg: Boolean;
   Token: integer;
   tstring, v1, arbeitsvar: String;
+
+  Procedure Test(OP: String);
+  Var
+    j: integer;
+  Begin
+    If LineContainsToken(OP, Tstring) <> 0 Then Begin
+      v1 := copy(tstring, 1, LineContainsToken(OP, Tstring) - 1);
+      // Löschen der 1. Variable und dem OP
+      delete(Tstring, 1, length(v1) + length(OP));
+      Tstring := DelFrontspace(DelEndspace(Tstring));
+      v1 := DelEndspace(DelEndspace(v1));
+      // Die Erste Variable einer Summe mus immer ein Identifer = Variable sein !!
+      If Not checkIdentifier(V1) Then Begin
+        erg := false;
+        WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
+      End;
+      If allow2varnotconst Then Begin
+        // eigentlich sollte man hier ne andere Variable wie j nehmen, aber die Braucht nu eh keiner Mehr
+        v1 := Tstring;
+        For j := 0 To 9 Do Begin
+          While pos(inttostr(j), Tstring) <> 0 Do
+            delete(Tstring, pos(inttostr(j), Tstring), 1);
+        End;
+        If length(Tstring) <> 0 Then Begin
+          Tstring := v1;
+          If Not checkIdentifier(Tstring) Then Begin
+            erg := false;
+            WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
+          End;
+        End;
+      End
+      Else Begin
+        // eigentlich sollte man hier ne andere Variable wie j nehmen, aber die Braucht nu eh keiner Mehr
+        v1 := Tstring;
+        For j := 0 To 9 Do Begin
+          While pos(inttostr(j), Tstring) <> 0 Do
+            delete(Tstring, pos(inttostr(j), Tstring), 1);
+        End;
+        If length(Tstring) <> 0 Then Begin
+          erg := false;
+          WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + V1 + '" is not a const, go to extended Options to allow this.');
+        End;
+      End;
+    End;
+  End;
+
 Begin
   // WEgschneiden der Zeilen information
   arbeitsvar := copy(Value, 1, pos(LineSeparator, value) - 1);
@@ -310,7 +351,7 @@ Begin
               // Testen bei ungültig
               v1 := uppercase(Tstring);
               If Not ((Pos('+', Tstring) <> 0) Or (Pos('*', Tstring) <> 0) Or (Pos('-', Tstring) <> 0) Or (Pos('^-', Tstring) <> 0) Or (Pos(' DIV ', V1) <> 0) Or (Pos(' MOD ', V1) <> 0)) Then Begin
-                // Da wir Zuweiszungen der ART X0:= 1 erlauben wollen müssen wir hier den Parser Verarschen.
+                // Da wir Zuweisungen der ART X0:= 1 erlauben wollen müssen wir hier den Parser Verarschen.
                 For Token := 0 To 9 Do Begin
                   While pos(inttostr(Token), v1) <> 0 Do
                     delete(v1, pos(inttostr(Token), v1), 1);
@@ -323,246 +364,12 @@ Begin
               End;
               // Ermitteln des Operators der zur Verfügung steht
               // Da hätten wir : + , - , ^- DIV , MOD
-              // Testen bei +
-              If LineContainsToken('+', Tstring) <> 0 Then Begin
-                v1 := copy(tstring, 1, LineContainsToken('+', Tstring) - 1);
-                // Löschen der 1. Variable + dem +
-                delete(Tstring, 1, length(v1) + 1);
-                Tstring := DelFrontspace(DelEndspace(Tstring));
-                v1 := DelEndspace(DelEndspace(v1));
-                // Die Erste Varaible einer Summe mus immer ein Identifer = Variable sein !!
-                If Not checkIdentifier(V1) Then Begin
-                  erg := false;
-                  WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
-                End;
-                If allow2varnotconst Then Begin
-                  // eigentlich sollte man hier ne andere Variable wie Token nehmen, aber die Braucht nu eh keiner Mehr
-                  v1 := Tstring;
-                  For token := 0 To 9 Do Begin
-                    While pos(inttostr(Token), Tstring) <> 0 Do
-                      delete(Tstring, pos(inttostr(Token), Tstring), 1);
-                  End;
-                  If length(Tstring) <> 0 Then Begin
-                    Tstring := v1;
-                    If Not checkIdentifier(Tstring) Then Begin
-                      erg := false;
-                      WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
-                    End;
-                  End;
-                End
-                Else Begin
-                  // eigentlich sollte man hier ne andere Variable wie Token nehmen, aber die Braucht nu eh keiner Mehr
-                  v1 := Tstring;
-                  For token := 0 To 9 Do Begin
-                    While pos(inttostr(Token), Tstring) <> 0 Do
-                      delete(Tstring, pos(inttostr(Token), Tstring), 1);
-                  End;
-                  If length(Tstring) <> 0 Then Begin
-                    erg := false;
-                    WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + V1 + '" is not a const, go to extended Options to allow this.');
-                  End;
-                End;
-              End;
-              // Testen bei -
-              If LineContainsToken('-', Tstring) <> 0 Then Begin
-                v1 := copy(tstring, 1, LineContainsToken('-', Tstring) - 1);
-                // Löschen der 1. Variable + dem -
-                delete(Tstring, 1, length(v1) + 1);
-                Tstring := DelFrontspace(DelEndspace(Tstring));
-                v1 := DelEndspace(DelEndspace(v1));
-                // Die Erste Varaible einer Summe mus immer ein Identifer = Variable sein !!
-                If Not checkIdentifier(V1) Then Begin
-                  erg := false;
-                  WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
-                End;
-                If allow2varnotconst Then Begin
-                  // eigentlich sollte man hier ne andere Variable wie Token nehmen, aber die Braucht nu eh keiner Mehr
-                  v1 := Tstring;
-                  For token := 0 To 9 Do Begin
-                    While pos(inttostr(Token), Tstring) <> 0 Do
-                      delete(Tstring, pos(inttostr(Token), Tstring), 1);
-                  End;
-                  If length(Tstring) <> 0 Then Begin
-                    Tstring := v1;
-                    If Not checkIdentifier(Tstring) Then Begin
-                      erg := false;
-                      WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
-                    End;
-                  End;
-                End
-                Else Begin
-                  // eigentlich sollte man hier ne andere Variable wie Token nehmen, aber die Braucht nu eh keiner Mehr
-                  v1 := Tstring;
-                  For token := 0 To 9 Do Begin
-                    While pos(inttostr(Token), Tstring) <> 0 Do
-                      delete(Tstring, pos(inttostr(Token), Tstring), 1);
-                  End;
-                  If length(Tstring) <> 0 Then Begin
-                    erg := false;
-                    WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + V1 + '" is not a const, go to extended Options to allow this.');
-                  End;
-                End;
-              End;
-              // Testen bei *
-              If LineContainsToken('*', Tstring) <> 0 Then Begin
-                v1 := copy(tstring, 1, LineContainsToken('*', Tstring) - 1);
-                // Löschen der 1. Variable + dem +
-                delete(Tstring, 1, length(v1) + 1);
-                Tstring := DelFrontspace(DelEndspace(Tstring));
-                v1 := DelEndspace(DelEndspace(v1));
-                // Die Erste Varaible einer Summe mus immer ein Identifer = Variable sein !!
-                If Not checkIdentifier(V1) Then Begin
-                  erg := false;
-                  WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
-                End;
-                If allow2varnotconst Then Begin
-                  // eigentlich sollte man hier ne andere Variable wie Token nehmen, aber die Braucht nu eh keiner Mehr
-                  v1 := Tstring;
-                  For token := 0 To 9 Do Begin
-                    While pos(inttostr(Token), Tstring) <> 0 Do
-                      delete(Tstring, pos(inttostr(Token), Tstring), 1);
-                  End;
-                  If length(Tstring) <> 0 Then Begin
-                    Tstring := v1;
-                    If Not checkIdentifier(Tstring) Then Begin
-                      erg := false;
-                      WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
-                    End;
-                  End;
-                End
-                Else Begin
-                  // eigentlich sollte man hier ne andere Variable wie Token nehmen, aber die Braucht nu eh keiner Mehr
-                  v1 := Tstring;
-                  For token := 0 To 9 Do Begin
-                    While pos(inttostr(Token), Tstring) <> 0 Do
-                      delete(Tstring, pos(inttostr(Token), Tstring), 1);
-                  End;
-                  If length(Tstring) <> 0 Then Begin
-                    erg := false;
-                    WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + V1 + '" is not a const, go to extended Options to allow this.');
-                  End;
-                End;
-              End;
-              // Testen bei ^-
-              If LineContainsToken('^-', Tstring) <> 0 Then Begin
-                v1 := copy(tstring, 1, LineContainsToken('^-', Tstring) - 1);
-                // Löschen der 1. Variable + dem -
-                delete(Tstring, 1, length(v1) + 2);
-                Tstring := DelFrontspace(DelEndspace(Tstring));
-                v1 := DelEndspace(DelEndspace(v1));
-                // Die Erste Varaible einer Summe mus immer ein Identifer = Variable sein !!
-                If Not checkIdentifier(V1) Then Begin
-                  erg := false;
-                  WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
-                End;
-                If allow2varnotconst Then Begin
-                  // eigentlich sollte man hier ne andere Variable wie Token nehmen, aber die Braucht nu eh keiner Mehr
-                  v1 := Tstring;
-                  For token := 0 To 9 Do Begin
-                    While pos(inttostr(Token), Tstring) <> 0 Do
-                      delete(Tstring, pos(inttostr(Token), Tstring), 1);
-                  End;
-                  If length(Tstring) <> 0 Then Begin
-                    Tstring := v1;
-                    If Not checkIdentifier(Tstring) Then Begin
-                      erg := false;
-                      WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
-                    End;
-                  End;
-                End
-                Else Begin
-                  // eigentlich sollte man hier ne andere Variable wie Token nehmen, aber die Braucht nu eh keiner Mehr
-                  v1 := Tstring;
-                  For token := 0 To 9 Do Begin
-                    While pos(inttostr(Token), Tstring) <> 0 Do
-                      delete(Tstring, pos(inttostr(Token), Tstring), 1);
-                  End;
-                  If length(Tstring) <> 0 Then Begin
-                    erg := false;
-                    WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + V1 + '" is not a const, go to extended Options to allow this.');
-                  End;
-                End;
-              End;
-              // Testen bei Mod
-              If LineContainsToken('Mod', Tstring) <> 0 Then Begin
-                v1 := copy(tstring, 1, LineContainsToken('Mod', Tstring) - 1);
-                // Löschen der 1. Variable + dem -
-                delete(Tstring, 1, length(v1) + 3);
-                Tstring := DelFrontspace(DelEndspace(Tstring));
-                v1 := DelEndspace(DelEndspace(v1));
-                // Die Erste Varaible einer Summe mus immer ein Identifer = Variable sein !!
-                If Not checkIdentifier(V1) Then Begin
-                  erg := false;
-                  WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
-                End;
-                If allow2varnotconst Then Begin
-                  // eigentlich sollte man hier ne andere Variable wie Token nehmen, aber die Braucht nu eh keiner Mehr
-                  v1 := Tstring;
-                  For token := 0 To 9 Do Begin
-                    While pos(inttostr(Token), Tstring) <> 0 Do
-                      delete(Tstring, pos(inttostr(Token), Tstring), 1);
-                  End;
-                  If length(Tstring) <> 0 Then Begin
-                    Tstring := v1;
-                    If Not checkIdentifier(Tstring) Then Begin
-                      erg := false;
-                      WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
-                    End;
-                  End;
-                End
-                Else Begin
-                  // eigentlich sollte man hier ne andere Variable wie Token nehmen, aber die Braucht nu eh keiner Mehr
-                  v1 := Tstring;
-                  For token := 0 To 9 Do Begin
-                    While pos(inttostr(Token), Tstring) <> 0 Do
-                      delete(Tstring, pos(inttostr(Token), Tstring), 1);
-                  End;
-                  If length(Tstring) <> 0 Then Begin
-                    erg := false;
-                    WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + V1 + '" is not a const, go to extended Options to allow this.');
-                  End;
-                End;
-              End;
-              // Testen bei Div
-              If LineContainsToken('Div', Tstring) <> 0 Then Begin
-                v1 := copy(tstring, 1, LineContainsToken('Div', Tstring) - 1);
-                // Löschen der 1. Variable + dem -
-                delete(Tstring, 1, length(v1) + 3);
-                Tstring := DelFrontspace(DelEndspace(Tstring));
-                v1 := DelEndspace(DelEndspace(v1));
-                // Die Erste Varaible einer Summe mus immer ein Identifer = Variable sein !!
-                If Not checkIdentifier(V1) Then Begin
-                  erg := false;
-                  WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
-                End;
-                If allow2varnotconst Then Begin
-                  // eigentlich sollte man hier ne andere Variable wie Token nehmen, aber die Braucht nu eh keiner Mehr
-                  v1 := Tstring;
-                  For token := 0 To 9 Do Begin
-                    While pos(inttostr(Token), Tstring) <> 0 Do
-                      delete(Tstring, pos(inttostr(Token), Tstring), 1);
-                  End;
-                  If length(Tstring) <> 0 Then Begin
-                    Tstring := v1;
-                    If Not checkIdentifier(Tstring) Then Begin
-                      erg := false;
-                      WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + v1 + '" Invalid identifier.');
-                    End;
-                  End;
-                End
-                Else Begin
-                  // eigentlich sollte man hier ne andere Variable wie Token nehmen, aber die Braucht nu eh keiner Mehr
-                  v1 := Tstring;
-                  For token := 0 To 9 Do Begin
-                    While pos(inttostr(Token), Tstring) <> 0 Do
-                      delete(Tstring, pos(inttostr(Token), Tstring), 1);
-                  End;
-                  If length(Tstring) <> 0 Then Begin
-                    erg := false;
-                    WarningsLogger.add('Found Error in Line [' + inttostr(getline(Value)) + '] : ' + ' "' + V1 + '" is not a const, go to extended Options to allow this.');
-                  End;
-                End;
-              End;
+              Test('+');
+              Test('-');
+              Test('*');
+              Test('^-');
+              Test('Mod');
+              Test('Div');
             End
             Else Begin
               // Der Fall das Mehrfach zuweisungen Erlaubt sind, der Kommt irgendwann auch noch rein
@@ -644,7 +451,7 @@ Begin
   müssen erkannt werden !!!
   ES Fehlt noch das rausgefunden wird ob Funcitonsnamen Doppelt sind !!
 
-  Gültiger Code der aber nitcht in einem Begin Block steht mus erkannt werden !!
+  Gültiger Code der aber nicht in einem Begin Block steht mus erkannt werden !!
   }
   noemptyline := false;
   infuncbeg := false;
@@ -1200,7 +1007,7 @@ Var
     func: PFunction;
     erg, z, ne: PBefehl;
     tmpfuncindex, tmpfrom, x, depth: Integer;
-    aline, v1, tstring, Varstring: String;
+    checker, aline, v1, tstring, Varstring: String;
     b, c, d: Boolean;
     para: Tpara;
   Begin
@@ -1255,6 +1062,7 @@ Var
           new(lp); // Loop Code
           lp^.Wiederhohlungen := -1; // Initialisierung für den Stack
           Varstring := getLoopVar(Aline);
+          d := false;
           lp^.WiederhohlungenVar := GetVarindex(GetLokalGlobalName(Ebene + Varstring), d); // Die Zählvariable
           // Speichern das die Variable benutzt wird
           If lp^.WiederhohlungenVar >= 0 Then
@@ -1291,13 +1099,13 @@ Var
           tstring := Preclear(aline);
           For x := 0 To high(CompiledCode.Func) Do Begin
             If LineContainsToken(CompiledCode.Func[x].Name, tstring) <> 0 Then Begin
-              // Wenn wir wissen das wir eine UNterfunction aufrufen können wir auch gleich ihren Namen speichern
+              // Wenn wir wissen das wir eine Unterfunction aufrufen können wir auch gleich ihren Namen speichern
               v1 := CompiledCode.Func[x].Name;
               tmpfuncindex := x;
               c := false;
             End;
           End;
-          // Verhindern das wir in einer Funciton noch mal eine Functin aufrufen
+          // Verhindern das wir in einer Funktion noch mal eine Funktion aufrufen
           If length(ebene) <> 0 Then c := true;
           If c Then Begin
             tstring := aline;
@@ -1325,6 +1133,7 @@ Var
               WarningsLogger.Add('Found Error in Line [' + inttostr(aw^.Line) + '] : ' + 'Unknown or illegal value ' + V1 + '.');
               Fehler := True;
             End;
+            b := false;
             aw^.Rechnung := MakeRechentree(uppercase(copy(Tstring, pos(':=', tstring) + 2, length(Tstring))), aw^.line, b, ebene, [], WarningsLogger); // Ausrechnen des Ausdruckes
             aw^.Next := ne;
             AddCompilableLine(aw^.line);
@@ -1342,7 +1151,6 @@ Var
             AddCompilableLine(getline(aline));
             from := CompiledCode.Func[tmpfuncindex].beg;
             CompiledCode.Func[tmpfuncindex].Used := true; // Merken das Die Function mindestens 1 mal aufgerufen wurde
-            setlength(para, 0);
             // Ermitteln der Übergebenen Variablen
             para := getparas(aline, b);
             If Not b Then Begin
@@ -1355,7 +1163,28 @@ Var
                 WarningsLogger.Add('Found Error in Line [' + inttostr(getline(aline)) + '] : ' + 'To many arguments.');
               End;
             End;
-            // Wir haben wohl Passend viele Variablen also können wir die Funciton aufrufen
+            (*
+             * Funktionsaufrufe sind nur erlaubt in der Form
+             *  <Variable> := <Funktionsname>(<Paramaterliste>);
+             * ggf, sollte diese Prüfung irgendwo anders gemacht werden ?
+             *)
+            v1 := LineWithoutLineInfo(v1);
+            checker := lowercase(aline);
+            delete(checker, 1, pos(':=', checker) + 1);
+            checker := trim(checker);
+            // Vor der Funktion darf nichts stehen
+            If pos(LowerCase(v1), checker) <> 1 Then Begin
+              b := true;
+              WarningsLogger.Add('Found Error in Line [' + inttostr(getline(aline)) + '] : ' + ' function call only allowed as assignment to a variable, not in formulas.');
+            End;
+            // Nach der Funktion darf nichts stehen
+            delete(checker, 1, pos(')', checker));
+            checker := trim(checker);
+            If pos(';', checker) <> 1 Then Begin
+              b := true;
+              WarningsLogger.Add('Found Error in Line [' + inttostr(getline(aline)) + '] : ' + ' function call only allowed as assignment to a variable, not in formulas.');
+            End;
+            // Wir haben wohl Passend viele Variablen also können wir die Funktion aufrufen
             If Not b Then Begin
               new(func);
               new(ne); // Instanz für nächsten Befehl

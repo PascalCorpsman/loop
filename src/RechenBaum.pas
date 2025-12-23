@@ -34,7 +34,7 @@ Type
 Procedure Freerechentree(Var Value: PRechenTree);
 Function RechneTree(Value: PRechenTree): int64;
 Function MakeRechentree(Value: String; Line: int64; Var Error: Boolean; Ebene: String; AlreadyFound: Array Of Prechentree; Const WarningsLogger: TStrings): Prechentree;
-// Rückt die Zeicehn  ( ) ebenfalls weg
+// Rückt die Zeichen ( ) ebenfalls weg
 Function Preclear(Value: String): String;
 
 Implementation
@@ -97,6 +97,7 @@ End;
 // Berechnet einen Ausdruck der durch einen Trechentree gegeben ist
 // Operatoren sind + , - , ^- , * , Mod , Div , And , Or , Not
 // Wobei X >= 1 -> True, X = 0 -> False gilt.
+// Ist result < 0 -> Fehler
 
 Function RechneTree(Value: PRechenTree): int64;
 Var
@@ -109,13 +110,12 @@ Begin
     Else Begin
       erg := 0; // Beruhigt den Compiler
       Case value^.Value Of
-        1: Begin
-            // Hohlen der Operanden
+        1: Begin // +
             v1 := RechneTree(value^.Left);
             v2 := RechneTree(value^.Right);
             If (V1 >= 0) And (v2 >= 0) Then Begin
               If (high(int64) - v2 >= v1) Then
-                erg := v1 + v2 // Berechnung des +
+                erg := v1 + v2
               Else Begin
                 erg := -1;
                 Showmessage('Error Overflow, your number is more than ' + inttostr(high(int64)));
@@ -124,37 +124,34 @@ Begin
             Else
               erg := -1; // Merken das ein Fehler War, ist egal welche Negative Zahl hauptsach negativ
           End;
-        2: Begin
-            // Hohlen der Operanden
+        2: Begin // -
             v1 := RechneTree(value^.Left);
             v2 := RechneTree(value^.Right);
             If (V1 >= 0) And (v2 >= 0) Then Begin
-              erg := v1 - v2; // Berechnung des -
+              erg := v1 - v2;
               If Erg < 0 Then
                 Showmessage('Error Underflow, your number is less than 0');
             End
             Else
               erg := -1; // Merken das ein Fehler War, ist egal welche Negative Zahl hauptsach negativ
           End;
-        3: Begin
-            // Hohlen der Operanden
+        3: Begin // ^-
             v1 := RechneTree(value^.Left);
             v2 := RechneTree(value^.Right);
             If (V1 >= 0) And (v2 >= 0) Then Begin
-              erg := v1 - v2; // Berechnung des ^-
+              erg := v1 - v2;
               If Erg < 0 Then Erg := 0; // Da wir das Modifizierte Minus haben müssen wir es auch so behandeln
             End
             Else
               erg := -1; // Merken das ein Fehler War, ist egal welche Negative Zahl hauptsach negativ
           End;
-        4: Begin
-            // Hohlen der Operanden
+        4: Begin // *
             v1 := RechneTree(value^.Left);
             v2 := RechneTree(value^.Right);
             If (V1 >= 0) And (v2 >= 0) Then Begin
               If v2 <> 0 Then Begin
                 If high(int64) Div v2 >= v1 Then
-                  erg := v1 * v2 // Berechnung des *
+                  erg := v1 * v2
                 Else Begin
                   erg := -1;
                   Showmessage('Error Overflow, your number is more than ' + inttostr(high(int64)));
@@ -167,12 +164,11 @@ Begin
             Else
               erg := -1; // Merken das ein Fehler War, ist egal welche Negative Zahl hauptsach negativ
           End;
-        5: Begin
-            // Hohlen der Operanden
+        5: Begin // Mod
             v1 := RechneTree(value^.Left);
             v2 := RechneTree(value^.Right);
             If (V1 >= 0) And (v2 > 0) Then Begin
-              erg := v1 Mod v2; // Berechnung des Mod
+              erg := v1 Mod v2;
             End
             Else Begin
               erg := -1; // Merken das ein Fehler War, ist egal welche Negative Zahl hauptsach negativ
@@ -180,12 +176,11 @@ Begin
                 Showmessage('Error Division by zero');
             End;
           End;
-        6: Begin
-            // Hohlen der Operanden
+        6: Begin // Div
             v1 := RechneTree(value^.Left);
             v2 := RechneTree(value^.Right);
             If (V1 >= 0) And (v2 > 0) Then Begin
-              erg := v1 Div v2; // Berechnung des Div
+              erg := v1 Div v2;
             End
             Else Begin
               erg := -1; // Merken das ein Fehler War, ist egal welche Negative Zahl hauptsach negativ
@@ -193,90 +188,82 @@ Begin
                 Showmessage('Error Division by zero');
             End;
           End;
-        7: Begin
-            // Hohlen der Operanden
+        7: Begin // Logisch AND
             v1 := RechneTree(value^.Left);
             v2 := RechneTree(value^.Right);
             If (V1 >= 0) And (v2 >= 0) Then Begin
-              erg := ord((v1 >= 1) And (v2 >= 1)); // Berechnung des AND
+              erg := ord((v1 >= 1) And (v2 >= 1));
             End
             Else
               erg := -1; // Merken das ein Fehler War, ist egal welche Negative Zahl hauptsach negativ
           End;
-        8: Begin
-            // Hohlen der Operanden
+        8: Begin // Logisch OR
             v1 := RechneTree(value^.Left);
             v2 := RechneTree(value^.Right);
             If (V1 >= 0) And (v2 >= 0) Then Begin
-              erg := ord((v1 >= 1) Or (v2 >= 1)); // Berechnung des OR
+              erg := ord((v1 >= 1) Or (v2 >= 1));
             End
             Else
               erg := -1; // Merken das ein Fehler War, ist egal welche Negative Zahl hauptsach negativ
           End;
-        9: Begin
-            // Hohlen der Operanden
+        9: Begin // Logisch Not
             v1 := RechneTree(value^.right);
             If (V1 >= 0) Then Begin
-              erg := ord(V1 = 0); // Berechnung des NOt
+              erg := ord(V1 = 0);
             End
             Else
               erg := -1; // Merken das ein Fehler War, ist egal welche Negative Zahl hauptsach negativ
           End;
-        10: Begin
-            // Hohlen der Operanden
+        10: Begin // =
             v1 := RechneTree(value^.Left);
             v2 := RechneTree(value^.Right);
             If (V1 >= 0) And (v2 >= 0) Then Begin
-              erg := ord(v1 = v2); // Berechnung des =
+              erg := ord(v1 = v2);
             End
             Else
               erg := -1; // Merken das ein Fehler War, ist egal welche Negative Zahl hauptsach negativ
           End;
-        11: Begin
-            // Hohlen der Operanden
+        11: Begin // <>
             v1 := RechneTree(value^.Left);
             v2 := RechneTree(value^.Right);
             If (V1 >= 0) And (v2 >= 0) Then Begin
-              erg := ord(v1 <> v2); // Berechnung des <>
+              erg := ord(v1 <> v2);
             End
             Else
               erg := -1; // Merken das ein Fehler War, ist egal welche Negative Zahl hauptsach negativ
           End;
-        12: Begin
-            // Hohlen der Operanden
+        12: Begin // >
             v1 := RechneTree(value^.Left);
             v2 := RechneTree(value^.Right);
             If (V1 >= 0) And (v2 >= 0) Then Begin
-              erg := ord(v1 > v2); // Berechnung des >
+              erg := ord(v1 > v2);
             End
             Else
               erg := -1; // Merken das ein Fehler War, ist egal welche Negative Zahl hauptsach negativ
           End;
-        13: Begin // Hohlen der Operanden
+        13: Begin // >=
             v1 := RechneTree(value^.Left);
             v2 := RechneTree(value^.Right);
             If (V1 >= 0) And (v2 >= 0) Then Begin
-              erg := ord(v1 >= v2); // Berechnung des >=
+              erg := ord(v1 >= v2);
             End
             Else
               erg := -1; // Merken das ein Fehler War, ist egal welche Negative Zahl hauptsach negativ
           End;
-        14: Begin
-            // Hohlen der Operanden
+        14: Begin // <
             v1 := RechneTree(value^.Left);
             v2 := RechneTree(value^.Right);
             If (V1 >= 0) And (v2 >= 0) Then Begin
-              erg := ord(v1 < v2); // Berechnung des <
+              erg := ord(v1 < v2);
             End
             Else
               erg := -1; // Merken das ein Fehler War, ist egal welche Negative Zahl hauptsach negativ
           End;
-        15: Begin
-            // Hohlen der Operanden
+        15: Begin // <=
             v1 := RechneTree(value^.Left);
             v2 := RechneTree(value^.Right);
             If (V1 >= 0) And (v2 >= 0) Then Begin
-              erg := ord(v1 <= v2); // Berechnung des <=
+              erg := ord(v1 <= v2);
             End
             Else
               erg := -1; // Merken das ein Fehler War, ist egal welche Negative Zahl hauptsach negativ
@@ -363,88 +350,38 @@ Var
     End;
   End;
 
-  // Da es blöd ist auf schlüsselworte wie And Mod und Div zu parsen ersetzen wir diese durch unerlaubte Zeicehn so lässt sich dann leichter Parsen
   (*
-  // Die zuordnung ist Willkürlich und wird nur inter benutzt es mus halt disjunkt zu allowedchars sein, da sonst Fehler auftreten könnten ;)
-  "+" -> "+"
-  "-" -> "-"
-  "^-" -> "!"
-  "*" -> "*"
-  "Mod" -> "&"
-  "Div" -> "$"
-  "And" -> "%"
-  "Or" -> "["
-  "Not" -> "]"
-  "=" -> "="
-  "<>" -> "?"
-  ">" -> ">"
-  ">=" -> "~"
-  "<" -> "<"
-  "<=" -> "#"
-  *)
+   * Ersetzt mehrzeichen Operanden durch Einchar Platzhalter
+   * -> Dadurch muss der LR-Parser nur ein Lookahead von 1 haben ;)
+   *)
   Function Swapop(Data: String): String;
-  Var
-    x: int64;
+    Procedure SwapSupOP(aFrom: String; aTo: Char);
+    Var
+      x: int64;
+    Begin
+      x := LineContainsToken(aFrom, Data);
+      While x <> 0 Do Begin
+        Delete(data, x, length(aFrom) - 1);
+        data[x] := aTo;
+        x := LineContainsToken(aFrom, Data);
+      End;
+    End;
+
   Begin
-    x := LineContainsToken('^-', Data);
-    While x <> 0 Do Begin
-      Delete(data, x, 1);
-      data[x] := '!';
-      x := LineContainsToken('^-', Data);
-    End;
-    x := LineContainsToken('Mod', Data);
-    While x <> 0 Do Begin
-      Delete(data, x, 2);
-      data[x] := '&';
-      x := LineContainsToken('Mod', Data);
-    End;
-    x := LineContainsToken('Div', Data);
-    While x <> 0 Do Begin
-      Delete(data, x, 2);
-      data[x] := '$';
-      x := LineContainsToken('Div', Data);
-    End;
-    x := LineContainsToken('And', Data);
-    While x <> 0 Do Begin
-      Delete(data, x, 2);
-      data[x] := '%';
-      x := LineContainsToken('And', Data);
-    End;
-    x := LineContainsToken('Or', Data);
-    While x <> 0 Do Begin
-      Delete(data, x, 1);
-      data[x] := '[';
-      x := LineContainsToken('Or', Data);
-    End;
-    x := LineContainsToken('Not', Data);
-    While x <> 0 Do Begin
-      Delete(data, x, 2);
-      data[x] := ']';
-      x := LineContainsToken('Not', Data);
-    End;
-    x := LineContainsToken('<>', Data);
-    While x <> 0 Do Begin
-      Delete(data, x, 1);
-      data[x] := '?';
-      x := LineContainsToken('<>', Data);
-    End;
-    x := LineContainsToken('>=', Data);
-    While x <> 0 Do Begin
-      Delete(data, x, 1);
-      data[x] := '~';
-      x := LineContainsToken('>=', Data);
-    End;
-    x := LineContainsToken('<=', Data);
-    While x <> 0 Do Begin
-      Delete(data, x, 1);
-      data[x] := '#';
-      x := LineContainsToken('<=', Data);
-    End;
+    SwapSupOP('^-', '!');
+    SwapSupOP('Mod', '&');
+    SwapSupOP('Div', '$');
+    SwapSupOP('And', '%');
+    SwapSupOP('Or', '[');
+    SwapSupOP('Not', ']');
+    SwapSupOP('<>', '?');
+    SwapSupOP('>=', '~');
+    SwapSupOP('<=', '#');
     result := data;
   End;
 
   // Ermittelt die Arrey position der nächsten variable die vor position Count Kommt
-  Function getBefor(Data: String; Count: int64): int64;
+  Function getBefore(Data: String; Count: int64): int64;
   Var
     y: int64;
     b: boolean;
@@ -541,6 +478,59 @@ Var
   an: Prechentree;
   s: String;
   b: Boolean;
+
+  // Parst alle vorkommen von OP und ersetzt sie durch einen Knoten mit passender Kennung
+  // False im Falle eines Fehlers
+  Function HandleOP(op: String; Key: integer): boolean;
+  Begin
+    result := false;
+    While Pos(op, Value) <> 0 Do Begin // Wir müssen von hinten nach Forne gehen
+      x := length(Value);
+      While x >= 1 Do Begin
+        If Value[x] = op Then Begin
+          // Wir haben unser Div gefunen nun müssen wir ein Blatt daraus machen.
+          front := getBefore(Value, x);
+          back := getafter(Value, x);
+          If (Front = -1) Or (Back = -1) Then Begin
+            Error := true;
+            WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
+            exit;
+          End
+          Else Begin
+            new(an);
+            an^.Left := klammern[front];
+            an^.Right := klammern[back];
+            an^.IsValue := false;
+            an^.Value := Key;
+            Setlength(klammern, high(Klammern) + 2);
+            klammern[high(Klammern)] := an; // Merken des Pointer's
+            i := x + 1;
+            b := true;
+            While b Do Begin
+              inc(i);
+              If Value[i] = Trennzeichen Then Begin
+                b := false;
+              End;
+            End;
+            y := x - 1;
+            b := true;
+            While b Do Begin
+              dec(Y);
+              If Value[Y] = Trennzeichen Then Begin
+                b := false;
+              End;
+            End;
+            Delete(Value, y, i - y + 1);
+            insert(Trennzeichen + inttostr(high(Klammern)) + Trennzeichen, value, y);
+            x := 0; // Dafür sorgen das die While Schleife Abbricht
+          End;
+        End;
+        dec(x);
+      End;
+    End;
+    result := true;
+  End;
+
 Begin
   result := Nil;
   // Wenn ein Leerstring übergeben wird
@@ -662,17 +652,16 @@ Begin
   End;
   Delete(Value, length(Value), 1); // Das Hinten Angefügte + Mus nun wieder Gelöscht werden
   // So da wir nun alle Variablen in Blättern haben können wir die Blätter zusammenbauen
-  // Das not
+  // Das not ist besonders, da es nur Linksseitig ist, deswegen musste HandleOp hier ausgerollt werden.
   While Pos(']', Value) <> 0 Do Begin // Wir müssen von hinten nach Forne gehen
     x := length(Value);
     While x >= 1 Do Begin
       If Value[x] = ']' Then Begin
         // Wir haben unser Div gefunen nun müssen wir ein Blatt daraus machen.
         back := getafter(Value, x);
-        If { (Front = -1) Or }(Back = -1) Then Begin
+        If (Back = -1) Then Begin
           Error := true;
           WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
-          Result := Nil;
           Goto Fehler;
         End
         Else Begin
@@ -701,660 +690,45 @@ Begin
     End;
   End;
   // Das *
-  While Pos('*', Value) <> 0 Do Begin // Wir müssen von hinten nach Forne gehen
-    x := length(Value);
-    While x >= 1 Do Begin
-      If Value[x] = '*' Then Begin
-        // Wir haben unser Div gefunen nun müssen wir ein Blatt daraus machen.
-        front := getBefor(Value, x);
-        back := getafter(Value, x);
-        If (Front = -1) Or (Back = -1) Then Begin
-          Error := true;
-          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
-          Result := Nil;
-          Goto Fehler;
-        End
-        Else Begin
-          new(an);
-          an^.Left := klammern[front];
-          an^.Right := klammern[back];
-          an^.IsValue := false;
-          an^.Value := 4; // Ist die Schlüsselnummer für Div
-          Setlength(klammern, high(Klammern) + 2);
-          klammern[high(Klammern)] := an; // Merken des Pointer's
-          i := x + 1;
-          b := true;
-          While b Do Begin
-            inc(i);
-            If Value[i] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          y := x - 1;
-          b := true;
-          While b Do Begin
-            dec(Y);
-            If Value[Y] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          Delete(Value, y, i - y + 1);
-          insert(Trennzeichen + inttostr(high(Klammern)) + Trennzeichen, value, y);
-          x := 0; // Dafür sorgen das die While Schleife Abbricht
-        End;
-      End;
-      dec(x);
-    End;
-  End;
+  If Not HandleOP('*', 4) Then Goto Fehler;
   // Das Mod
-  While Pos('&', Value) <> 0 Do Begin // Wir müssen von hinten nach Forne gehen
-    x := length(Value);
-    While x >= 1 Do Begin
-      If Value[x] = '&' Then Begin
-        // Wir haben unser Div gefunen nun müssen wir ein Blatt daraus machen.
-        front := getBefor(Value, x);
-        back := getafter(Value, x);
-        If (Front = -1) Or (Back = -1) Then Begin
-          Error := true;
-          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
-          Result := Nil;
-          Goto Fehler;
-        End
-        Else Begin
-          new(an);
-          an^.Left := klammern[front];
-          an^.Right := klammern[back];
-          an^.IsValue := false;
-          an^.Value := 5; // Ist die Schlüsselnummer für mod
-          Setlength(klammern, high(Klammern) + 2);
-          klammern[high(Klammern)] := an; // Merken des Pointer's
-          i := x + 1;
-          b := true;
-          While b Do Begin
-            inc(i);
-            If Value[i] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          y := x - 1;
-          b := true;
-          While b Do Begin
-            dec(Y);
-            If Value[Y] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          Delete(Value, y, i - y + 1);
-          insert(Trennzeichen + inttostr(high(Klammern)) + Trennzeichen, value, y);
-          x := 0; // Dafür sorgen das die While Schleife Abbricht
-        End;
-      End;
-      dec(x);
-    End;
-  End;
+  If Not HandleOP('&', 5) Then Goto Fehler;
   // Das Div
-  While Pos('$', Value) <> 0 Do Begin // Wir müssen von hinten nach Forne gehen
-    x := length(Value);
-    While x >= 1 Do Begin
-      If Value[x] = '$' Then Begin
-        // Wir haben unser Div gefunen nun müssen wir ein Blatt daraus machen.
-        front := getBefor(Value, x);
-        back := getafter(Value, x);
-        If (Front = -1) Or (Back = -1) Then Begin
-          Error := true;
-          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
-          Result := Nil;
-          Goto Fehler;
-        End
-        Else Begin
-          new(an);
-          an^.Left := klammern[front];
-          an^.Right := klammern[back];
-          an^.IsValue := false;
-          an^.Value := 6; // Ist die Schlüsselnummer für Div
-          Setlength(klammern, high(Klammern) + 2);
-          klammern[high(Klammern)] := an; // Merken des Pointer's
-          i := x + 1;
-          b := true;
-          While b Do Begin
-            inc(i);
-            If Value[i] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          y := x - 1;
-          b := true;
-          While b Do Begin
-            dec(Y);
-            If Value[Y] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          Delete(Value, y, i - y + 1);
-          insert(Trennzeichen + inttostr(high(Klammern)) + Trennzeichen, value, y);
-          x := 0; // Dafür sorgen das die While Schleife Abbricht
-        End;
-      End;
-      dec(x);
-    End;
-  End;
+  If Not HandleOP('$', 6) Then Goto Fehler;
   // Das -
-  While Pos('-', Value) <> 0 Do Begin // Wir müssen von hinten nach Forne gehen
-    x := length(Value);
-    While x >= 1 Do Begin
-      If Value[x] = '-' Then Begin
-        // Wir haben unser Div gefunen nun müssen wir ein Blatt daraus machen.
-        front := getBefor(Value, x);
-        back := getafter(Value, x);
-        If (Front = -1) Or (Back = -1) Then Begin
-          Error := true;
-          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
-          Result := Nil;
-          Goto Fehler;
-        End
-        Else Begin
-          new(an);
-          an^.Left := klammern[front];
-          an^.Right := klammern[back];
-          an^.IsValue := false;
-          an^.Value := 2; // Ist die Schlüsselnummer für Div
-          Setlength(klammern, high(Klammern) + 2);
-          klammern[high(Klammern)] := an; // Merken des Pointer's
-          i := x + 1;
-          b := true;
-          While b Do Begin
-            inc(i);
-            If Value[i] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          y := x - 1;
-          b := true;
-          While b Do Begin
-            dec(Y);
-            If Value[Y] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          Delete(Value, y, i - y + 1);
-          insert(Trennzeichen + inttostr(high(Klammern)) + Trennzeichen, value, y);
-          x := 0; // Dafür sorgen das die While Schleife Abbricht
-        End;
-      End;
-      dec(x);
-    End;
-  End;
+  If Not HandleOP('-', 2) Then Goto Fehler;
   // Das ^-
-  While Pos('!', Value) <> 0 Do Begin // Wir müssen von hinten nach Forne gehen
-    x := length(Value);
-    While x >= 1 Do Begin
-      If Value[x] = '!' Then Begin
-        // Wir haben unser Div gefunen nun müssen wir ein Blatt daraus machen.
-        front := getBefor(Value, x);
-        back := getafter(Value, x);
-        If (Front = -1) Or (Back = -1) Then Begin
-          Error := true;
-          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
-          Result := Nil;
-          Goto Fehler;
-        End
-        Else Begin
-          new(an);
-          an^.Left := klammern[front];
-          an^.Right := klammern[back];
-          an^.IsValue := false;
-          an^.Value := 3; // Ist die Schlüsselnummer für ^-
-          Setlength(klammern, high(Klammern) + 2);
-          klammern[high(Klammern)] := an; // Merken des Pointer's
-          i := x + 1;
-          b := true;
-          While b Do Begin
-            inc(i);
-            If Value[i] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          y := x - 1;
-          b := true;
-          While b Do Begin
-            dec(Y);
-            If Value[Y] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          Delete(Value, y, i - y + 1);
-          insert(Trennzeichen + inttostr(high(Klammern)) + Trennzeichen, value, y);
-          x := 0; // Dafür sorgen das die While Schleife Abbricht
-        End;
-      End;
-      dec(x);
-    End;
-  End;
+  If Not HandleOP('!', 3) Then Goto Fehler;
   // Das +
-  While Pos('+', Value) <> 0 Do Begin // Wir müssen von hinten nach Forne gehen
-    x := length(Value);
-    While x >= 1 Do Begin
-      If Value[x] = '+' Then Begin
-        // Wir haben unser Div gefunen nun müssen wir ein Blatt daraus machen.
-        front := getBefor(Value, x);
-        back := getafter(Value, x);
-        If (Front = -1) Or (Back = -1) Then Begin
-          Error := true;
-          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
-          Result := Nil;
-          Goto Fehler;
-        End
-        Else Begin
-          new(an);
-          an^.Left := klammern[front];
-          an^.Right := klammern[back];
-          an^.IsValue := false;
-          an^.Value := 1; // Ist die Schlüsselnummer für +
-          Setlength(klammern, high(Klammern) + 2);
-          klammern[high(Klammern)] := an; // Merken des Pointer's
-          i := x + 1;
-          b := true;
-          While b Do Begin
-            inc(i);
-            If Value[i] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          y := x - 1;
-          b := true;
-          While b Do Begin
-            dec(Y);
-            If Value[Y] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          Delete(Value, y, i - y + 1);
-          insert(Trennzeichen + inttostr(high(Klammern)) + Trennzeichen, value, y);
-          x := 0; // Dafür sorgen das die While Schleife Abbricht
-        End;
-      End;
-      dec(x);
-    End;
-  End;
+  If Not HandleOP('+', 1) Then Goto Fehler;
   // Das =
-  While Pos('=', Value) <> 0 Do Begin // Wir müssen von hinten nach Forne gehen
-    x := length(Value);
-    While x >= 1 Do Begin
-      If Value[x] = '=' Then Begin
-        // Wir haben unser Div gefunen nun müssen wir ein Blatt daraus machen.
-        front := getBefor(Value, x);
-        back := getafter(Value, x);
-        If (Front = -1) Or (Back = -1) Then Begin
-          Error := true;
-          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
-          Result := Nil;
-          Goto Fehler;
-        End
-        Else Begin
-          new(an);
-          an^.Left := klammern[front];
-          an^.Right := klammern[back];
-          an^.IsValue := false;
-          an^.Value := 10; // Ist die Schlüsselnummer für =
-          Setlength(klammern, high(Klammern) + 2);
-          klammern[high(Klammern)] := an; // Merken des Pointer's
-          i := x + 1;
-          b := true;
-          While b Do Begin
-            inc(i);
-            If Value[i] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          y := x - 1;
-          b := true;
-          While b Do Begin
-            dec(Y);
-            If Value[Y] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          Delete(Value, y, i - y + 1);
-          insert(Trennzeichen + inttostr(high(Klammern)) + Trennzeichen, value, y);
-          x := 0; // Dafür sorgen das die While Schleife Abbricht
-        End;
-      End;
-      dec(x);
-    End;
-  End;
+  If Not HandleOP('=', 10) Then Goto Fehler;
   // Das <>
-  While Pos('?', Value) <> 0 Do Begin // Wir müssen von hinten nach Forne gehen
-    x := length(Value);
-    While x >= 1 Do Begin
-      If Value[x] = '?' Then Begin
-        // Wir haben unser Div gefunen nun müssen wir ein Blatt daraus machen.
-        front := getBefor(Value, x);
-        back := getafter(Value, x);
-        If (Front = -1) Or (Back = -1) Then Begin
-          Error := true;
-          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
-          Result := Nil;
-          Goto Fehler;
-        End
-        Else Begin
-          new(an);
-          an^.Left := klammern[front];
-          an^.Right := klammern[back];
-          an^.IsValue := false;
-          an^.Value := 11; // Ist die Schlüsselnummer für <>
-          Setlength(klammern, high(Klammern) + 2);
-          klammern[high(Klammern)] := an; // Merken des Pointer's
-          i := x + 1;
-          b := true;
-          While b Do Begin
-            inc(i);
-            If Value[i] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          y := x - 1;
-          b := true;
-          While b Do Begin
-            dec(Y);
-            If Value[Y] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          Delete(Value, y, i - y + 1);
-          insert(Trennzeichen + inttostr(high(Klammern)) + Trennzeichen, value, y);
-          x := 0; // Dafür sorgen das die While Schleife Abbricht
-        End;
-      End;
-      dec(x);
-    End;
-  End;
+  If Not HandleOP('?', 11) Then Goto Fehler;
   // Das >
-  While Pos('>', Value) <> 0 Do Begin // Wir müssen von hinten nach Forne gehen
-    x := length(Value);
-    While x >= 1 Do Begin
-      If Value[x] = '>' Then Begin
-        // Wir haben unser Div gefunen nun müssen wir ein Blatt daraus machen.
-        front := getBefor(Value, x);
-        back := getafter(Value, x);
-        If (Front = -1) Or (Back = -1) Then Begin
-          Error := true;
-          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
-          Result := Nil;
-          Goto Fehler;
-        End
-        Else Begin
-          new(an);
-          an^.Left := klammern[front];
-          an^.Right := klammern[back];
-          an^.IsValue := false;
-          an^.Value := 12; // Ist die Schlüsselnummer für >
-          Setlength(klammern, high(Klammern) + 2);
-          klammern[high(Klammern)] := an; // Merken des Pointer's
-          i := x + 1;
-          b := true;
-          While b Do Begin
-            inc(i);
-            If Value[i] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          y := x - 1;
-          b := true;
-          While b Do Begin
-            dec(Y);
-            If Value[Y] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          Delete(Value, y, i - y + 1);
-          insert(Trennzeichen + inttostr(high(Klammern)) + Trennzeichen, value, y);
-          x := 0; // Dafür sorgen das die While Schleife Abbricht
-        End;
-      End;
-      dec(x);
-    End;
-  End;
+  If Not HandleOP('>', 12) Then Goto Fehler;
   // Das >=
-  While Pos('~', Value) <> 0 Do Begin // Wir müssen von hinten nach Forne gehen
-    x := length(Value);
-    While x >= 1 Do Begin
-      If Value[x] = '~' Then Begin
-        // Wir haben unser Div gefunen nun müssen wir ein Blatt daraus machen.
-        front := getBefor(Value, x);
-        back := getafter(Value, x);
-        If (Front = -1) Or (Back = -1) Then Begin
-          Error := true;
-          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
-          Result := Nil;
-          Goto Fehler;
-        End
-        Else Begin
-          new(an);
-          an^.Left := klammern[front];
-          an^.Right := klammern[back];
-          an^.IsValue := false;
-          an^.Value := 13; // Ist die Schlüsselnummer für >=
-          Setlength(klammern, high(Klammern) + 2);
-          klammern[high(Klammern)] := an; // Merken des Pointer's
-          i := x + 1;
-          b := true;
-          While b Do Begin
-            inc(i);
-            If Value[i] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          y := x - 1;
-          b := true;
-          While b Do Begin
-            dec(Y);
-            If Value[Y] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          Delete(Value, y, i - y + 1);
-          insert(Trennzeichen + inttostr(high(Klammern)) + Trennzeichen, value, y);
-          x := 0; // Dafür sorgen das die While Schleife Abbricht
-        End;
-      End;
-      dec(x);
-    End;
-  End;
+  If Not HandleOP('~', 13) Then Goto Fehler;
   // Das <
-  While Pos('<', Value) <> 0 Do Begin // Wir müssen von hinten nach Forne gehen
-    x := length(Value);
-    While x >= 1 Do Begin
-      If Value[x] = '<' Then Begin
-        // Wir haben unser Div gefunen nun müssen wir ein Blatt daraus machen.
-        front := getBefor(Value, x);
-        back := getafter(Value, x);
-        If (Front = -1) Or (Back = -1) Then Begin
-          Error := true;
-          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
-          Result := Nil;
-          Goto Fehler;
-        End
-        Else Begin
-          new(an);
-          an^.Left := klammern[front];
-          an^.Right := klammern[back];
-          an^.IsValue := false;
-          an^.Value := 14; // Ist die Schlüsselnummer für <
-          Setlength(klammern, high(Klammern) + 2);
-          klammern[high(Klammern)] := an; // Merken des Pointer's
-          i := x + 1;
-          b := true;
-          While b Do Begin
-            inc(i);
-            If Value[i] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          y := x - 1;
-          b := true;
-          While b Do Begin
-            dec(Y);
-            If Value[Y] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          Delete(Value, y, i - y + 1);
-          insert(Trennzeichen + inttostr(high(Klammern)) + Trennzeichen, value, y);
-          x := 0; // Dafür sorgen das die While Schleife Abbricht
-        End;
-      End;
-      dec(x);
-    End;
-  End;
+  If Not HandleOP('<', 14) Then Goto Fehler;
   // Das <=
-  While Pos('#', Value) <> 0 Do Begin // Wir müssen von hinten nach Forne gehen
-    x := length(Value);
-    While x >= 1 Do Begin
-      If Value[x] = '#' Then Begin
-        // Wir haben unser Div gefunen nun müssen wir ein Blatt daraus machen.
-        front := getBefor(Value, x);
-        back := getafter(Value, x);
-        If (Front = -1) Or (Back = -1) Then Begin
-          Error := true;
-          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
-          Result := Nil;
-          Goto Fehler;
-        End
-        Else Begin
-          new(an);
-          an^.Left := klammern[front];
-          an^.Right := klammern[back];
-          an^.IsValue := false;
-          an^.Value := 15; // Ist die Schlüsselnummer für <=
-          Setlength(klammern, high(Klammern) + 2);
-          klammern[high(Klammern)] := an; // Merken des Pointer's
-          i := x + 1;
-          b := true;
-          While b Do Begin
-            inc(i);
-            If Value[i] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          y := x - 1;
-          b := true;
-          While b Do Begin
-            dec(Y);
-            If Value[Y] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          Delete(Value, y, i - y + 1);
-          insert(Trennzeichen + inttostr(high(Klammern)) + Trennzeichen, value, y);
-          x := 0; // Dafür sorgen das die While Schleife Abbricht
-        End;
-      End;
-      dec(x);
-    End;
-  End;
+  If Not HandleOP('#', 15) Then Goto Fehler;
   // Das And
-  While Pos('%', Value) <> 0 Do Begin // Wir müssen von hinten nach Forne gehen
-    x := length(Value);
-    While x >= 1 Do Begin
-      If Value[x] = '%' Then Begin
-        // Wir haben unser Div gefunen nun müssen wir ein Blatt daraus machen.
-        front := getBefor(Value, x);
-        back := getafter(Value, x);
-        If (Front = -1) Or (Back = -1) Then Begin
-          Error := true;
-          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
-          Result := Nil;
-          Goto Fehler;
-        End
-        Else Begin
-          new(an);
-          an^.Left := klammern[front];
-          an^.Right := klammern[back];
-          an^.IsValue := false;
-          an^.Value := 7; // Ist die Schlüsselnummer für and
-          Setlength(klammern, high(Klammern) + 2);
-          klammern[high(Klammern)] := an; // Merken des Pointer's
-          i := x + 1;
-          b := true;
-          While b Do Begin
-            inc(i);
-            If Value[i] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          y := x - 1;
-          b := true;
-          While b Do Begin
-            dec(Y);
-            If Value[Y] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          Delete(Value, y, i - y + 1);
-          insert(Trennzeichen + inttostr(high(Klammern)) + Trennzeichen, value, y);
-          x := 0; // Dafür sorgen das die While Schleife Abbricht
-        End;
-      End;
-      dec(x);
-    End;
-  End;
+  If Not HandleOP('%', 7) Then Goto Fehler;
   // Das or
-  While Pos('[', Value) <> 0 Do Begin // Wir müssen von hinten nach Forne gehen
-    x := length(Value);
-    While x >= 1 Do Begin
-      If Value[x] = '[' Then Begin
-        // Wir haben unser Div gefunen nun müssen wir ein Blatt daraus machen.
-        front := getBefor(Value, x);
-        back := getafter(Value, x);
-        If (Front = -1) Or (Back = -1) Then Begin
-          Error := true;
-          WarningsLogger.Add('Found Error in Line [' + inttostr(line) + '] : ' + 'Missing Value.');
-          Result := Nil;
-          Goto Fehler;
-        End
-        Else Begin
-          new(an);
-          an^.Left := klammern[front];
-          an^.Right := klammern[back];
-          an^.IsValue := false;
-          an^.Value := 8; // Ist die Schlüsselnummer für or
-          Setlength(klammern, high(Klammern) + 2);
-          klammern[high(Klammern)] := an; // Merken des Pointer's
-          i := x + 1;
-          b := true;
-          While b Do Begin
-            inc(i);
-            If Value[i] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          y := x - 1;
-          b := true;
-          While b Do Begin
-            dec(Y);
-            If Value[Y] = Trennzeichen Then Begin
-              b := false;
-            End;
-          End;
-          Delete(Value, y, i - y + 1);
-          insert(Trennzeichen + inttostr(high(Klammern)) + Trennzeichen, value, y);
-          x := 0; // Dafür sorgen das die While Schleife Abbricht
-        End;
-      End;
-      dec(x);
-    End;
-  End;
+  If Not HandleOP('[', 8) Then Goto Fehler;
   // Wir sind Fertig das was nun in Value steht ist der Einsprungpointer in unsere Rechnung.
   s := Value;
+  // Entfernen der "Trennzeichen"
   delete(s, 1, 1);
   Delete(s, length(s), 1);
   result := klammern[strtoint(s)];
   Fehler:
   // wenn ein Fehler War dann müssen wir die Pointer wieder Frei geben
   If Error Then Begin
-    For x := 0 To high(Klammern) Do begin
+    For x := 0 To high(Klammern) Do Begin
       Freerechentree(klammern[x]);
-    end;
+    End;
   End;
   setlength(Klammern, 0);
 End;

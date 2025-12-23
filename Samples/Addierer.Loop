@@ -1,0 +1,14 @@
+(******************************************************************************)
+(* Sample Programm zum Testen der Leistungsfhigkeit des Compilers *)
+(******************************************************************************)
+
+Procedure Addierer;
+Var X1, X2;
+Begin
+  x1 := Get;
+  x2 := Get;
+  x0 := x1;
+  Loop x2 Do
+    x0 := x0 + 1;
+  End;
+End;

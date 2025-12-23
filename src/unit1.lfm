@@ -15,6 +15,7 @@ object Form1: TForm1
   Position = poScreenCenter
   LCLVersion = '4.99.0.0'
   OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDropFiles = FormDropFiles
   OnShow = FormShow
@@ -854,7 +855,7 @@ object Form1: TForm1
       OnClick = Deleteall1Click
     end
     object hidemenue1: TMenuItem
-      Caption = 'hide menue'
+      Caption = 'Hide menue'
       OnClick = hidemenue1Click
     end
   end
@@ -867,7 +868,7 @@ object Form1: TForm1
     Left = 512
     Top = 328
     object close2: TMenuItem
-      Caption = 'close'
+      Caption = 'Close'
       OnClick = close2Click
     end
   end

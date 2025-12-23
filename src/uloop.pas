@@ -129,11 +129,26 @@ Function getFontstylefromstring(Data: String): Tfontstyles;
 
 Procedure Nop; // To have a breakpoint that does not hurt ;)
 
+Function LineWithoutLineInfo(aLine: String): String; // Schneited alles nach LineSeparator ab
+
 Implementation
 
 Procedure Nop;
 Begin
 
+End;
+
+Function LineWithoutLineInfo(aLine: String): String; // Schneited alles nach LineSeparator ab
+Var
+  index: Integer;
+Begin
+  index := pos(LineSeparator, aLine);
+  If index <> 0 Then Begin
+    result := copy(aline, 1, index - 1);
+  End
+  Else Begin
+    result := aLine;
+  End;
 End;
 
 // Diese Function soll dann später wenn der Compiler mal Functionen kann die entsprechenden
