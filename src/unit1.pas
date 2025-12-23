@@ -1,7 +1,7 @@
 (******************************************************************************)
 (* Loop                                                            ??.??.2006 *)
 (*                                                                            *)
-(* Version     : 0.13                                                         *)
+(* Version     : 0.14                                                         *)
 (*                                                                            *)
 (* Author      : Uwe Schächterle (Corpsman)                                   *)
 (*                                                                            *)
@@ -84,7 +84,7 @@
 (*                      o Einrichten einer Schriftart einstellung für den     *)
 (*                         Editor                                             *)
 (*               0.13 : o Port nach Lazarus / FreePascal                      *)
-(*                                                                            *)
+(*               0.14 :                                                       *)
 (*
 Bisher noch nicht Behobene Bugs :
 
