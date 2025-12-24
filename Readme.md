@@ -1,6 +1,6 @@
 # Loop
 
-Loop is a fully usable interpreter for the Loop language (loop on [wikipedia](https://en.wikipedia.org/wiki/LOOP_(programming_language)))
+Loop is a fully usable interpreter for the Loop language (Loop on [wikipedia](https://en.wikipedia.org/wiki/LOOP_(programming_language))). As this interpreter uses a bit "more" than defined by Loop its recommended to also read the [manual](Manual.md).
 
 ![](Documentation/preview.png)
 
